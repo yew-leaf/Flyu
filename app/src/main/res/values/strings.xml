@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Flyu</string>
+    <string name="error_gif">x or y bound size should be at least %1$dpx and file size should be no more than %2$sM</string>
+    <string name="take_photo">拍照</string>
+    <string name="choose_photo">从相册选择</string>
+    <string name="cancel">取消</string>
+    <string name="what_you_want_to_say">你最想说的话</string>
+    <string name="submit">提交</string>
+</resources>
