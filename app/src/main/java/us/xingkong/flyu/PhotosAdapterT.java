@@ -25,17 +25,18 @@ import java.util.List;
  * @描述:
  * @更新日志:
  */
-public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class PhotosAdapterT extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public static final int TYPE_NORMAL = 0;
     public static final int TYPE_FOOTER = 1;
     private Context mContext;
     private LayoutInflater mInflater;
-    private List<Uri> mList;
+    private List<PhotoBean> mList;
     private View mFooterView;
     private onItemClickListener mListener;
+    private onAddClickListener listener;
 
-    public PhotosAdapter(Context context, List<Uri> list) {
+    public PhotosAdapterT(Context context, List<PhotoBean> list) {
         mContext = context;
         mList = list;
         mInflater = LayoutInflater.from(mContext);
@@ -46,12 +47,25 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         notifyItemInserted(getItemCount() - 1);
     }
 
+    public interface onAddClickListener {
+        void onAddClick();
+    }
+
+    public void setOnAddClickListener(onAddClickListener listener) {
+        this.listener = listener;
+    }
+
     public interface onItemClickListener {
         void onItemClick(int position);
     }
 
     public void setItemClickListener(onItemClickListener listener) {
         mListener = listener;
+    }
+
+    public void delete(int position) {
+        mList.remove(position);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -81,13 +95,11 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
-
-
         switch (getItemViewType(position)) {
             case TYPE_NORMAL:
-                setItem((ItemHolder) holder, mList);
-                /*if (mList != null) {
-                    Uri uri = mList.get(position );
+                //setItem((ItemHolder) holder, mList);
+                if (mList != null) {
+                    Uri uri = Uri.parse(mList.get(position).getUri());
                     Glide.with(mContext)
                             .load(uri)
                             .thumbnail(0.5f)
@@ -100,7 +112,19 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                             mListener.onItemClick(position);
                         }
                     });
-                }*/
+                }
+                ((ItemHolder) holder).photoItem.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        return true;
+                    }
+                });
+                ((ItemHolder) holder).delete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        delete(position);
+                    }
+                });
                 break;
             case TYPE_FOOTER:
 
@@ -110,11 +134,11 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     ((AddHolder) holder).photoAdd.setEnabled(false);
                 }
 
-                if (mListener != null) {
+                if (listener != null) {
                     ((AddHolder) holder).photoAdd.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            mListener.onItemClick(position);
+                            listener.onAddClick();
                         }
                     });
                 }
@@ -124,10 +148,10 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
     }
 
-    private void setItem(ItemHolder holder, List<Uri> list) {
+    private void setItem(ItemHolder holder, List<PhotoBean> list) {
         final int position = holder.getLayoutPosition();
         if (list != null) {
-            Uri uri = mList.get(position);
+            Uri uri = Uri.parse(mList.get(position).getUri());
             Glide.with(mContext)
                     .load(uri)
                     .thumbnail(0.5f)
@@ -150,8 +174,7 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         holder.delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mList.remove(position);
-                notifyDataSetChanged();
+                delete(position);
             }
         });
     }

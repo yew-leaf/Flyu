@@ -8,7 +8,6 @@ import android.graphics.PathEffect;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.View;
 
 import static android.support.v7.widget.helper.ItemTouchHelper.ACTION_STATE_DRAG;
@@ -25,10 +24,10 @@ import static android.support.v7.widget.helper.ItemTouchHelper.ACTION_STATE_DRAG
  */
 public class TouchHelperCallback extends ItemTouchHelper.Callback {
 
-    private PhotosAdapter mAdapter;
+    private PhotosAdapterT mAdapter;
     private Paint mPaint;    //虚线画笔
 
-    public TouchHelperCallback(PhotosAdapter adapter) {
+    public TouchHelperCallback(PhotosAdapterT adapter) {
         mAdapter = adapter;
         mPaint = new Paint();
         mPaint.setColor(Color.GRAY);
@@ -44,9 +43,7 @@ public class TouchHelperCallback extends ItemTouchHelper.Callback {
         if (viewHolder.getLayoutPosition() == mAdapter.getItemCount() - 1) {
             return 0;
         }
-        Log.e("getLayoutPosition", viewHolder.getLayoutPosition() + "");
-        Log.e("mAdapter", mAdapter.getItemCount() + "");
-        int dragFlags = ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
+        int dragFlags = ItemTouchHelper.DOWN |ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
         int swipeFlags = 0;
         return makeMovementFlags(dragFlags, swipeFlags);
     }
@@ -73,12 +70,14 @@ public class TouchHelperCallback extends ItemTouchHelper.Callback {
     public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
         super.onSelectedChanged(viewHolder, actionState);
         if (actionState == ACTION_STATE_DRAG) {
-            if (viewHolder instanceof PhotosAdapter.ItemHolder) {
-                PhotosAdapter.ItemHolder holder = (PhotosAdapter.ItemHolder) viewHolder;
+            if (viewHolder instanceof PhotosAdapterT.ItemHolder) {
+                PhotosAdapterT.ItemHolder holder = (PhotosAdapterT.ItemHolder) viewHolder;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     holder.photoItem.setElevation(8);
                 }
                 holder.photoItem.setBackgroundColor(Color.LTGRAY);
+               /* holder.photoItem.setScaleX(1.1f);
+                holder.photoItem.setScaleY(1.1f);*/
                 holder.delete.setVisibility(View.GONE);
             }
         }
@@ -87,24 +86,26 @@ public class TouchHelperCallback extends ItemTouchHelper.Callback {
     @Override
     public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         super.clearView(recyclerView, viewHolder);
-        if (viewHolder instanceof PhotosAdapter.ItemHolder) {
-            PhotosAdapter.ItemHolder holder = (PhotosAdapter.ItemHolder) viewHolder;
+        if (viewHolder instanceof PhotosAdapterT.ItemHolder) {
+            PhotosAdapterT.ItemHolder holder = (PhotosAdapterT.ItemHolder) viewHolder;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 holder.photoItem.setElevation(2);
             }
             holder.photoItem.setBackgroundColor(Color.parseColor("#f0f0f0"));
+            /*holder.photoItem.setScaleX(1.0f);
+            holder.photoItem.setScaleY(1.0f);*/
             holder.delete.setVisibility(View.VISIBLE);
         }
     }
 
     @Override
-    public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-        super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+    public void onChildDrawOver(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+        super.onChildDrawOver(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
         c.drawRect(
                 viewHolder.itemView.getLeft(),
                 viewHolder.itemView.getTop(),
                 viewHolder.itemView.getRight(),
-                viewHolder.itemView.getRight(),
+                viewHolder.itemView.getBottom(),
                 mPaint);
     }
 }

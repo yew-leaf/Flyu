@@ -38,4 +38,5 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.6.1'
     implementation 'com.squareup.okhttp3:okhttp:3.8.1'
     implementation 'com.squareup.okio:okio:1.13.0'
+    implementation 'com.github.chrisbanes:PhotoView:2.1.3'
 }

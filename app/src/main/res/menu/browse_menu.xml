@@ -2,7 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/submit"
-        android:title="@string/submit"
-        app:showAsAction="ifRoom" />
+        android:id="@+id/delete_browse"
+        android:icon="@mipmap/delete_browse"
+        android:title="@string/delete"
+        app:showAsAction="always" />
 </menu>

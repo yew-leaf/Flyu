@@ -39,6 +39,8 @@
         <activity android:name=".PhotoAdd" />
         <activity android:name=".Recycler" />
         <activity android:name=".PopWindow" />
+        <activity android:name=".Words" />
+        <activity android:name=".Browse"></activity>
     </application>
 
 </manifest>

@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -25,20 +26,27 @@ import java.util.List;
  * @描述:
  * @更新日志:
  */
-public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class PhotosAdapterTest extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    public static final int TYPE_NORMAL = 0;
-    public static final int TYPE_FOOTER = 1;
+    public static final int TYPE_HEADER = 0;
+    public static final int TYPE_NORMAL = 1;
+    public static final int TYPE_FOOTER = 2;
     private Context mContext;
     private LayoutInflater mInflater;
     private List<Uri> mList;
+    private View mHeaderView;
     private View mFooterView;
     private onItemClickListener mListener;
 
-    public PhotosAdapter(Context context, List<Uri> list) {
+    public PhotosAdapterTest(Context context, List<Uri> list) {
         mContext = context;
         mList = list;
         mInflater = LayoutInflater.from(mContext);
+    }
+
+    public void setHeaderView(View headerView) {
+        mHeaderView = headerView;
+        notifyItemInserted(0);
     }
 
     public void setFooterView(View footerView) {
@@ -56,6 +64,9 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public int getItemViewType(int position) {
+        if (mHeaderView != null && position == 0) {
+            return TYPE_HEADER;
+        }
         if (mFooterView != null && position == getItemCount() - 1) {
             return TYPE_FOOTER;
         }
@@ -65,6 +76,10 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if (mHeaderView != null && viewType == TYPE_HEADER) {
+            setHeaderHeight(mHeaderView, parent);
+            return new WordsHolder(mHeaderView);
+        }
         if (mFooterView != null && viewType == TYPE_FOOTER) {
             setItemWidth(mFooterView, parent);
             return new AddHolder(mFooterView);
@@ -74,6 +89,11 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         return new ItemHolder(view);
     }
 
+    private void setHeaderHeight(View view, ViewGroup parent) {
+        view.getLayoutParams().width = parent.getWidth();
+        view.getLayoutParams().height = parent.getHeight() / 3;
+    }
+
     private void setItemWidth(View view, ViewGroup parent) {
         view.getLayoutParams().width = parent.getWidth() / 3;
         view.getLayoutParams().height = parent.getWidth() / 3;
@@ -81,13 +101,13 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
-
-
         switch (getItemViewType(position)) {
+            case TYPE_HEADER:
+                break;
             case TYPE_NORMAL:
-                setItem((ItemHolder) holder, mList);
-                /*if (mList != null) {
-                    Uri uri = mList.get(position );
+                //setItem((ItemHolder) holder, mList);
+                if (mList != null) {
+                    Uri uri = mList.get(position -1);
                     Glide.with(mContext)
                             .load(uri)
                             .thumbnail(0.5f)
@@ -100,16 +120,9 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                             mListener.onItemClick(position);
                         }
                     });
-                }*/
+                }
                 break;
             case TYPE_FOOTER:
-
-                if (mList == null || mList.size() < 3) {
-                    ((AddHolder) holder).photoAdd.setEnabled(true);
-                } else {
-                    ((AddHolder) holder).photoAdd.setEnabled(false);
-                }
-
                 if (mListener != null) {
                     ((AddHolder) holder).photoAdd.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -122,6 +135,7 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             default:
                 break;
         }
+
     }
 
     private void setItem(ItemHolder holder, List<Uri> list) {
@@ -147,22 +161,17 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 return true;
             }
         });
-        holder.delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mList.remove(position);
-                notifyDataSetChanged();
-            }
-        });
     }
 
     @Override
     public int getItemCount() {
-        if (mFooterView == null) {
+        if (mHeaderView == null && mFooterView == null) {
             return mList.size();
-        } else if (mList != null) {
+        } else if (mHeaderView == null || mFooterView == null) {
             return mList.size() + 1;
-        } else return 1;
+        } else if (mList != null) {
+            return mList.size() + 2;
+        } else return 2;
     }
 
     public void moveItem(int fromPosition, int toPosition) {
@@ -174,10 +183,19 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             for (int i = fromPosition; i > toPosition; i--) {
                 Collections.swap(mList, i, i - 1);
             }
+            notifyItemMoved(fromPosition, toPosition);
         }
-        notifyItemMoved(fromPosition, toPosition);
     }
 
+    class WordsHolder extends RecyclerView.ViewHolder {
+
+        EditText words;
+
+        WordsHolder(View itemView) {
+            super(itemView);
+            words = itemView.findViewById(R.id.words_test);
+        }
+    }
 
     class AddHolder extends RecyclerView.ViewHolder {
 
