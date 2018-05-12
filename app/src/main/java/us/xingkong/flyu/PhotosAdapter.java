@@ -25,20 +25,20 @@ import java.util.List;
  * @描述:
  * @更新日志:
  */
-public class PicturesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int TYPE_NORMAL = 0;
     private static final int TYPE_FOOTER = 1;
     private Context mContext;
-    private LayoutInflater inflater;
+    private LayoutInflater mInflater;
     private List<Uri> mList;
     private View mFooterView;
     private onItemClickListener mListener;
 
-    public PicturesAdapter(Context context, List<Uri> list) {
+    public PhotosAdapter(Context context, List<Uri> list) {
         mContext = context;
         mList = list;
-        inflater = LayoutInflater.from(mContext);
+        mInflater = LayoutInflater.from(mContext);
     }
 
     public void setFooterView(View footerView) {
@@ -67,11 +67,11 @@ public class PicturesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (mFooterView != null && viewType == TYPE_FOOTER) {
             setItemWidth(mFooterView, parent);
-            return new PicturesHolder(mFooterView);
+            return new AddHolder(mFooterView);
         }
-        View view = inflater.inflate(R.layout.activity_photo_item, parent, false);
+        View view = mInflater.inflate(R.layout.activity_photo_item, parent, false);
         setItemWidth(view, parent);
-        return new PicturesHolder(view);
+        return new ItemHolder(view);
     }
 
     private void setItemWidth(View view, ViewGroup parent) {
@@ -83,15 +83,16 @@ public class PicturesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
         switch (getItemViewType(position)) {
             case TYPE_NORMAL:
+                setItem((ItemHolder) holder, mList);
                 if (mList != null) {
                     Uri uri = mList.get(position);
                     Glide.with(mContext)
                             .load(uri)
-                            .thumbnail(0.1f)
-                            .into(((PicturesHolder) holder).photoImage);
+                            .thumbnail(0.5f)
+                            .into(((ItemHolder) holder).photoImage);
                 }
                 if (mListener != null) {
-                    ((PicturesHolder) holder).photoItem.setOnClickListener(new View.OnClickListener() {
+                    ((ItemHolder) holder).photoItem.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             mListener.onItemClick(position);
@@ -101,7 +102,7 @@ public class PicturesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 break;
             case TYPE_FOOTER:
                 if (mListener != null) {
-                    ((PicturesHolder) holder).photoAdd.setOnClickListener(new View.OnClickListener() {
+                    ((AddHolder) holder).photoAdd.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             mListener.onItemClick(position);
@@ -112,17 +113,41 @@ public class PicturesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             default:
                 break;
         }
+
+    }
+
+    private void setItem(ItemHolder holder, List<Uri> list) {
+        final int position = holder.getLayoutPosition();
+        if (list != null) {
+            Uri uri = mList.get(position);
+            Glide.with(mContext)
+                    .load(uri)
+                    .thumbnail(0.5f)
+                    .into(holder.photoImage);
+        }
+        if (mListener != null) {
+            holder.photoItem.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mListener.onItemClick(position);
+                }
+            });
+        }
+        holder.photoItem.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                return true;
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        if (mList == null) {
-            return 1;
-        } else {
+        if (mList != null) {
             return mList.size() + 1;
+        } else {
+            return 1;
         }
-
-
     }
 
     public void moveItem(int fromPosition, int toPosition) {
@@ -138,16 +163,26 @@ public class PicturesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    class PicturesHolder extends RecyclerView.ViewHolder {
+    class AddHolder extends RecyclerView.ViewHolder {
 
-         CardView photoAdd, photoItem;
-         ImageView photoImage;
+        CardView photoAdd;
 
-        PicturesHolder(View itemView) {
+        AddHolder(View itemView) {
             super(itemView);
             photoAdd = itemView.findViewById(R.id.photo_add);
+        }
+    }
+
+    class ItemHolder extends RecyclerView.ViewHolder {
+
+        CardView photoItem;
+        ImageView photoImage, delete;
+
+        ItemHolder(View itemView) {
+            super(itemView);
             photoItem = itemView.findViewById(R.id.photo_item);
             photoImage = itemView.findViewById(R.id.photo_image);
+            delete = itemView.findViewById(R.id.delete_item);
         }
     }
 }

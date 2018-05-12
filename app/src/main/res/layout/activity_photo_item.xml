@@ -22,4 +22,13 @@
         android:layout_height="wrap_content"
         android:scaleType="centerCrop" />
 
+    <ImageView
+        android:id="@+id/delete_item"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_gravity="end|top"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/delete"
+        android:visibility="gone" />
+
 </android.support.v7.widget.CardView>
