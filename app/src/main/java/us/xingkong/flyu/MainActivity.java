@@ -53,11 +53,13 @@ import java.util.List;
  * @描述:
  * @更新日志:
  * @目前的问题: (1) popupWindow的动画还未改成material design风格、外边距
- * (2) 拖拽排序、删除
+ * (2) 拖拽排序、删除√
  * (3) 点击图片后预览√
- * (4) 上传
+ * (4) 上传(后端)
  * (5) grid里面item的边距
  * (6) test的adapter
+ * (7) base64
+ * (8) 清除缓存
  */
 
 public class MainActivity extends AppCompatActivity {
@@ -275,7 +277,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         switch (requestCode) {
             case CAMERA_REQUEST:
                 if (resultCode == RESULT_OK) {
@@ -299,8 +300,15 @@ public class MainActivity extends AppCompatActivity {
                         bean.setCheck(true);
                         mPhotoList.add(bean);
                     }
-                    // mPhotoList.addAll(Matisse.obtainResult(data));
                     loadPictures(mPhotoList);
+                }
+                break;
+            case Browse_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    List<PhotoBean> list = (List<PhotoBean>) data.getSerializableExtra("photo");
+                    mPhotoList.clear();
+                    mPhotoList.addAll(list);
+                    mAdapter.notifyDataSetChanged();
                 }
                 break;
             default:
@@ -346,27 +354,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "最多支持三张照片哦", Toast.LENGTH_SHORT).show();
         }
 
-       /* mAdapter.setItemClickListener(new PhotosAdapterT.onItemClickListener() {
-            @Override
-            public void onItemClick(int position) {
-                closeKeyboard();
-                if (position == mPhotoList.size()) {
-                    WindowManager.LayoutParams lp = getWindow().getAttributes();
-                    lp.alpha = 0.5f;
-                    getWindow().setAttributes(lp);
-                    popupWindow.showAtLocation(sheet, Gravity.BOTTOM, 0, 0);
-                    popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-                        @Override
-                        public void onDismiss() {
-                            WindowManager.LayoutParams lp = getWindow().getAttributes();
-                            lp.alpha = 1f;
-                            getWindow().setAttributes(lp);
-                        }
-                    });
-                }
-            }
-        });*/
-
         mAdapter.setOnAddClickListener(new PhotosAdapterT.onAddClickListener() {
             @Override
             public void onAddClick() {
@@ -393,7 +380,6 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(mAdapter);
         setFooterView(mRecyclerView);
         mAdapter.notifyDataSetChanged();
-        Log.e("mList", mAdapter.getItemCount() + "");
         ItemTouchHelper.Callback callback = new TouchHelperCallback(mAdapter);
         ItemTouchHelper helper = new ItemTouchHelper(callback);
         helper.attachToRecyclerView(mRecyclerView);
@@ -403,9 +389,6 @@ public class MainActivity extends AppCompatActivity {
                 if (position < list.size()) {
                     PhotoBean bean = list.get(position);
                     bean.setPosition(position);
-                    Log.e("position", bean.getPosition() + "");
-                    Log.e("position", bean.getCheck() + "");
-                    Log.e("position", bean.getUri() + "");
                     Intent intent = new Intent(MainActivity.this, Browse.class);
                     intent.putExtra("photo", (Serializable) list);
                     intent.putExtra("bean", bean);
@@ -413,8 +396,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
-
     }
 
     private void closeKeyboard() {

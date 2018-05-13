@@ -55,7 +55,7 @@ public class TouchHelperCallback extends ItemTouchHelper.Callback {
         if (toPosition == mAdapter.getItemCount() - 1) {
             return false;
         }
-        if (viewHolder instanceof PhotosAdapter.ItemHolder) {
+        if (viewHolder instanceof PhotosAdapterT.ItemHolder) {
             mAdapter.moveItem(fromPosition, toPosition);
         }
         return true;

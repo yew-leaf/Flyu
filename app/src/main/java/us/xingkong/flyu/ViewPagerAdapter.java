@@ -26,29 +26,39 @@ public class ViewPagerAdapter extends PagerAdapter {
 
     private List<PhotoBean> mList;
     private AppCompatActivity mActivity;
+    private PhotoView mPhotoView;
+    private OnPhotoViewClickListener mListener;
 
     public ViewPagerAdapter(AppCompatActivity context, List<PhotoBean> list) {
         mActivity = context;
         mList = list;
     }
 
+    public interface OnPhotoViewClickListener {
+        void onClick();
+    }
+
+    public void setOnPhotoViewClickListener(OnPhotoViewClickListener listener) {
+        mListener = listener;
+    }
+
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         PhotoBean bean = mList.get(position);
-        PhotoView photoView = new PhotoView(mActivity);
+        mPhotoView = new PhotoView(mActivity);
         Glide.with(mActivity)
                 .asBitmap()
                 .load(Uri.parse(bean.getUri()))
-                .into(photoView);
-        container.addView(photoView);
-        photoView.setOnClickListener(new View.OnClickListener() {
+                .into(mPhotoView);
+        container.addView(mPhotoView);
+        mPhotoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mActivity.finish();
+                mListener.onClick();
             }
         });
-        return photoView;
+        return mPhotoView;
     }
 
     @Override

@@ -1,13 +1,19 @@
 package us.xingkong.flyu;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class Browse extends AppCompatActivity {
@@ -24,14 +30,18 @@ public class Browse extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browse);
         initView();
-        mToolbar.setTitle("");
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(true);
+
         PhotoBean bean = (PhotoBean) getIntent().getSerializableExtra("bean");
         mList = (List<PhotoBean>) getIntent().getSerializableExtra("photo");
-        Log.e("list", mList.size() + "");
         currentPosition = bean.getPosition();
+
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goBack();
+            }
+        });
+
         mAdapter = new ViewPagerAdapter(Browse.this, mList);
         mViewPager.setAdapter(mAdapter);
         mViewPager.setCurrentItem(currentPosition);
@@ -44,12 +54,38 @@ public class Browse extends AppCompatActivity {
                 hint.setText((currentPosition + 1) + "/" + mList.size());
             }
         });
+
+        mAdapter.setOnPhotoViewClickListener(new ViewPagerAdapter.OnPhotoViewClickListener() {
+            @Override
+            public void onClick() {
+                goBack();
+            }
+        });
     }
 
     private void initView() {
         mToolbar = findViewById(R.id.toolbar);
         mViewPager = findViewById(R.id.viewPager);
         hint = findViewById(R.id.hint);
+        mToolbar.setTitle("");
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
+    }
+
+    private void goBack() {
+        Intent intent = new Intent(Browse.this, MainActivity.class);
+        intent.putExtra("photo", (Serializable) mList);
+        setResult(RESULT_OK, intent);
+        finish();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            goBack();
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -58,7 +94,35 @@ public class Browse extends AppCompatActivity {
         mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-
+                switch (item.getItemId()) {
+                    case R.id.delete_browse:
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(Browse.this);
+                        dialog.setTitle("提示");
+                        dialog.setMessage("要删除这张照片吗？");
+                        dialog.setCancelable(false);
+                        dialog.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Log.e("currentPosition", currentPosition + "");
+                                mList.remove(currentPosition);
+                                mAdapter.notifyDataSetChanged();
+                                hint.setText((currentPosition + 1) + "/" + mList.size());
+                                if (mList.size() == 0) {
+                                    hint.setText("0/0");
+                                }
+                            }
+                        });
+                        dialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                        dialog.show();
+                        break;
+                    default:
+                        break;
+                }
                 return true;
             }
         });

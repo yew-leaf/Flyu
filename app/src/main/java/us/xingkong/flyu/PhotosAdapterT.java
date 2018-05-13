@@ -94,7 +94,7 @@ public class PhotosAdapterT extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
         switch (getItemViewType(position)) {
             case TYPE_NORMAL:
                 //setItem((ItemHolder) holder, mList);
@@ -122,7 +122,7 @@ public class PhotosAdapterT extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 ((ItemHolder) holder).delete.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        delete(position);
+                        delete(holder.getLayoutPosition());
                     }
                 });
                 break;
