@@ -109,7 +109,7 @@ public class PhotosAdapterT extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     ((ItemHolder) holder).photoItem.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            mListener.onItemClick(position);
+                            mListener.onItemClick(holder.getLayoutPosition());
                         }
                     });
                 }

@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
@@ -84,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
     private CardView choosePhoto, takePhoto, cancel;
     private ArrayList<String> mBaseList = new ArrayList<>();
     private ImageView test;
+    private float alpha = 1f;
 
     @Override
 
@@ -358,16 +360,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onAddClick() {
                 closeKeyboard();
-                WindowManager.LayoutParams lp = getWindow().getAttributes();
-                lp.alpha = 0.5f;
-                getWindow().setAttributes(lp);
+                setEnterAlpha();
                 popupWindow.showAtLocation(sheet, Gravity.BOTTOM, 0, 0);
                 popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
                     @Override
                     public void onDismiss() {
-                        WindowManager.LayoutParams lp = getWindow().getAttributes();
-                        lp.alpha = 1f;
-                        getWindow().setAttributes(lp);
+                        setExitAlpha();
                     }
                 });
             }
@@ -392,10 +390,61 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(MainActivity.this, Browse.class);
                     intent.putExtra("photo", (Serializable) list);
                     intent.putExtra("bean", bean);
-                    startActivityForResult(intent, Browse_REQUEST);
+                    String name = getString(R.string.translate);
+                    ActivityOptionsCompat options = ActivityOptionsCompat
+                            .makeSceneTransitionAnimation(MainActivity.this, mRecyclerView, name);
+                    ActivityCompat.startActivityForResult(MainActivity.this, intent, Browse_REQUEST, options.toBundle());
                 }
             }
         });
+    }
+
+    private void setEnterAlpha() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (alpha > 0.5f) {
+                    try {
+                        Thread.sleep(8);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    alpha -= 0.01f;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            WindowManager.LayoutParams lp = getWindow().getAttributes();
+                            lp.alpha = alpha;
+                            getWindow().setAttributes(lp);
+                        }
+                    });
+                }
+            }
+        }).start();
+    }
+
+    private void setExitAlpha() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (alpha < 1f) {
+                    try {
+                        Thread.sleep(8);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    alpha += 0.01f;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            WindowManager.LayoutParams lp = getWindow().getAttributes();
+                            lp.alpha = alpha;
+                            getWindow().setAttributes(lp);
+                        }
+                    });
+                }
+            }
+        }).start();
     }
 
     private void closeKeyboard() {
