@@ -78,6 +78,7 @@ public class Browse extends AppCompatActivity {
         intent.putExtra("photo", (Serializable) mList);
         setResult(RESULT_OK, intent);
         finish();
+        overridePendingTransition(0, R.anim.activity_exit);
     }
 
     @Override

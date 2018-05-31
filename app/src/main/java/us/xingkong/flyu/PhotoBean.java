@@ -14,7 +14,6 @@ import java.io.Serializable;
  */
 public class PhotoBean implements Serializable {
     private String uri;
-    private boolean check;
     private int position;
 
     public String getUri() {
@@ -23,14 +22,6 @@ public class PhotoBean implements Serializable {
 
     public void setUri(String uri) {
         this.uri = uri;
-    }
-
-    public boolean getCheck() {
-        return check;
-    }
-
-    public void setCheck(boolean check) {
-        this.check = check;
     }
 
     public int getPosition() {

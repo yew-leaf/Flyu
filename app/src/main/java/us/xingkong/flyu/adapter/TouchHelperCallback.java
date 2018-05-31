@@ -1,4 +1,4 @@
-package us.xingkong.flyu;
+package us.xingkong.flyu.adapter;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -24,10 +24,10 @@ import static android.support.v7.widget.helper.ItemTouchHelper.ACTION_STATE_DRAG
  */
 public class TouchHelperCallback extends ItemTouchHelper.Callback {
 
-    private PhotosAdapterT mAdapter;
+    private PhotosAdapter mAdapter;
     private Paint mPaint;    //虚线画笔
 
-    public TouchHelperCallback(PhotosAdapterT adapter) {
+    public TouchHelperCallback(PhotosAdapter adapter) {
         mAdapter = adapter;
         mPaint = new Paint();
         mPaint.setColor(Color.GRAY);
@@ -55,7 +55,7 @@ public class TouchHelperCallback extends ItemTouchHelper.Callback {
         if (toPosition == mAdapter.getItemCount() - 1) {
             return false;
         }
-        if (viewHolder instanceof PhotosAdapterT.ItemHolder) {
+        if (viewHolder instanceof PhotosAdapter.ItemHolder) {
             mAdapter.moveItem(fromPosition, toPosition);
         }
         return true;
@@ -70,8 +70,8 @@ public class TouchHelperCallback extends ItemTouchHelper.Callback {
     public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
         super.onSelectedChanged(viewHolder, actionState);
         if (actionState == ACTION_STATE_DRAG) {
-            if (viewHolder instanceof PhotosAdapterT.ItemHolder) {
-                PhotosAdapterT.ItemHolder holder = (PhotosAdapterT.ItemHolder) viewHolder;
+            if (viewHolder instanceof PhotosAdapter.ItemHolder) {
+                PhotosAdapter.ItemHolder holder = (PhotosAdapter.ItemHolder) viewHolder;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     holder.photoItem.setElevation(8);
                 }
@@ -86,8 +86,8 @@ public class TouchHelperCallback extends ItemTouchHelper.Callback {
     @Override
     public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         super.clearView(recyclerView, viewHolder);
-        if (viewHolder instanceof PhotosAdapterT.ItemHolder) {
-            PhotosAdapterT.ItemHolder holder = (PhotosAdapterT.ItemHolder) viewHolder;
+        if (viewHolder instanceof PhotosAdapter.ItemHolder) {
+            PhotosAdapter.ItemHolder holder = (PhotosAdapter.ItemHolder) viewHolder;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 holder.photoItem.setElevation(2);
             }

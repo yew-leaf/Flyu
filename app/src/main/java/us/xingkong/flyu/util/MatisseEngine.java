@@ -1,4 +1,4 @@
-package us.xingkong.flyu;
+package us.xingkong.flyu.util;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;

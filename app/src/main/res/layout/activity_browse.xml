@@ -7,7 +7,7 @@
     android:background="@color/browse"
     tools:context=".Browse">
 
-    <include layout="@layout/activity_toolbar" />
+    <include layout="@layout/toolbar" />
 
     <us.xingkong.flyu.ViewPager
         android:id="@+id/viewPager"

@@ -1,22 +1,4 @@
-package us.xingkong.flyu;
-
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+package us.xingkong.flyu.util;
 
 /**
  * @作者: Xuer
@@ -28,12 +10,12 @@ import okhttp3.Response;
  * @描述:
  * @更新日志:
  */
-public class OkUtils {
-    private static OkUtils okUtils;
+public class OkUtil {
+    /*private static OkUtil okUtils;
     private static OkHttpClient okHttpClient;
     private Handler mHandler;
 
-    private OkUtils() {
+    private OkUtil() {
         okHttpClient = new OkHttpClient();
         okHttpClient.newBuilder().connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
@@ -41,11 +23,11 @@ public class OkUtils {
         mHandler = new Handler(Looper.getMainLooper());
     }
 
-    public static OkUtils getInstance() {
+    public static OkUtil getInstance() {
         if (okUtils == null) {
-            synchronized (OkUtils.class) {
+            synchronized (OkUtil.class) {
                 if (okUtils == null) {
-                    okUtils = new OkUtils();
+                    okUtils = new OkUtil();
                 }
             }
         }
@@ -170,5 +152,5 @@ public class OkUtils {
         }
         Log.i("url", sb.toString());
         return sb.toString();
-    }
+    }*/
 }

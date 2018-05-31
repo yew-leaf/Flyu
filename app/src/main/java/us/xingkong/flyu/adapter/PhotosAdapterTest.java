@@ -1,10 +1,11 @@
-package us.xingkong.flyu;
+package us.xingkong.flyu.adapter;
 
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,12 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+
+import us.xingkong.flyu.PhotoBean;
+import us.xingkong.flyu.R;
 
 /**
  * @作者: Xuer
@@ -32,16 +38,17 @@ public class PhotosAdapterTest extends RecyclerView.Adapter<RecyclerView.ViewHol
     public static final int TYPE_NORMAL = 1;
     public static final int TYPE_FOOTER = 2;
     private Context mContext;
-    private LayoutInflater mInflater;
-    private List<Uri> mList;
+    private LayoutInflater inflater;
+    private List<PhotoBean> mList;
     private View mHeaderView;
     private View mFooterView;
     private onItemClickListener mListener;
+    private onAddClickListener listener;
 
-    public PhotosAdapterTest(Context context, List<Uri> list) {
+    public PhotosAdapterTest(Context context, List<PhotoBean> list) {
         mContext = context;
         mList = list;
-        mInflater = LayoutInflater.from(mContext);
+        inflater = LayoutInflater.from(mContext);
     }
 
     public void setHeaderView(View headerView) {
@@ -54,12 +61,33 @@ public class PhotosAdapterTest extends RecyclerView.Adapter<RecyclerView.ViewHol
         notifyItemInserted(getItemCount() - 1);
     }
 
+    public interface onAddClickListener {
+        void onAddClick();
+    }
+
+    public void setOnAddClickListener(onAddClickListener listener) {
+        this.listener = listener;
+    }
+
     public interface onItemClickListener {
         void onItemClick(int position);
     }
 
     public void setItemClickListener(onItemClickListener listener) {
         mListener = listener;
+    }
+
+    public void delete(int position) {
+        mList.remove(position);
+        //notifyDataSetChanged();
+        notifyItemRemoved(position);
+    }
+
+    public void print() {
+        for (PhotoBean bean : mList) {
+            Log.e("uri", bean.getUri());
+            Log.e("position", bean.getPosition()+"");
+        }
     }
 
     @Override
@@ -78,15 +106,29 @@ public class PhotosAdapterTest extends RecyclerView.Adapter<RecyclerView.ViewHol
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (mHeaderView != null && viewType == TYPE_HEADER) {
             setHeaderHeight(mHeaderView, parent);
-            return new WordsHolder(mHeaderView);
+            return new HeaderHolder(mHeaderView);
         }
         if (mFooterView != null && viewType == TYPE_FOOTER) {
             setItemWidth(mFooterView, parent);
-            return new AddHolder(mFooterView);
+            return new FooterHolder(mFooterView);
         }
-        View view = mInflater.inflate(R.layout.activity_photo_item, parent, false);
+        View view = inflater.inflate(R.layout.item_photo, parent, false);
         setItemWidth(view, parent);
         return new ItemHolder(view);
+        /*View view = inflater.inflate(viewType, parent, false);
+        Log.e("viewType", viewType + "");
+        if (viewType == TYPE_HEADER) {
+            setHeaderView(view);
+            setHeaderHeight(view, parent);
+            return new WordsHolder(view);
+        }
+        if (viewType == TYPE_FOOTER) {
+            setFooterView(view);
+            setItemWidth(view, parent);
+            return new AddHolder(view);
+        }
+        setItemWidth(view, parent);
+        return new ItemHolder(view);*/
     }
 
     private void setHeaderHeight(View view, ViewGroup parent) {
@@ -100,14 +142,13 @@ public class PhotosAdapterTest extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
         switch (getItemViewType(position)) {
             case TYPE_HEADER:
                 break;
             case TYPE_NORMAL:
-                //setItem((ItemHolder) holder, mList);
                 if (mList != null) {
-                    Uri uri = mList.get(position -1);
+                    Uri uri = Uri.parse(mList.get(position-1).getUri());
                     Glide.with(mContext)
                             .load(uri)
                             .thumbnail(0.5f)
@@ -117,17 +158,35 @@ public class PhotosAdapterTest extends RecyclerView.Adapter<RecyclerView.ViewHol
                     ((ItemHolder) holder).photoItem.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            mListener.onItemClick(position);
+                            mListener.onItemClick(holder.getLayoutPosition()-1);
                         }
                     });
                 }
+                ((ItemHolder) holder).photoItem.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        return true;
+                    }
+                });
+                ((ItemHolder) holder).delete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        delete(holder.getLayoutPosition());
+                    }
+                });
                 break;
             case TYPE_FOOTER:
-                if (mListener != null) {
-                    ((AddHolder) holder).photoAdd.setOnClickListener(new View.OnClickListener() {
+                if (mList == null || mList.size() < 3) {
+                    ((FooterHolder) holder).photoAdd.setEnabled(true);
+                } else {
+                    ((FooterHolder) holder).photoAdd.setEnabled(false);
+                }
+
+                if (listener != null) {
+                    ((FooterHolder) holder).photoAdd.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            mListener.onItemClick(position);
+                            listener.onAddClick();
                         }
                     });
                 }
@@ -138,10 +197,18 @@ public class PhotosAdapterTest extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     }
 
+    private List<PhotoBean> removeDuplicateWithOrder(List<PhotoBean> list) {
+        Set set = new LinkedHashSet<PhotoBean>();
+        set.addAll(list);
+        list.clear();
+        list.addAll(set);
+        return list;
+    }
+
     private void setItem(ItemHolder holder, List<Uri> list) {
         final int position = holder.getLayoutPosition();
         if (list != null) {
-            Uri uri = mList.get(position);
+            Uri uri = Uri.parse(mList.get(position).getUri());
             Glide.with(mContext)
                     .load(uri)
                     .thumbnail(0.5f)
@@ -172,6 +239,17 @@ public class PhotosAdapterTest extends RecyclerView.Adapter<RecyclerView.ViewHol
         } else if (mList != null) {
             return mList.size() + 2;
         } else return 2;
+        /*if (mHeaderView == null && mFooterView == null) {
+            return mList.size() - 2;
+        } else if (mHeaderView == null || mFooterView == null) {
+            return mList.size() - 1;
+        } else if (mList != null) {
+            return mList.size();
+        } else return 0;*/
+    }
+
+    public int getCount() {
+        return mList.size();
     }
 
     public void moveItem(int fromPosition, int toPosition) {
@@ -183,25 +261,25 @@ public class PhotosAdapterTest extends RecyclerView.Adapter<RecyclerView.ViewHol
             for (int i = fromPosition; i > toPosition; i--) {
                 Collections.swap(mList, i, i - 1);
             }
-            notifyItemMoved(fromPosition, toPosition);
         }
+        notifyItemMoved(fromPosition, toPosition);
     }
 
-    class WordsHolder extends RecyclerView.ViewHolder {
+    class HeaderHolder extends RecyclerView.ViewHolder {
 
         EditText words;
 
-        WordsHolder(View itemView) {
+        HeaderHolder(View itemView) {
             super(itemView);
             words = itemView.findViewById(R.id.words_test);
         }
     }
 
-    class AddHolder extends RecyclerView.ViewHolder {
+    class FooterHolder extends RecyclerView.ViewHolder {
 
         CardView photoAdd;
 
-        AddHolder(View itemView) {
+        FooterHolder(View itemView) {
             super(itemView);
             photoAdd = itemView.findViewById(R.id.photo_add);
         }

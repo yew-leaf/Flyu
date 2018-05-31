@@ -2,7 +2,7 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/photo_item"
+    android:id="@+id/photo_add"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:clickable="true"
@@ -13,22 +13,12 @@
     app:cardElevation="2dp"
     app:cardPreventCornerOverlap="true"
     app:cardUseCompatPadding="true"
-    app:contentPadding="2dp"
-    tools:context=".PhotoItem">
+    app:contentPadding="2dp">
 
     <ImageView
-        android:id="@+id/photo_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:scaleType="centerCrop" />
-
-    <ImageView
-        android:id="@+id/delete_item"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_gravity="end|top"
-        android:scaleType="centerCrop"
-        android:src="@mipmap/delete"
-        android:visibility="gone" />
+        android:layout_gravity="center"
+        android:src="@mipmap/add" />
 
 </android.support.v7.widget.CardView>

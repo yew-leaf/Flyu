@@ -1,4 +1,4 @@
-package us.xingkong.flyu;
+package us.xingkong.flyu.util;
 
 import android.content.Context;
 import android.graphics.Point;
@@ -11,6 +11,8 @@ import com.zhihu.matisse.internal.utils.PhotoMetadataUtils;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import us.xingkong.flyu.R;
 
 /**
  * @作者: Xuer

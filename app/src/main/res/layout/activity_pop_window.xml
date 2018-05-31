@@ -6,8 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
     android:elevation="16dp"
-    android:orientation="vertical"
-    tools:context=".PopWindow">
+    android:orientation="vertical">
 
     <android.support.v7.widget.CardView
         android:id="@+id/take_photo"

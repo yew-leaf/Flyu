@@ -10,7 +10,6 @@
     android:minHeight="?attr/actionBarSize"
     app:title="起个标题真难"
     app:titleTextAppearance="@style/TextAppearance.AppCompat.Title"
-    app:titleTextColor="@color/white"
-    tools:context=".Toolbar">
+    app:titleTextColor="@color/white">
 
 </android.support.v7.widget.Toolbar>
