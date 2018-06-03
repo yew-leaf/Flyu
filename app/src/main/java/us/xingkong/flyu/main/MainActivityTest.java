@@ -1,4 +1,4 @@
-package us.xingkong.flyu;
+package us.xingkong.flyu.main;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -49,6 +49,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import us.xingkong.flyu.browse.Browse;
+import us.xingkong.flyu.PhotoBean;
+import us.xingkong.flyu.R;
 import us.xingkong.flyu.adapter.PhotosAdapterTest;
 import us.xingkong.flyu.adapter.TouchHelperCallbackTest;
 import us.xingkong.flyu.util.GifSizeFilter;
@@ -135,7 +138,6 @@ public class MainActivityTest extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
-        test = findViewById(R.id.test);
     }
 
     private void initPopupWindow() {

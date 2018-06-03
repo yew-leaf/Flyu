@@ -1,4 +1,4 @@
-package us.xingkong.flyu;
+package us.xingkong.flyu.main;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -6,7 +6,9 @@ import android.content.Intent;
 import java.io.Serializable;
 import java.util.List;
 
+import us.xingkong.flyu.PhotoBean;
 import us.xingkong.flyu.adapter.PhotosAdapter;
+import us.xingkong.flyu.browse.Browse;
 
 /**
  * @作者: Xuer

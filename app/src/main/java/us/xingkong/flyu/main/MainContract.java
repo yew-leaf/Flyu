@@ -1,9 +1,10 @@
-package us.xingkong.flyu;
+package us.xingkong.flyu.main;
 
 import android.content.Intent;
 
 import java.util.List;
 
+import us.xingkong.flyu.PhotoBean;
 import us.xingkong.flyu.adapter.PhotosAdapter;
 import us.xingkong.flyu.base.BasePresenter;
 import us.xingkong.flyu.base.BaseView;
@@ -16,6 +17,10 @@ import us.xingkong.flyu.base.BaseView;
  */
 public interface MainContract {
 
+    interface Presenter extends BasePresenter {
+        void display(List<PhotoBean> list);
+    }
+
     interface View extends BaseView<Presenter> {
         void setHeaderView();
 
@@ -24,9 +29,5 @@ public interface MainContract {
         void setAdapter(PhotosAdapter adapter);
 
         void toOtherActivity(Intent intent);
-    }
-
-    interface Presenter extends BasePresenter {
-        void display(List<PhotoBean> list);
     }
 }

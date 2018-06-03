@@ -1,4 +1,4 @@
-package us.xingkong.flyu;
+package us.xingkong.flyu.view;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

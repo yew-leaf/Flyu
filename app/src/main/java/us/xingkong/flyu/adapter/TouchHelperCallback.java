@@ -25,7 +25,9 @@ import static android.support.v7.widget.helper.ItemTouchHelper.ACTION_STATE_DRAG
 public class TouchHelperCallback extends ItemTouchHelper.Callback {
 
     private PhotosAdapter mAdapter;
-    private Paint mPaint;    //虚线画笔
+    private Paint mPaint;// 虚线画笔
+    private onSelectedListener mListener;
+    private PhotosAdapter.ItemHolder holder;
 
     public TouchHelperCallback(PhotosAdapter adapter) {
         mAdapter = adapter;
@@ -38,12 +40,34 @@ public class TouchHelperCallback extends ItemTouchHelper.Callback {
         mPaint.setPathEffect(pathEffect);
     }
 
+    public interface onSelectedListener {
+        void onSelected();
+    }
+
+    public void setOnSelectedListener(onSelectedListener listener) {
+        mListener = listener;
+    }
+
+    public void setSelected() {
+        holder.photoItem.setBackgroundColor(Color.LTGRAY);
+//                holder.photoItem.setScaleX(1.1f);
+//                holder.photoItem.setScaleY(1.1f);
+        holder.delete.setVisibility(View.GONE);
+    }
+
+    public void setNormal() {
+        holder.photoItem.setBackgroundColor(Color.parseColor("#f0f0f0"));
+//            holder.photoItem.setScaleX(1.0f);
+//            holder.photoItem.setScaleY(1.0f);
+        holder.delete.setVisibility(View.VISIBLE);
+    }
+
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         if (viewHolder.getLayoutPosition() == mAdapter.getItemCount() - 1) {
             return 0;
         }
-        int dragFlags = ItemTouchHelper.DOWN |ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
+        int dragFlags = ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
         int swipeFlags = 0;
         return makeMovementFlags(dragFlags, swipeFlags);
     }
@@ -71,14 +95,12 @@ public class TouchHelperCallback extends ItemTouchHelper.Callback {
         super.onSelectedChanged(viewHolder, actionState);
         if (actionState == ACTION_STATE_DRAG) {
             if (viewHolder instanceof PhotosAdapter.ItemHolder) {
-                PhotosAdapter.ItemHolder holder = (PhotosAdapter.ItemHolder) viewHolder;
+                holder = (PhotosAdapter.ItemHolder) viewHolder;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     holder.photoItem.setElevation(8);
                 }
-                holder.photoItem.setBackgroundColor(Color.LTGRAY);
-               /* holder.photoItem.setScaleX(1.1f);
-                holder.photoItem.setScaleY(1.1f);*/
-                holder.delete.setVisibility(View.GONE);
+                setSelected();
+                mListener.onSelected();
             }
         }
     }
@@ -87,14 +109,11 @@ public class TouchHelperCallback extends ItemTouchHelper.Callback {
     public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         super.clearView(recyclerView, viewHolder);
         if (viewHolder instanceof PhotosAdapter.ItemHolder) {
-            PhotosAdapter.ItemHolder holder = (PhotosAdapter.ItemHolder) viewHolder;
+            holder = (PhotosAdapter.ItemHolder) viewHolder;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 holder.photoItem.setElevation(2);
             }
-            holder.photoItem.setBackgroundColor(Color.parseColor("#f0f0f0"));
-            /*holder.photoItem.setScaleX(1.0f);
-            holder.photoItem.setScaleY(1.0f);*/
-            holder.delete.setVisibility(View.VISIBLE);
+            setNormal();
         }
     }
 

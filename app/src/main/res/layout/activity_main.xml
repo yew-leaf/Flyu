@@ -7,7 +7,7 @@
     android:background="@color/background"
     android:focusableInTouchMode="true"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".main.MainActivity">
 
     <include layout="@layout/toolbar" />
 
@@ -21,7 +21,7 @@
         android:orientation="vertical"
         android:padding="10dp">
 
-        <EditText
+        <android.support.v7.widget.AppCompatEditText
             android:id="@+id/words"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -42,13 +42,5 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="0dp"
         android:layout_weight="1.5" />
-
-    <ImageView
-        android:id="@+id/test"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:src="@mipmap/delete"
-        android:visibility="gone" />
 
 </LinearLayout>

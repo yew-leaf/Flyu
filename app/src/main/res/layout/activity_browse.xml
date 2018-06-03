@@ -5,20 +5,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/browse"
-    tools:context=".Browse">
+    tools:context=".browse.Browse">
 
     <include layout="@layout/toolbar" />
 
-    <us.xingkong.flyu.ViewPager
+    <us.xingkong.flyu.view.ViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/toolbar"
         android:transitionName="@string/translate">
 
-    </us.xingkong.flyu.ViewPager>
+    </us.xingkong.flyu.view.ViewPager>
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/hint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -21,11 +21,7 @@ import us.xingkong.flyu.R;
 
 /**
  * @作者: Xuer
- * @包名: us.xingkong.flyu
- * @类名: PicturesAdapter
  * @创建时间: 2018/5/10 13:02
- * @最后修改于:
- * @版本: 1.0
  * @描述:
  * @更新日志:
  */
@@ -54,13 +50,19 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public void print() {
         for (PhotoBean bean : mList) {
             Log.i("uri", bean.getUri());
-            Log.i("position", bean.getPosition()+"");
+            Log.i("position", bean.getPosition() + "");
         }
     }
 
-    public void clear(){
-        if (mList!=null)
-        mList.clear();
+    public void delete(int position) {
+        mList.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public void clear() {
+        if (mList != null)
+            mList.clear();
+        //这里好像还有点问题，为空时退出
     }
 
     public interface onAddClickListener {
@@ -68,7 +70,7 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     public void setOnAddClickListener(onAddClickListener listener) {
-        this.addListener = listener;
+        addListener = listener;
     }
 
     public interface onItemClickListener {
@@ -77,11 +79,6 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     public void setItemClickListener(onItemClickListener listener) {
         itemListener = listener;
-    }
-
-    public void delete(int position) {
-        mList.remove(position);
-        notifyItemRemoved(position);
     }
 
     @Override
@@ -142,9 +139,9 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 });
                 break;
             case TYPE_FOOTER:
-                if (mList == null || mList.size() < 3) {
+                if (mList == null || mList.size() < 3)
                     ((FooterHolder) holder).photoAdd.setEnabled(true);
-                } else
+                else
                     ((FooterHolder) holder).photoAdd.setEnabled(false);
 
                 if (addListener != null) {

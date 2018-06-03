@@ -7,7 +7,7 @@
     android:background="@color/background"
     android:focusableInTouchMode="true"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".main.MainActivity">
 
     <include layout="@layout/toolbar" />
 

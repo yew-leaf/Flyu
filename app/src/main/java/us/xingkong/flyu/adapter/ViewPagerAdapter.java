@@ -1,4 +1,4 @@
-package us.xingkong.flyu;
+package us.xingkong.flyu.adapter;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -12,13 +12,11 @@ import com.github.chrisbanes.photoview.PhotoView;
 
 import java.util.List;
 
+import us.xingkong.flyu.PhotoBean;
+
 /**
  * @作者: Xuer
- * @包名: us.xingkong.flyu
- * @类名: ViewPagerAdapter
  * @创建时间: 2018/5/13 1:06
- * @最后修改于:
- * @版本: 1.0
  * @描述:
  * @更新日志:
  */

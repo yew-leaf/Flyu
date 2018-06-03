@@ -1,4 +1,4 @@
-package us.xingkong.flyu;
+package us.xingkong.flyu.main;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -16,6 +16,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -31,7 +32,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
@@ -47,8 +47,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.SaveListener;
+import us.xingkong.flyu.PhotoBean;
+import us.xingkong.flyu.R;
 import us.xingkong.flyu.adapter.PhotosAdapter;
 import us.xingkong.flyu.adapter.TouchHelperCallback;
 import us.xingkong.flyu.base.BaseActivity;
@@ -75,27 +75,28 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.words)
-    EditText words;
+    AppCompatEditText words;
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
 
-
-    private MainContract.Presenter mPresenter;
-    private Uri uri;
-    private ArrayList<PhotoBean> photos;
     private final static int GENERAL_REQUEST = 0;
     private final static int CAMERA_REQUEST = 1;
     private final static int ALBUM_REQUEST = 2;
     private final static int Browse_REQUEST = 3;
+    private float alpha = 1f;
+    private View sheet;
+    private PopupWindow popupWindow;
+    private Uri uri;
+    private ArrayList<PhotoBean> photos;
     private ArrayList<String> permissionList;
+    private ArrayList<String> base64List;
+    private PhotosAdapter mAdapter;
+    private MainContract.Presenter mPresenter;
     private String[] permissions = new String[]{
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,};
-    private PhotosAdapter mAdapter;
-    private PopupWindow popupWindow;
-    private View sheet;
-    private ArrayList<String> base64List;
-    private float alpha = 1f;
+    private MenuItem ok;
+    private TouchHelperCallback callback;
 
     @Override
     protected int bindLayout() {
@@ -113,6 +114,7 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowTitleEnabled(true);
+        toolbar.setTitle("发送");
 
         initPopupWindow();
 
@@ -131,6 +133,11 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
         photos = new ArrayList<>();
         permissionList = new ArrayList<>();
         base64List = new ArrayList<>();
+    }
+
+    @Override
+    protected void initListener() {
+
     }
 
     private void initPopupWindow() {
@@ -240,25 +247,33 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        ok = menu.findItem(R.id.ok);
+        ok.setVisible(false);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+
                 switch (item.getItemId()) {
                     case R.id.submit:
                         //parseBitmapToBase64();
-                        Model model = new Model();
-                        model.setWords(words.getText().toString());
-                        model.setPhoto("123456");
-                        model.save(new SaveListener<String>() {
-                            @Override
-                            public void done(String s, BmobException e) {
-                                if (e != null) {
-                                    e.printStackTrace();
-                                } else {
-                                    Toast.makeText(MainActivity.this, "创建成功", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
+//                        Model model = new Model();
+//                        model.setWords(words.getText().toString());
+//                        model.setPhoto("123456");
+//                        model.save(new SaveListener<String>() {
+//                            @Override
+//                            public void done(String s, BmobException e) {
+//                                if (e != null) {
+//                                    e.printStackTrace();
+//                                } else {
+//                                    Toast.makeText(MainActivity.this, "创建成功", Toast.LENGTH_SHORT).show();
+//                                }
+//                            }
+//                        });
+                        break;
+                    case R.id.ok:
+                        //callback.setSelected();
+                        ok.setVisible(false);
+                        mAdapter.notifyDataSetChanged();
                         break;
                 }
                 return true;
@@ -309,9 +324,6 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
                     PhotoBean bean = new PhotoBean();
                     bean.setUri(uri.toString());
                     photos.add(bean);
-                    //String uri = this.uri.toString();
-                    //String base64 = new String(Base64.encode(uri.getBytes(), Base64.DEFAULT));
-                    //Log.e("details", "uri>>>" + uri + "base64>>>" + base64);
                     mPresenter.display(photos);
                 }
                 break;
@@ -460,10 +472,16 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
     public void setAdapter(PhotosAdapter adapter) {
         mAdapter = adapter;
         recyclerView.setAdapter(mAdapter);
-        ItemTouchHelper.Callback callback = new TouchHelperCallback(mAdapter);
+        //setFooterView();
+        callback = new TouchHelperCallback(mAdapter);
         ItemTouchHelper helper = new ItemTouchHelper(callback);
         helper.attachToRecyclerView(recyclerView);
-
+        callback.setOnSelectedListener(new TouchHelperCallback.onSelectedListener() {
+            @Override
+            public void onSelected() {
+                ok.setVisible(true);
+            }
+        });
     }
 
     @Override

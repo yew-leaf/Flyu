@@ -31,6 +31,7 @@ public abstract class BaseActivity<P extends BasePresenter>
         bind = ButterKnife.bind(this);
         initView();
         initData();
+        initListener();
     }
 
     @Override
@@ -58,6 +59,7 @@ public abstract class BaseActivity<P extends BasePresenter>
 
     /**
      * 返回Contract里的Presenter
+     *
      * @return presenter
      */
     protected P getPresenter() {
@@ -66,6 +68,7 @@ public abstract class BaseActivity<P extends BasePresenter>
 
     /**
      * 绑定布局
+     *
      * @return 布局id
      */
     protected abstract int bindLayout();
@@ -84,6 +87,11 @@ public abstract class BaseActivity<P extends BasePresenter>
      * 获取数据
      */
     protected abstract void initData();
+
+    /**
+     * 普通控件的监听事件
+     */
+    protected abstract void initListener();
 
     @Override
     protected void onDestroy() {

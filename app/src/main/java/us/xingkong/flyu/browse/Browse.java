@@ -1,52 +1,86 @@
-package us.xingkong.flyu;
+package us.xingkong.flyu.browse;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 
 import java.io.Serializable;
 import java.util.List;
 
-public class Browse extends AppCompatActivity {
+import butterknife.BindView;
+import us.xingkong.flyu.PhotoBean;
+import us.xingkong.flyu.R;
+import us.xingkong.flyu.view.ViewPager;
+import us.xingkong.flyu.adapter.ViewPagerAdapter;
+import us.xingkong.flyu.base.BaseActivity;
+import us.xingkong.flyu.main.MainActivity;
 
-    private Toolbar mToolbar;
-    private List<PhotoBean> mList;
-    private ViewPager mViewPager;
+public class Browse extends BaseActivity<BrowseContract.Presenter>
+        implements BrowseContract.View {
+
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.viewPager)
+    ViewPager viewPager;
+    @BindView(R.id.hint)
+    AppCompatTextView hint;
+
     private int currentPosition;
+    private List<PhotoBean> mList;
     private ViewPagerAdapter mAdapter;
-    private TextView hint;
+    private BrowseContract.Presenter mPresenter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_browse);
-        initView();
+    protected int bindLayout() {
+        return R.layout.activity_browse;
+    }
 
+    @Override
+    protected void init() {
+
+    }
+
+    @Override
+    protected void initView() {
+        toolbar.setTitle("");
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(true);
+
+        new BrowsePresenter(this);
+        mPresenter = getPresenter();
+    }
+
+    @Override
+    protected void initData() {
         PhotoBean bean = (PhotoBean) getIntent().getSerializableExtra("bean");
         mList = (List<PhotoBean>) getIntent().getSerializableExtra("photo");
         currentPosition = bean.getPosition();
 
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        mAdapter = new ViewPagerAdapter(Browse.this, mList);
+        viewPager.setAdapter(mAdapter);
+        viewPager.setCurrentItem(currentPosition);
+        hint.setText((currentPosition + 1) + "/" + mList.size());
+    }
+
+    @Override
+    protected void initListener() {
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 goBack();
             }
         });
 
-        mAdapter = new ViewPagerAdapter(Browse.this, mList);
-        mViewPager.setAdapter(mAdapter);
-        mViewPager.setCurrentItem(currentPosition);
-        hint.setText((currentPosition + 1) + "/" + mList.size());
-        mViewPager.addOnPageChangeListener(new android.support.v4.view.ViewPager.SimpleOnPageChangeListener() {
+        viewPager.addOnPageChangeListener(new android.support.v4.view.ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
@@ -63,17 +97,8 @@ public class Browse extends AppCompatActivity {
         });
     }
 
-    private void initView() {
-        mToolbar = findViewById(R.id.toolbar);
-        mViewPager = findViewById(R.id.viewPager);
-        hint = findViewById(R.id.hint);
-        mToolbar.setTitle("");
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(true);
-    }
-
-    private void goBack() {
+    @Override
+    public void goBack() {
         Intent intent = new Intent(Browse.this, MainActivity.class);
         intent.putExtra("photo", (Serializable) mList);
         setResult(RESULT_OK, intent);
@@ -82,17 +107,15 @@ public class Browse extends AppCompatActivity {
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            goBack();
-        }
-        return super.onKeyDown(keyCode, event);
+    public void onBackPressed() {
+        super.onBackPressed();
+        goBack();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.browse_menu, menu);
-        mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
