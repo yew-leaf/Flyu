@@ -1,5 +1,6 @@
 package us.xingkong.flyu.login;
 
+import us.xingkong.flyu.UserModel;
 import us.xingkong.flyu.base.BasePresenter;
 import us.xingkong.flyu.base.BaseView;
 
@@ -18,6 +19,16 @@ public interface LoginContract {
     }
 
     interface View extends BaseView<Presenter> {
+        String getUserName();
 
+        String getPassword();
+
+        void setVisibility(int visibility);
+
+        void setEnable(boolean enable);
+
+        void showMessage(String message);
+
+        void toOtherActivity(UserModel user);
     }
 }

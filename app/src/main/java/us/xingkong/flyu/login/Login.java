@@ -1,4 +1,4 @@
-package us.xingkong.flyu.register;
+package us.xingkong.flyu.login;
 
 import android.content.Intent;
 import android.support.design.widget.Snackbar;
@@ -6,42 +6,41 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ProgressBar;
 
 import butterknife.BindView;
 import us.xingkong.flyu.R;
 import us.xingkong.flyu.UserModel;
+import us.xingkong.flyu.app.App;
 import us.xingkong.flyu.base.BaseActivity;
 import us.xingkong.flyu.main.MainActivity;
+import us.xingkong.flyu.register.Register;
 import us.xingkong.flyu.util.UIUtil;
 
-public class Register extends BaseActivity<RegisterContract.Presenter>
-        implements RegisterContract.View {
+public class Login extends BaseActivity<LoginContract.Presenter>
+        implements LoginContract.View {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.username)
     AppCompatEditText username;
-    @BindView(R.id.email)
-    AppCompatEditText email;
     @BindView(R.id.password)
     AppCompatEditText password;
-    @BindView(R.id.repassword)
-    AppCompatEditText repassword;
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
     @BindView(R.id.submit)
     AppCompatButton submit;
-    @BindView(R.id.to)
-    AppCompatButton to;
+    @BindView(R.id.register)
+    AppCompatButton register;
 
-    private RegisterContract.Presenter mPresenter;
-
+    private long exitTime;
+    private LoginContract.Presenter mPresenter;
 
     @Override
     protected int bindLayout() {
-        return R.layout.activity_register;
+        return R.layout.activity_login;
     }
 
     @Override
@@ -53,9 +52,9 @@ public class Register extends BaseActivity<RegisterContract.Presenter>
     protected void initView() {
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        toolbar.setTitle("注册");
+        toolbar.setTitle("登录");
 
-        new RegisterPresenter(this);
+        new LoginPresenter(this);
         mPresenter = getPresenter();
     }
 
@@ -69,17 +68,16 @@ public class Register extends BaseActivity<RegisterContract.Presenter>
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPresenter.register();
-                UIUtil.closeKeyboard(Register.this);
+                mPresenter.login();
+                UIUtil.closeKeyboard(Login.this);
             }
         });
 
-        to.setOnClickListener(new View.OnClickListener() {
+        register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Register.this, MainActivity.class);
+                Intent intent = new Intent(Login.this, Register.class);
                 startActivity(intent);
-                finish();
             }
         });
     }
@@ -90,18 +88,8 @@ public class Register extends BaseActivity<RegisterContract.Presenter>
     }
 
     @Override
-    public String getEmail() {
-        return email.getText().toString();
-    }
-
-    @Override
     public String getPassword() {
         return password.getText().toString();
-    }
-
-    @Override
-    public String getRepassword() {
-        return repassword.getText().toString();
     }
 
     @Override
@@ -121,9 +109,24 @@ public class Register extends BaseActivity<RegisterContract.Presenter>
 
     @Override
     public void toOtherActivity(UserModel user) {
-        Intent intent = new Intent(Register.this, MainActivity.class);
+        Intent intent = new Intent(Login.this, MainActivity.class);
         intent.putExtra("user", user);
         startActivity(intent);
         finish();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (System.currentTimeMillis() - exitTime > 2000) {
+                Snackbar.make(submit, "再按一次退出", Snackbar.LENGTH_SHORT).show();
+                exitTime = System.currentTimeMillis();
+            } else {
+                App.exit();
+                //System.exit(0);
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

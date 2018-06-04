@@ -37,7 +37,7 @@ public class RegisterModel {
         params.put("e", email);
         params.put("p", password);
         if (!password.equals(repassword)) {
-            mResult = "error:-1";
+            mResult = "error:5";
             mListener.failure(mResult);
         } else
             OkUtil.get(Constants.REGISTER, params, new OkUtil.DataCallBack() {
@@ -59,6 +59,7 @@ public class RegisterModel {
                 public void onFailure(Request request, IOException e) {
                     e.printStackTrace();
                     Log.e("RegisterModel", "注册失败");
+                    mResult = "error:-1";
                     mListener.failure(mResult);
                 }
             });

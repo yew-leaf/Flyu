@@ -2,7 +2,6 @@ package us.xingkong.flyu.main;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -31,7 +30,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
@@ -54,6 +52,7 @@ import us.xingkong.flyu.adapter.TouchHelperCallback;
 import us.xingkong.flyu.base.BaseActivity;
 import us.xingkong.flyu.util.GifSizeFilter;
 import us.xingkong.flyu.util.MatisseEngine;
+import us.xingkong.flyu.util.UIUtil;
 
 /**
  * @作者: Xuer
@@ -430,13 +429,13 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
         }).start();
     }
 
-    private void closeKeyboard() {
-        View view = getWindow().peekDecorView();
-        if (view != null) {
-            InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-    }
+//    private void closeKeyboard() {
+//        View view = getWindow().peekDecorView();
+//        if (view != null) {
+//            InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//            manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+//        }
+//    }
 
     @Override
     public void setHeaderView() {
@@ -454,7 +453,8 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
         mAdapter.setOnAddClickListener(new PhotosAdapter.onAddClickListener() {
             @Override
             public void onAddClick() {
-                closeKeyboard();
+                //closeKeyboard();
+                UIUtil.closeKeyboard(MainActivity.this);
                 setEnterAlpha();
                 popupWindow.showAtLocation(sheet, Gravity.BOTTOM, 0, 0);
                 popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {

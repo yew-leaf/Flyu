@@ -11,7 +11,7 @@ public class Constants {
 
     public static final String REGISTER = "http://39.108.0.22/blog/public/insert";
 
-    public static final String LOGIN = "http://39.108.0.22/blog/public.signin";
+    public static final String LOGIN = "http://39.108.0.22/blog/public/signin";
 
     public static final String UPLOAD = "http://www.yogasol.xin/api/send";
 

@@ -54,7 +54,7 @@ public class RegisterPresenter implements RegisterContract.Presenter,
         mView.setVisibility(View.INVISIBLE);
         switch (result) {
             case "error:-1":
-                mView.showMessage("两次密码不一致");
+                mView.showMessage("网络连接错误");
                 break;
             case "error:1":
                 mView.showMessage("用户已被注册");
@@ -67,6 +67,9 @@ public class RegisterPresenter implements RegisterContract.Presenter,
                 break;
             case "error:4":
                 mView.showMessage("邮件格式有误");
+                break;
+            case "error:5":
+                mView.showMessage("两次密码不一致");
                 break;
             case "error:0":
                 mView.showMessage("不能为空");

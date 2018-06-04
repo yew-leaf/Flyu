@@ -54,6 +54,6 @@ public class MainPresenter implements MainContract.Presenter {
 
     @Override
     public void destroy() {
-        mAdapter.clear();
+        //mAdapter.clear();
     }
 }

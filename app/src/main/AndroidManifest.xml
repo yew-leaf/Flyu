@@ -41,13 +41,15 @@
 
         <activity android:name=".browse.Browse" />
         <activity android:name=".main.MainActivityTest" />
-        <activity android:name=".Login" />
-        <activity android:name=".register.Register">
+        <activity android:name=".login.Login" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".register.Register">
+
         </activity>
     </application>
 
