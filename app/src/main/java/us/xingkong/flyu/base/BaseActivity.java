@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import us.xingkong.flyu.app.App;
+import us.xingkong.oktuil.OkUtil;
 
 /**
  * @作者: Xuer
@@ -20,6 +21,7 @@ public abstract class BaseActivity<P extends BasePresenter>
         extends AppCompatActivity implements BaseView<P> {
 
     private Unbinder bind;
+    private OkUtil mOkUtil;
     private P mPresenter;
 
     @Override
@@ -29,6 +31,7 @@ public abstract class BaseActivity<P extends BasePresenter>
         init();
         setContentView(bindLayout());
         bind = ButterKnife.bind(this);
+        mOkUtil = App.getInstance().getOkUtil();
         initView();
         initData();
         initListener();
@@ -97,6 +100,7 @@ public abstract class BaseActivity<P extends BasePresenter>
     protected void onDestroy() {
         super.onDestroy();
         bind.unbind();
+        mOkUtil.cancel(this);
         if (mPresenter != null) {
             mPresenter.destroy();
         }

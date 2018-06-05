@@ -2,6 +2,8 @@ package us.xingkong.flyu.main;
 
 import android.content.Intent;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import us.xingkong.flyu.PhotoBean;
@@ -19,14 +21,20 @@ public interface MainContract {
 
     interface Presenter extends BasePresenter {
         void display(List<PhotoBean> list);
+
+        void upload(ArrayList<File> files);
     }
 
     interface View extends BaseView<Presenter> {
+        String getWords();
+
         void setHeaderView();
 
         void setFooterView();
 
         void setAdapter(PhotosAdapter adapter);
+
+        void showMessage(String message);
 
         void toOtherActivity(Intent intent);
     }

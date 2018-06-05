@@ -14,7 +14,7 @@ import us.xingkong.flyu.R;
 import us.xingkong.flyu.UserModel;
 import us.xingkong.flyu.base.BaseActivity;
 import us.xingkong.flyu.main.MainActivity;
-import us.xingkong.flyu.util.UIUtil;
+import us.xingkong.flyu.util.UiUtil;
 
 public class Register extends BaseActivity<RegisterContract.Presenter>
         implements RegisterContract.View {
@@ -31,7 +31,7 @@ public class Register extends BaseActivity<RegisterContract.Presenter>
     AppCompatEditText repassword;
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
-    @BindView(R.id.submit)
+    @BindView(R.id.login)
     AppCompatButton submit;
     @BindView(R.id.to)
     AppCompatButton to;
@@ -70,7 +70,7 @@ public class Register extends BaseActivity<RegisterContract.Presenter>
             @Override
             public void onClick(View v) {
                 mPresenter.register();
-                UIUtil.closeKeyboard(Register.this);
+                UiUtil.closeKeyboard(Register.this);
             }
         });
 

@@ -13,7 +13,29 @@ public class Constants {
 
     public static final String LOGIN = "http://39.108.0.22/blog/public/signin";
 
-    public static final String UPLOAD = "http://www.yogasol.xin/api/send";
+    public static final String UPLOAD_IMAGE_AND_TEXT = "http://www.yogasol.xin/api/send";
 
-    public static final String DOWNLOAD = "http://www.yogasol.xin/api/fetch";
+    public static final String DOWNLOAD_IMAGE = "http://www.yogasol.xin/api/fetch";
+
+    public static final String DOWNLOAD_TEXT = "http://www.yogasol.xin/api/fetchtext";
+
+    public static final String NETWORK_IS_UNAVAILABLE = "-1";
+
+    public static final String PASSWORD_IS_WRONG = "1";
+
+    public static final String USERNAME_OR_PASSWORD_IS_EMPTY = "0";
+
+    public static final String USER_DOESNT_EXIST = "2";
+
+    public static final String SUCCESS = "5";
+
+    public static final String USER_EXISTS = "1";
+
+    public static final String USERNAME_IS_TOO_LONG = "2";
+
+    public static final String PASSWORD_IS_ILLEAGAL = "3";
+
+    public static final String EMAIL_IS_ILLEAGAL = "4";
+
+    public static final String PASSWORD_ISNT_THE_SAME = "6";
 }

@@ -5,6 +5,11 @@ import android.content.Context;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
+import us.xingkong.oktuil.OkUtil;
+
 
 /**
  * @作者: Xuer
@@ -14,7 +19,9 @@ import java.util.List;
  */
 public class App extends android.app.Application {
 
+    private OkUtil mOkUtil;
     private static Context appContext;
+    private static App mInstance;
     public static List<Activity> activities = new LinkedList<>();
 
     @Override
@@ -22,10 +29,24 @@ public class App extends android.app.Application {
         super.onCreate();
         //Bmob.initialize(this, Constants.APPID);
         appContext = getApplicationContext();
+        mInstance = this;
+        OkHttpClient okHttpClient = new OkHttpClient();
+        okHttpClient.newBuilder().connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS);
+        mOkUtil = new OkUtil(okHttpClient);
+    }
+
+    public OkUtil getOkUtil() {
+        return mOkUtil;
     }
 
     public static Context getAppContext() {
         return appContext;
+    }
+
+    public static synchronized App getInstance() {
+        return mInstance;
     }
 
     public static void addActivity(Activity activity) {

@@ -2,13 +2,14 @@ package us.xingkong.flyu.register;
 
 import android.util.Log;
 
-import java.io.IOException;
 import java.util.HashMap;
 
-import okhttp3.Request;
 import us.xingkong.flyu.UserModel;
+import us.xingkong.flyu.app.App;
 import us.xingkong.flyu.app.Constants;
-import us.xingkong.flyu.util.OkUtil;
+import us.xingkong.oktuil.OkUtil;
+import us.xingkong.oktuil.response.ResultResponse;
+
 
 /**
  * @作者: Xuer
@@ -36,32 +37,35 @@ public class RegisterModel {
         params.put("u", username);
         params.put("e", email);
         params.put("p", password);
+        OkUtil okUtil = App.getInstance().getOkUtil();
         if (!password.equals(repassword)) {
-            mResult = "error:5";
+            mResult = Constants.PASSWORD_ISNT_THE_SAME;
             mListener.failure(mResult);
         } else
-            OkUtil.get(Constants.REGISTER, params, new OkUtil.DataCallBack() {
-                @Override
-                public void onSuccess(String result) throws Exception {
-                    Log.e("result", result);
-                    mResult = result;
-                    if (result.equals("succ")) {
-                        UserModel user = new UserModel();
-                        user.setUsername(username);
-                        user.setEmail(email);
-                        user.setPassword(password);
-                        mListener.success(user);
-                    } else
-                        mListener.failure(mResult);
-                }
+            okUtil.get().url(Constants.REGISTER)
+                    .params(params)
+                    .tag(this)
+                    .enqueue(new ResultResponse() {
+                        @Override
+                        public void onSuccess(int statusCode, String result) {
+                            Log.e("result", result);
+                            mResult = result;
+                            if (result.equals(Constants.SUCCESS)) {
+                                UserModel user = new UserModel();
+                                user.setUsername(username);
+                                user.setEmail(email);
+                                user.setPassword(password);
+                                mListener.success(user);
+                            } else
+                                mListener.failure(mResult);
+                        }
 
-                @Override
-                public void onFailure(Request request, IOException e) {
-                    e.printStackTrace();
-                    Log.e("RegisterModel", "注册失败");
-                    mResult = "error:-1";
-                    mListener.failure(mResult);
-                }
-            });
+                        @Override
+                        public void onFailure(int statusCode, String errorMsg) {
+                            Log.e("RegisterModel", "注册失败");
+                            mResult = Constants.NETWORK_IS_UNAVAILABLE;
+                            mListener.failure(mResult);
+                        }
+                    });
     }
 }

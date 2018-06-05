@@ -3,6 +3,7 @@ package us.xingkong.flyu.login;
 import android.view.View;
 
 import us.xingkong.flyu.UserModel;
+import us.xingkong.flyu.app.Constants;
 
 /**
  * @作者: Xuer
@@ -58,16 +59,16 @@ public class LoginPresenter implements LoginContract.Presenter,
         mView.setEnable(true);
         mView.setVisibility(View.INVISIBLE);
         switch (result) {
-            case "error:-1":
+            case Constants.NETWORK_IS_UNAVAILABLE:
                 mView.showMessage("网络连接错误");
                 break;
-            case "2":
+            case Constants.PASSWORD_IS_WRONG:
                 mView.showMessage("密码错误");
                 break;
-            case "3":
+            case Constants.USER_DOESNT_EXIST:
                 mView.showMessage("该用户未被注册");
                 break;
-            case "4":
+            case Constants.USERNAME_OR_PASSWORD_IS_EMPTY:
                 mView.showMessage("用户名或密码为空");
                 break;
         }

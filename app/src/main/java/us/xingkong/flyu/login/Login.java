@@ -17,10 +17,10 @@ import us.xingkong.flyu.app.App;
 import us.xingkong.flyu.base.BaseActivity;
 import us.xingkong.flyu.main.MainActivity;
 import us.xingkong.flyu.register.Register;
-import us.xingkong.flyu.util.UIUtil;
+import us.xingkong.flyu.util.UiUtil;
 
 public class Login extends BaseActivity<LoginContract.Presenter>
-        implements LoginContract.View {
+        implements LoginContract.View, View.OnClickListener {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -30,8 +30,8 @@ public class Login extends BaseActivity<LoginContract.Presenter>
     AppCompatEditText password;
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
-    @BindView(R.id.submit)
-    AppCompatButton submit;
+    @BindView(R.id.login)
+    AppCompatButton login;
     @BindView(R.id.register)
     AppCompatButton register;
 
@@ -65,21 +65,8 @@ public class Login extends BaseActivity<LoginContract.Presenter>
 
     @Override
     protected void initListener() {
-        submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mPresenter.login();
-                UIUtil.closeKeyboard(Login.this);
-            }
-        });
-
-        register.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Login.this, Register.class);
-                startActivity(intent);
-            }
-        });
+        login.setOnClickListener(this);
+        register.setOnClickListener(this);
     }
 
     @Override
@@ -99,12 +86,13 @@ public class Login extends BaseActivity<LoginContract.Presenter>
 
     @Override
     public void setEnable(boolean enable) {
-        submit.setEnabled(enable);
+        login.setEnabled(enable);
+        register.setEnabled(enable);
     }
 
     @Override
     public void showMessage(String message) {
-        Snackbar.make(submit, message, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(login, message, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -116,10 +104,24 @@ public class Login extends BaseActivity<LoginContract.Presenter>
     }
 
     @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.login:
+                UiUtil.closeKeyboard(Login.this);
+                mPresenter.login();
+                break;
+            case R.id.register:
+                Intent intent = new Intent(Login.this, Register.class);
+                startActivity(intent);
+                break;
+        }
+    }
+
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (System.currentTimeMillis() - exitTime > 2000) {
-                Snackbar.make(submit, "再按一次退出", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(login, "再按一次退出", Snackbar.LENGTH_SHORT).show();
                 exitTime = System.currentTimeMillis();
             } else {
                 App.exit();

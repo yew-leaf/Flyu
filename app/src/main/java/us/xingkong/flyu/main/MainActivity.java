@@ -5,11 +5,11 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
@@ -21,7 +21,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -33,13 +32,11 @@ import android.view.WindowManager;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.filter.Filter;
 import com.zhihu.matisse.internal.entity.CaptureStrategy;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +49,7 @@ import us.xingkong.flyu.adapter.TouchHelperCallback;
 import us.xingkong.flyu.base.BaseActivity;
 import us.xingkong.flyu.util.GifSizeFilter;
 import us.xingkong.flyu.util.MatisseEngine;
-import us.xingkong.flyu.util.UIUtil;
+import us.xingkong.flyu.util.UiUtil;
 
 /**
  * @作者: Xuer
@@ -84,18 +81,19 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
     private final static int Browse_REQUEST = 3;
     private float alpha = 1f;
     private View sheet;
+    private View footer;
     private PopupWindow popupWindow;
     private Uri uri;
     private ArrayList<PhotoBean> photos;
     private ArrayList<String> permissionList;
-    private ArrayList<String> base64List;
+    //private ArrayList<String> base64List;
     private PhotosAdapter mAdapter;
+    private MenuItem ok;
+    private TouchHelperCallback callback;
     private MainContract.Presenter mPresenter;
     private String[] permissions = new String[]{
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,};
-    private MenuItem ok;
-    private TouchHelperCallback callback;
 
     @Override
     protected int bindLayout() {
@@ -123,6 +121,8 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
         mAdapter = new PhotosAdapter(MainActivity.this, new ArrayList<PhotoBean>());
         recyclerView.setAdapter(mAdapter);
 
+        footer = LayoutInflater.from(MainActivity.this).inflate(R.layout.item_footer, recyclerView, false);
+
         new MainPresenter(this);
         mPresenter = getPresenter();
     }
@@ -131,7 +131,7 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
     protected void initData() {
         photos = new ArrayList<>();
         permissionList = new ArrayList<>();
-        base64List = new ArrayList<>();
+        //base64List = new ArrayList<>();
     }
 
     @Override
@@ -255,19 +255,13 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
                 switch (item.getItemId()) {
                     case R.id.submit:
                         //parseBitmapToBase64();
-//                        Model model = new Model();
-//                        model.setWords(words.getText().toString());
-//                        model.setPhoto("123456");
-//                        model.save(new SaveListener<String>() {
-//                            @Override
-//                            public void done(String s, BmobException e) {
-//                                if (e != null) {
-//                                    e.printStackTrace();
-//                                } else {
-//                                    Toast.makeText(MainActivity.this, "创建成功", Toast.LENGTH_SHORT).show();
-//                                }
-//                            }
-//                        });
+                        ArrayList<File> files = new ArrayList<>();
+                        for (PhotoBean bean : photos) {
+                            String uri = bean.getUri();
+                            File file = new File(bean.getPath(Uri.parse(uri), MainActivity.this));
+                            files.add(file);
+                        }
+                        mPresenter.upload(files);
                         break;
                     case R.id.ok:
                         //callback.setSelected();
@@ -281,7 +275,7 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
         return true;
     }
 
-    private void parseBitmapToBase64() {
+    /*private void parseBitmapToBase64() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -313,7 +307,7 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
                 }
             }
         }).start();
-    }
+    }*/
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -429,13 +423,10 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
         }).start();
     }
 
-//    private void closeKeyboard() {
-//        View view = getWindow().peekDecorView();
-//        if (view != null) {
-//            InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//            manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
-//        }
-//    }
+    @Override
+    public String getWords() {
+        return words.getText().toString();
+    }
 
     @Override
     public void setHeaderView() {
@@ -444,17 +435,10 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
 
     @Override
     public void setFooterView() {
-        View footer = LayoutInflater.from(MainActivity.this).inflate(R.layout.item_footer, recyclerView, false);
-
-        if (photos.size() >= 3) {
-            Toast.makeText(MainActivity.this, "最多支持三张照片哦", Toast.LENGTH_SHORT).show();
-        }
-
         mAdapter.setOnAddClickListener(new PhotosAdapter.onAddClickListener() {
             @Override
             public void onAddClick() {
-                //closeKeyboard();
-                UIUtil.closeKeyboard(MainActivity.this);
+                UiUtil.closeKeyboard(MainActivity.this);
                 setEnterAlpha();
                 popupWindow.showAtLocation(sheet, Gravity.BOTTOM, 0, 0);
                 popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
@@ -472,7 +456,6 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
     public void setAdapter(PhotosAdapter adapter) {
         mAdapter = adapter;
         recyclerView.setAdapter(mAdapter);
-        //setFooterView();
         callback = new TouchHelperCallback(mAdapter);
         ItemTouchHelper helper = new ItemTouchHelper(callback);
         helper.attachToRecyclerView(recyclerView);
@@ -482,6 +465,11 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
                 ok.setVisible(true);
             }
         });
+    }
+
+    @Override
+    public void showMessage(String message) {
+        Snackbar.make(footer, message, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override

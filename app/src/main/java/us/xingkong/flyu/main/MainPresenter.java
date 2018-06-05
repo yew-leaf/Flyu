@@ -3,10 +3,13 @@ package us.xingkong.flyu.main;
 import android.app.Activity;
 import android.content.Intent;
 
+import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import us.xingkong.flyu.PhotoBean;
+import us.xingkong.flyu.UploadModel;
 import us.xingkong.flyu.adapter.PhotosAdapter;
 import us.xingkong.flyu.browse.Browse;
 
@@ -16,20 +19,27 @@ import us.xingkong.flyu.browse.Browse;
  * @描述:
  * @更新日志:
  */
-public class MainPresenter implements MainContract.Presenter {
+public class MainPresenter implements MainContract.Presenter,
+        MainModel.OnRequestListener {
 
     private MainContract.View mView;
+    private MainModel model;
     private Activity activity;
     private PhotosAdapter mAdapter;
 
     MainPresenter(MainContract.View view) {
         mView = view;
         mView.setPresenter(this);
+        model = new MainModel();
+        model.setOnRequestListener(this);
         activity = mView.getActivity();
     }
 
     @Override
     public void display(final List<PhotoBean> list) {
+        if (list.size() >= 3) {
+            mView.showMessage("最多支持三张照片哦");
+        }
         mAdapter = new PhotosAdapter(activity, list);
         mView.setAdapter(mAdapter);
         mAdapter.setItemClickListener(new PhotosAdapter.onItemClickListener() {
@@ -48,6 +58,11 @@ public class MainPresenter implements MainContract.Presenter {
     }
 
     @Override
+    public void upload(ArrayList<File> files) {
+        model.uploadImageAndText("射命丸文", mView.getWords(), files);
+    }
+
+    @Override
     public void start() {
         mView.setFooterView();
     }
@@ -55,5 +70,15 @@ public class MainPresenter implements MainContract.Presenter {
     @Override
     public void destroy() {
         //mAdapter.clear();
+    }
+
+    @Override
+    public void success(UploadModel user) {
+        mView.showMessage("上传成功");
+    }
+
+    @Override
+    public void failure(String result) {
+        mView.showMessage("上传失败");
     }
 }

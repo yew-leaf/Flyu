@@ -8,7 +8,7 @@
     android:background="@color/zhihu"
     android:elevation="4dp"
     android:minHeight="?attr/actionBarSize"
-    app:title="起个标题真难"
+    app:title="@string/app_name"
     app:titleTextAppearance="@style/TextAppearance.AppCompat.Title"
     app:titleTextColor="@color/white">
 

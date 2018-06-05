@@ -3,6 +3,7 @@ package us.xingkong.flyu.register;
 import android.view.View;
 
 import us.xingkong.flyu.UserModel;
+import us.xingkong.flyu.app.Constants;
 
 /**
  * @作者: Xuer
@@ -53,25 +54,25 @@ public class RegisterPresenter implements RegisterContract.Presenter,
         mView.setEnable(true);
         mView.setVisibility(View.INVISIBLE);
         switch (result) {
-            case "error:-1":
+            case Constants.NETWORK_IS_UNAVAILABLE:
                 mView.showMessage("网络连接错误");
                 break;
-            case "error:1":
+            case Constants.USER_EXISTS:
                 mView.showMessage("用户已被注册");
                 break;
-            case "error:2":
+            case Constants.USERNAME_IS_TOO_LONG:
                 mView.showMessage("用户名过长");
                 break;
-            case "error:3":
+            case Constants.PASSWORD_IS_ILLEAGAL:
                 mView.showMessage("密码长度不在6-16位");
                 break;
-            case "error:4":
+            case Constants.EMAIL_IS_ILLEAGAL:
                 mView.showMessage("邮件格式有误");
                 break;
-            case "error:5":
+            case Constants.PASSWORD_ISNT_THE_SAME:
                 mView.showMessage("两次密码不一致");
                 break;
-            case "error:0":
+            case Constants.USERNAME_OR_PASSWORD_IS_EMPTY:
                 mView.showMessage("不能为空");
                 break;
         }
