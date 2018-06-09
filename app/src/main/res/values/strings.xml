@@ -1,6 +1,22 @@
 <resources>
     <string name="app_name">Flyu</string>
     <string name="error_gif">x or y bound size should be at least %1$dpx and file size should be no more than %2$sM</string>
+    <string name="username_hint">用户名</string>
+    <string name="password_hint">密码</string>
+    <string name="login">登录</string>
+    <string name="register">注册</string>
+    <string name="email">邮箱</string>
+    <string name="repassword">再输入一次密码</string>
+    <string name="home">首页</string>
+    <string name="mine">我的</string>
+    <string name="profile">个人</string>
+    <string name="dynamic">动态</string>
+    <string name="follow">关注</string>
+    <string name="fans">粉丝</string>
+    <string name="about">关于</string>
+    <string name="night">夜间模式</string>
+    <string name="update">检查更新</string>
+    <string name="logout">退出登录</string>
     <string name="take_photo">拍照</string>
     <string name="choose_photo">从相册选择</string>
     <string name="cancel">取消</string>

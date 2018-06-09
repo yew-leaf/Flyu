@@ -27,14 +27,14 @@ import us.xingkong.oktuil.response.ResponseInterface;
 public class UploadBuilder extends BaseRequestBuilderWithParams<UploadBuilder> {
 
     private Map<String, File> mFiles;
-    private ArrayList<MultipartBody.Part> mParts;
+    private List<MultipartBody.Part> mParts;
 
     public UploadBuilder(OkUtil okUtil) {
         super(okUtil);
     }
 
-    public UploadBuilder files(Map<String, File> params) {
-        mFiles = params;
+    public UploadBuilder files(Map<String, File> files) {
+        mFiles = files;
         return this;
     }
 
@@ -83,6 +83,7 @@ public class UploadBuilder extends BaseRequestBuilderWithParams<UploadBuilder> {
                     .newCall(request)
                     .enqueue(new Callback(responseInterface));
         } catch (Exception e) {
+            e.printStackTrace();
             responseInterface.onFailure(0, e.getMessage());
         }
     }

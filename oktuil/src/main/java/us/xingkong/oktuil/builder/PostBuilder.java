@@ -54,10 +54,12 @@ public class PostBuilder extends BaseRequestBuilderWithParams<PostBuilder> {
             }
 
             Request request = builder.build();
+
             OkUtil.getOkHttpClient()
                     .newCall(request)
                     .enqueue(new Callback(responseInterface));
         } catch (Exception e) {
+            e.printStackTrace();
             responseInterface.onFailure(0, e.getMessage());
         }
     }

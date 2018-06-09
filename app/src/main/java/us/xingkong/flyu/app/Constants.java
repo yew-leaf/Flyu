@@ -13,11 +13,11 @@ public class Constants {
 
     public static final String LOGIN = "http://39.108.0.22/blog/public/signin";
 
+    public static final String URL = "http://www.yogasol.xin/";
+
     public static final String UPLOAD_IMAGE_AND_TEXT = "http://www.yogasol.xin/api/send";
 
-    public static final String DOWNLOAD_IMAGE = "http://www.yogasol.xin/api/fetch";
-
-    public static final String DOWNLOAD_TEXT = "http://www.yogasol.xin/api/fetchtext";
+    public static final String DOWNLOAD_IMAGE_AND_TEXT = "http://www.yogasol.xin/api/fetch";
 
     public static final String NETWORK_IS_UNAVAILABLE = "-1";
 

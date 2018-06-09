@@ -5,8 +5,10 @@ import android.util.Log;
 import java.util.HashMap;
 
 import us.xingkong.flyu.UserModel;
+import us.xingkong.flyu.UserModelDao;
 import us.xingkong.flyu.app.App;
 import us.xingkong.flyu.app.Constants;
+import us.xingkong.flyu.base.OnRequestListener;
 import us.xingkong.oktuil.OkUtil;
 import us.xingkong.oktuil.response.ResultResponse;
 
@@ -19,16 +21,10 @@ import us.xingkong.oktuil.response.ResultResponse;
  */
 public class RegisterModel {
 
-    private OnRequestListener mListener;
+    private OnRequestListener<UserModel> mListener;
     private String mResult;
 
-    public interface OnRequestListener {
-        void success(UserModel user);
-
-        void failure(String result);
-    }
-
-    public void setOnRequestListener(OnRequestListener listener) {
+    public void setOnRequestListener(OnRequestListener<UserModel> listener) {
         mListener = listener;
     }
 
@@ -55,6 +51,9 @@ public class RegisterModel {
                                 user.setUsername(username);
                                 user.setEmail(email);
                                 user.setPassword(password);
+                                user.setIsLogged(false);
+                                UserModelDao dao = App.getInstance().getDaoSession().getUserModelDao();
+                                dao.insert(user);
                                 mListener.success(user);
                             } else
                                 mListener.failure(mResult);

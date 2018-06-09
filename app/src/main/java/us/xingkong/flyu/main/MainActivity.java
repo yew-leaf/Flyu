@@ -70,8 +70,8 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @BindView(R.id.words)
-    AppCompatEditText words;
+    @BindView(R.id.content)
+    AppCompatEditText content;
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
 
@@ -84,9 +84,9 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
     private View footer;
     private PopupWindow popupWindow;
     private Uri uri;
-    private ArrayList<PhotoBean> photos;
-    private ArrayList<String> permissionList;
-    //private ArrayList<String> base64List;
+    private List<PhotoBean> photos;
+    private List<String> permissionList;
+    //private List<String> base64List;
     private PhotosAdapter mAdapter;
     private MenuItem ok;
     private TouchHelperCallback callback;
@@ -107,6 +107,10 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
 
     @Override
     protected void initView() {
+        photos = new ArrayList<>();
+        permissionList = new ArrayList<>();
+        //base64List = new ArrayList<>();
+
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -129,14 +133,17 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
 
     @Override
     protected void initData() {
-        photos = new ArrayList<>();
-        permissionList = new ArrayList<>();
-        //base64List = new ArrayList<>();
+
     }
 
     @Override
     protected void initListener() {
-
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     private void initPopupWindow() {
@@ -251,17 +258,17 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-
                 switch (item.getItemId()) {
                     case R.id.submit:
                         //parseBitmapToBase64();
-                        ArrayList<File> files = new ArrayList<>();
+                        List<File> files = new ArrayList<>();
                         for (PhotoBean bean : photos) {
                             String uri = bean.getUri();
                             File file = new File(bean.getPath(Uri.parse(uri), MainActivity.this));
                             files.add(file);
                         }
                         mPresenter.upload(files);
+                        finish();
                         break;
                     case R.id.ok:
                         //callback.setSelected();
@@ -424,8 +431,8 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
     }
 
     @Override
-    public String getWords() {
-        return words.getText().toString();
+    public String getContent() {
+        return content.getText().toString();
     }
 
     @Override

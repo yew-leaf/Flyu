@@ -2,8 +2,13 @@ package us.xingkong.flyu.login;
 
 import android.view.View;
 
+import java.util.List;
+
 import us.xingkong.flyu.UserModel;
+import us.xingkong.flyu.UserModelDao;
+import us.xingkong.flyu.app.App;
 import us.xingkong.flyu.app.Constants;
+import us.xingkong.flyu.base.OnRequestListener;
 
 /**
  * @作者: Xuer
@@ -12,7 +17,7 @@ import us.xingkong.flyu.app.Constants;
  * @更新日志:
  */
 public class LoginPresenter implements LoginContract.Presenter,
-        LoginModel.OnRequestListener {
+        OnRequestListener<UserModel> {
 
     private LoginContract.View mView;
     private LoginModel model;
@@ -38,7 +43,13 @@ public class LoginPresenter implements LoginContract.Presenter,
 
     @Override
     public void start() {
-
+        UserModelDao dao = App.getInstance().getDaoSession().getUserModelDao();
+        List<UserModel> list = dao.loadAll();
+        for (UserModel user : list) {
+            if (user.getIsLogged()) {
+                mView.toOtherActivity(user);
+            }
+        }
     }
 
     @Override
@@ -47,11 +58,11 @@ public class LoginPresenter implements LoginContract.Presenter,
     }
 
     @Override
-    public void success(UserModel user) {
+    public void success(UserModel result) {
         mView.setEnable(true);
         mView.setVisibility(View.INVISIBLE);
         mView.showMessage("登录成功");
-        mView.toOtherActivity(user);
+        mView.toOtherActivity(result);
     }
 
     @Override

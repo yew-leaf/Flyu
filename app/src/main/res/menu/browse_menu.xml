@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/delete_browse"
-        android:icon="@mipmap/delete_browse"
+        android:icon="@mipmap/ic_delete_browse"
         android:title="@string/delete"
         app:showAsAction="always" />
 </menu>

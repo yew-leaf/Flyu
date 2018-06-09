@@ -38,6 +38,7 @@ public class DeleteBuilder extends BaseRequestBuilder<DeleteBuilder> {
                     .newCall(request)
                     .enqueue(new Callback(responseInterface));
         } catch (Exception e) {
+            e.printStackTrace();
             responseInterface.onFailure(0, e.getMessage());
         }
     }

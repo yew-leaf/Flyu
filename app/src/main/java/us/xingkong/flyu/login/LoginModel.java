@@ -5,8 +5,10 @@ import android.util.Log;
 import java.util.HashMap;
 
 import us.xingkong.flyu.UserModel;
+import us.xingkong.flyu.UserModelDao;
 import us.xingkong.flyu.app.App;
 import us.xingkong.flyu.app.Constants;
+import us.xingkong.flyu.base.OnRequestListener;
 import us.xingkong.oktuil.OkUtil;
 import us.xingkong.oktuil.response.ResultResponse;
 
@@ -19,16 +21,10 @@ import us.xingkong.oktuil.response.ResultResponse;
  */
 public class LoginModel {
 
-    private OnRequestListener mListener;
+    private OnRequestListener<UserModel> mListener;
     private String mResult;
 
-    public interface OnRequestListener {
-        void success(UserModel user);
-
-        void failure(String result);
-    }
-
-    public void setOnRequestListener(OnRequestListener listener) {
+    public void setOnRequestListener(OnRequestListener<UserModel> listener) {
         mListener = listener;
     }
 
@@ -47,9 +43,10 @@ public class LoginModel {
                         Log.e("result", result);
                         mResult = result;
                         if (result.equals(Constants.SUCCESS)) {
-                            UserModel user = new UserModel();
-                            user.setUsername(username);
-                            user.setPassword(password);
+                            UserModelDao dao = App.getInstance().getDaoSession().getUserModelDao();
+                            UserModel user = dao.load(username);
+                            user.setIsLogged(true);
+                            dao.update(user);
                             mListener.success(user);
                         } else {
                             mListener.failure(mResult);

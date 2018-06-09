@@ -45,6 +45,7 @@ public class GetBuilder extends BaseRequestBuilderWithParams<GetBuilder> {
                     .newCall(request)
                     .enqueue(new Callback(responseInterface));
         } catch (Exception e) {
+            e.printStackTrace();
             responseInterface.onFailure(0, e.toString());
         }
     }

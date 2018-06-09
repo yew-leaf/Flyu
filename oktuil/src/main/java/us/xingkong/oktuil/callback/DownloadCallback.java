@@ -92,7 +92,7 @@ public class DownloadCallback implements Callback {
                             @Override
                             public void run() {
                                 if (mDownloadResponse != null) {
-                                    mDownloadResponse.onFailure("Fail To Save File" + e.toString());
+                                    mDownloadResponse.onFailure("errorMsg:" + e.toString());
                                 }
                             }
                         });
@@ -103,7 +103,7 @@ public class DownloadCallback implements Callback {
                     @Override
                     public void run() {
                         if (mDownloadResponse != null) {
-                            mDownloadResponse.onFailure("Failure Status=" + response.code());
+                            mDownloadResponse.onFailure("errorCode:" + response.code());
                         }
                     }
                 });

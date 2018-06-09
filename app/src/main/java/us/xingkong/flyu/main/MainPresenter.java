@@ -5,13 +5,12 @@ import android.content.Intent;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import us.xingkong.flyu.PhotoBean;
-import us.xingkong.flyu.UploadModel;
 import us.xingkong.flyu.adapter.PhotosAdapter;
-import us.xingkong.flyu.browse.Browse;
+import us.xingkong.flyu.base.OnRequestListener;
+import us.xingkong.flyu.browse.BrowseActivity;
 
 /**
  * @作者: Xuer
@@ -20,7 +19,7 @@ import us.xingkong.flyu.browse.Browse;
  * @更新日志:
  */
 public class MainPresenter implements MainContract.Presenter,
-        MainModel.OnRequestListener {
+        OnRequestListener<String> {
 
     private MainContract.View mView;
     private MainModel model;
@@ -48,7 +47,7 @@ public class MainPresenter implements MainContract.Presenter,
                 if (position < list.size()) {
                     PhotoBean bean = list.get(position);
                     bean.setPosition(position);
-                    Intent intent = new Intent(activity, Browse.class);
+                    Intent intent = new Intent(activity, BrowseActivity.class);
                     intent.putExtra("photo", (Serializable) list);
                     intent.putExtra("bean", bean);
                     mView.toOtherActivity(intent);
@@ -58,8 +57,8 @@ public class MainPresenter implements MainContract.Presenter,
     }
 
     @Override
-    public void upload(ArrayList<File> files) {
-        model.uploadImageAndText("射命丸文", mView.getWords(), files);
+    public void upload(List<File> files) {
+        model.uploadImageAndText("射命丸文", mView.getContent(), files);
     }
 
     @Override
@@ -73,7 +72,7 @@ public class MainPresenter implements MainContract.Presenter,
     }
 
     @Override
-    public void success(UploadModel user) {
+    public void success(String result) {
         mView.showMessage("上传成功");
     }
 

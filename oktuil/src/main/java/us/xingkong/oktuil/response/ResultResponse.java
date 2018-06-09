@@ -49,7 +49,7 @@ public abstract class ResultResponse implements ResponseInterface {
     public abstract void onSuccess(int statusCode, String result);
 
     @Override
-    public void onProgress(long currentBytes, long totalBytes) {
+    public void onProgress(long currentBytes, long targetBytes) {
 
     }
 }

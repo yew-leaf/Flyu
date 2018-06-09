@@ -127,6 +127,7 @@ public class DownloadBuilder {
             call.enqueue(new DownloadCallback(mFilePath, mCompleteBytes, downloadResponse));
             return call;
         } catch (Exception e) {
+            e.printStackTrace();
             downloadResponse.onFailure(e.getMessage());
             return null;
         }

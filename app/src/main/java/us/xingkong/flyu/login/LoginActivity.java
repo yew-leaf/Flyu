@@ -2,10 +2,8 @@ package us.xingkong.flyu.login;
 
 import android.content.Intent;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
-import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -15,15 +13,13 @@ import us.xingkong.flyu.R;
 import us.xingkong.flyu.UserModel;
 import us.xingkong.flyu.app.App;
 import us.xingkong.flyu.base.BaseActivity;
-import us.xingkong.flyu.main.MainActivity;
-import us.xingkong.flyu.register.Register;
+import us.xingkong.flyu.container.ContainerActivity;
+import us.xingkong.flyu.register.RegisterActivity;
 import us.xingkong.flyu.util.UiUtil;
 
-public class Login extends BaseActivity<LoginContract.Presenter>
+public class LoginActivity extends BaseActivity<LoginContract.Presenter>
         implements LoginContract.View, View.OnClickListener {
 
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
     @BindView(R.id.username)
     AppCompatEditText username;
     @BindView(R.id.password)
@@ -50,10 +46,6 @@ public class Login extends BaseActivity<LoginContract.Presenter>
 
     @Override
     protected void initView() {
-        setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
-        toolbar.setTitle("登录");
-
         new LoginPresenter(this);
         mPresenter = getPresenter();
     }
@@ -97,8 +89,8 @@ public class Login extends BaseActivity<LoginContract.Presenter>
 
     @Override
     public void toOtherActivity(UserModel user) {
-        Intent intent = new Intent(Login.this, MainActivity.class);
-        intent.putExtra("user", user);
+        Intent intent = new Intent(LoginActivity.this, ContainerActivity.class);
+        intent.putExtra("username", user.getUsername());
         startActivity(intent);
         finish();
     }
@@ -107,11 +99,11 @@ public class Login extends BaseActivity<LoginContract.Presenter>
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.login:
-                UiUtil.closeKeyboard(Login.this);
+                UiUtil.closeKeyboard(LoginActivity.this);
                 mPresenter.login();
                 break;
             case R.id.register:
-                Intent intent = new Intent(Login.this, Register.class);
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
                 startActivity(intent);
                 break;
         }

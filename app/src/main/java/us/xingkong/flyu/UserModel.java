@@ -1,6 +1,8 @@
 package us.xingkong.flyu;
 
-import java.io.Serializable;
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Generated;
 
 /**
  * @作者: Xuer
@@ -8,10 +10,26 @@ import java.io.Serializable;
  * @描述:
  * @更新日志:
  */
-public class UserModel implements Serializable {
+@Entity
+public class UserModel {
+    @Id
     private String username;
     private String email;
     private String password;
+    private boolean isLogged = false;
+
+    @Generated(hash = 1756045049)
+    public UserModel(String username, String email, String password,
+                     boolean isLogged) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.isLogged = isLogged;
+    }
+
+    @Generated(hash = 782181818)
+    public UserModel() {
+    }
 
     public String getUsername() {
         return username;
@@ -35,5 +53,13 @@ public class UserModel implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean getIsLogged() {
+        return this.isLogged;
+    }
+
+    public void setIsLogged(boolean isLogged) {
+        this.isLogged = isLogged;
     }
 }

@@ -3,19 +3,21 @@ package us.xingkong.flyu.adapter;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
 import java.util.Collections;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import us.xingkong.flyu.PhotoBean;
 import us.xingkong.flyu.R;
 
@@ -115,17 +117,17 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     Glide.with(mContext)
                             .load(uri)
                             .thumbnail(0.5f)
-                            .into(((ItemHolder) holder).photoImage);
+                            .into(((ItemHolder) holder).image);
                 }
                 if (itemListener != null) {
-                    ((ItemHolder) holder).photoItem.setOnClickListener(new View.OnClickListener() {
+                    ((ItemHolder) holder).item.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             itemListener.onItemClick(holder.getLayoutPosition());
                         }
                     });
                 }
-                ((ItemHolder) holder).photoItem.setOnLongClickListener(new View.OnLongClickListener() {
+                ((ItemHolder) holder).item.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
                         return true;
@@ -140,12 +142,12 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 break;
             case TYPE_FOOTER:
                 if (mList == null || mList.size() < 3)
-                    ((FooterHolder) holder).photoAdd.setEnabled(true);
+                    ((FooterHolder) holder).add.setEnabled(true);
                 else
-                    ((FooterHolder) holder).photoAdd.setEnabled(false);
+                    ((FooterHolder) holder).add.setEnabled(false);
 
                 if (addListener != null) {
-                    ((FooterHolder) holder).photoAdd.setOnClickListener(new View.OnClickListener() {
+                    ((FooterHolder) holder).add.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             addListener.onAddClick();
@@ -183,24 +185,27 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     class FooterHolder extends RecyclerView.ViewHolder {
 
-        CardView photoAdd;
+        @BindView(R.id.add)
+        CardView add;
 
         FooterHolder(View itemView) {
             super(itemView);
-            photoAdd = itemView.findViewById(R.id.photo_add);
+            ButterKnife.bind(this, itemView);
         }
     }
 
     class ItemHolder extends RecyclerView.ViewHolder {
 
-        CardView photoItem;
-        ImageView photoImage, delete;
+        @BindView(R.id.item)
+        CardView item;
+        @BindView(R.id.image)
+        AppCompatImageView image;
+        @BindView(R.id.delete)
+        AppCompatImageView delete;
 
         ItemHolder(View itemView) {
             super(itemView);
-            photoItem = itemView.findViewById(R.id.photo_item);
-            photoImage = itemView.findViewById(R.id.photo_image);
-            delete = itemView.findViewById(R.id.delete_item);
+            ButterKnife.bind(this, itemView);
         }
     }
 }

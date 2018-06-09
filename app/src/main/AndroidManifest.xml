@@ -23,12 +23,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/BaseAppTheme">
-        <activity
-            android:name=".main.MainActivity"
-            android:windowSoftInputMode="adjustPan">
-
-        </activity>
-
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="us.xingkong.flyu"
@@ -39,18 +33,27 @@
                 android:resource="@xml/file" />
         </provider>
 
-        <activity android:name=".browse.Browse" />
-        <activity android:name=".main.MainActivityTest" />
-        <activity android:name=".login.Login" >
+        <activity android:name=".login.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".register.Register">
+        <activity android:name=".register.RegisterActivity" />
+        <activity
+            android:name=".container.ContainerActivity"
+            android:windowSoftInputMode="adjustPan" >
 
         </activity>
+
+        <activity
+            android:name=".main.MainActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity android:name=".browse.BrowseActivity" />
+        <activity android:name=".profile.ProfileActivity" />
+        <activity android:name=".mine.MineActivity" />
+        <activity android:name=".home.HomeActivity" />
     </application>
 
 </manifest>

@@ -6,7 +6,7 @@
         android:id="@+id/ok"
         android:title="@string/ok"
         app:showAsAction="ifRoom"
-        android:icon="@mipmap/ok"/>
+        android:icon="@mipmap/ic_ok" />
 
     <item
         android:id="@+id/submit"

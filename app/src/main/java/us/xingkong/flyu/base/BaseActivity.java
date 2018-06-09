@@ -20,9 +20,9 @@ import us.xingkong.oktuil.OkUtil;
 public abstract class BaseActivity<P extends BasePresenter>
         extends AppCompatActivity implements BaseView<P> {
 
-    private Unbinder bind;
-    private OkUtil mOkUtil;
-    private P mPresenter;
+    protected Unbinder bind;
+    protected OkUtil mOkUtil;
+    protected P mPresenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,6 +45,15 @@ public abstract class BaseActivity<P extends BasePresenter>
         }
     }
 
+    /**
+     * 返回Contract里的Presenter
+     *
+     * @return presenter
+     */
+    protected P getPresenter() {
+        return mPresenter;
+    }
+
     @Override
     public void setPresenter(P presenter) {
         mPresenter = presenter;
@@ -58,15 +67,6 @@ public abstract class BaseActivity<P extends BasePresenter>
     @Override
     public Context getContext() {
         return this;
-    }
-
-    /**
-     * 返回Contract里的Presenter
-     *
-     * @return presenter
-     */
-    protected P getPresenter() {
-        return mPresenter;
     }
 
     /**

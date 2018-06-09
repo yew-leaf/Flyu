@@ -4,6 +4,7 @@ import android.view.View;
 
 import us.xingkong.flyu.UserModel;
 import us.xingkong.flyu.app.Constants;
+import us.xingkong.flyu.base.OnRequestListener;
 
 /**
  * @作者: Xuer
@@ -12,7 +13,7 @@ import us.xingkong.flyu.app.Constants;
  * @更新日志:
  */
 public class RegisterPresenter implements RegisterContract.Presenter,
-        RegisterModel.OnRequestListener {
+        OnRequestListener<UserModel> {
 
     private RegisterContract.View mView;
     private RegisterModel model;
@@ -42,11 +43,11 @@ public class RegisterPresenter implements RegisterContract.Presenter,
     }
 
     @Override
-    public void success(UserModel user) {
+    public void success(UserModel result) {
         mView.setEnable(true);
         mView.setVisibility(View.INVISIBLE);
         mView.showMessage("注册成功");
-        mView.toOtherActivity(user);
+        mView.toOtherActivity(result);
     }
 
     @Override

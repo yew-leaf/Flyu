@@ -40,7 +40,7 @@ public class Callback implements okhttp3.Callback {
             OkUtil.mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    mResponseInterface.onFailure(response.code(), "Failure Status = " + response.code());
+                    mResponseInterface.onFailure(response.code(), "errorCode:" + response.code());
                 }
             });
         }

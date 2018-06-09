@@ -3,14 +3,14 @@ package us.xingkong.flyu.main;
 import android.util.Log;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
-import us.xingkong.flyu.UploadModel;
 import us.xingkong.flyu.app.App;
 import us.xingkong.flyu.app.Constants;
+import us.xingkong.flyu.base.OnRequestListener;
 import us.xingkong.oktuil.OkUtil;
 import us.xingkong.oktuil.response.ResultResponse;
 
@@ -23,33 +23,26 @@ import us.xingkong.oktuil.response.ResultResponse;
  */
 public class MainModel {
 
-    private OnRequestListener mListener;
+    private OnRequestListener<String> mListener;
     private String mResult;
 
-    public interface OnRequestListener {
-        void success(UploadModel user);
-
-        void failure(String result);
-    }
-
-    public void setOnRequestListener(OnRequestListener listener) {
+    public void setOnRequestListener(OnRequestListener<String> listener) {
         mListener = listener;
     }
 
-    public void uploadImageAndText(final String name, final String text, final ArrayList<File> files) {
+    public void uploadImageAndText(String name, String text, List<File> files) {
         HashMap<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("text", text);
         Map<String, File> fileMap = new LinkedHashMap<>();
         for (File file : files) {
-            fileMap.put("img", file);
+            fileMap.put("img[]", file);
         }
         OkUtil okUtil = App.getInstance().getOkUtil();
         okUtil.upload()
                 .url(Constants.UPLOAD_IMAGE_AND_TEXT)
                 .params(params)
-                //.files(fileMap)
-                .addFile("img",files.get(0))
+                .files(fileMap)
                 .tag(this)
                 .enqueue(new ResultResponse() {
                     @Override
@@ -57,12 +50,7 @@ public class MainModel {
                         Log.e("result", result);
                         mResult = result;
                         if (!result.equals("error")) {
-                            UploadModel upload = new UploadModel();
-                            upload.setName(name);
-                            upload.setText(text);
-                            upload.setImg(files);
-                            upload.setCreated_at(result);
-                            mListener.success(upload);
+                            mListener.success("success");
                         } else
                             mListener.failure(mResult);
                     }

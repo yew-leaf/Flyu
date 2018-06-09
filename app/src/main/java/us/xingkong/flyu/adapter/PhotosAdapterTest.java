@@ -281,7 +281,7 @@ public class PhotosAdapterTest extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         FooterHolder(View itemView) {
             super(itemView);
-            photoAdd = itemView.findViewById(R.id.photo_add);
+            photoAdd = itemView.findViewById(R.id.add);
         }
     }
 
@@ -292,9 +292,9 @@ public class PhotosAdapterTest extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         ItemHolder(View itemView) {
             super(itemView);
-            photoItem = itemView.findViewById(R.id.photo_item);
-            photoImage = itemView.findViewById(R.id.photo_image);
-            delete = itemView.findViewById(R.id.delete_item);
+            photoItem = itemView.findViewById(R.id.item);
+            photoImage = itemView.findViewById(R.id.image);
+            delete = itemView.findViewById(R.id.delete);
         }
     }
 }

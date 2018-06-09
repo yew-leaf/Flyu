@@ -13,5 +13,5 @@ public interface ResponseInterface {
 
     void onFailure(int statusCode, String errorMsg);
 
-    void onProgress(long currentBytes, long totalBytes);
+    void onProgress(long currentBytes, long targetBytes);
 }

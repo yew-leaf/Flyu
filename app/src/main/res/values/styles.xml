@@ -17,6 +17,7 @@
         <item name="android:actionMenuTextColor">@android:color/white</item>
         <item name="actionMenuTextAppearance">@style/MenuText</item>
         <item name="android:textColorSecondary">@android:color/white</item>
+        <!--<item name="android:windowSoftInputMode">adjustPan</item>-->
     </style>
 
     <style name="SheetAnimation" parent="android:Animation">

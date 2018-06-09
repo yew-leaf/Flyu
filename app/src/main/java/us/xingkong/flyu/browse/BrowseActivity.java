@@ -22,7 +22,7 @@ import us.xingkong.flyu.adapter.ViewPagerAdapter;
 import us.xingkong.flyu.base.BaseActivity;
 import us.xingkong.flyu.main.MainActivity;
 
-public class Browse extends BaseActivity<BrowseContract.Presenter>
+public class BrowseActivity extends BaseActivity<BrowseContract.Presenter>
         implements BrowseContract.View {
 
     @BindView(R.id.toolbar)
@@ -65,7 +65,7 @@ public class Browse extends BaseActivity<BrowseContract.Presenter>
         mList = (List<PhotoBean>) getIntent().getSerializableExtra("photo");
         currentPosition = bean.getPosition();
 
-        mAdapter = new ViewPagerAdapter(Browse.this, mList);
+        mAdapter = new ViewPagerAdapter(BrowseActivity.this, mList);
         viewPager.setAdapter(mAdapter);
         viewPager.setCurrentItem(currentPosition);
         hint.setText((currentPosition + 1) + "/" + mList.size());
@@ -99,7 +99,7 @@ public class Browse extends BaseActivity<BrowseContract.Presenter>
 
     @Override
     public void goBack() {
-        Intent intent = new Intent(Browse.this, MainActivity.class);
+        Intent intent = new Intent(BrowseActivity.this, MainActivity.class);
         intent.putExtra("photo", (Serializable) mList);
         setResult(RESULT_OK, intent);
         finish();
@@ -120,7 +120,7 @@ public class Browse extends BaseActivity<BrowseContract.Presenter>
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.delete_browse:
-                        AlertDialog.Builder dialog = new AlertDialog.Builder(Browse.this);
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(BrowseActivity.this);
                         dialog.setTitle("提示");
                         dialog.setMessage("要删除这张照片吗？");
                         dialog.setCancelable(false);

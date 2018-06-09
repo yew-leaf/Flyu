@@ -49,14 +49,14 @@ public class TouchHelperCallback extends ItemTouchHelper.Callback {
     }
 
     public void setSelected() {
-        holder.photoItem.setBackgroundColor(Color.LTGRAY);
+        holder.item.setBackgroundColor(Color.LTGRAY);
 //                holder.photoItem.setScaleX(1.1f);
 //                holder.photoItem.setScaleY(1.1f);
         holder.delete.setVisibility(View.GONE);
     }
 
     public void setNormal() {
-        holder.photoItem.setBackgroundColor(Color.parseColor("#f0f0f0"));
+        holder.item.setBackgroundColor(Color.parseColor("#f0f0f0"));
 //            holder.photoItem.setScaleX(1.0f);
 //            holder.photoItem.setScaleY(1.0f);
         holder.delete.setVisibility(View.VISIBLE);
@@ -97,7 +97,7 @@ public class TouchHelperCallback extends ItemTouchHelper.Callback {
             if (viewHolder instanceof PhotosAdapter.ItemHolder) {
                 holder = (PhotosAdapter.ItemHolder) viewHolder;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    holder.photoItem.setElevation(8);
+                    holder.item.setElevation(8);
                 }
                 setSelected();
                 mListener.onSelected();
@@ -111,7 +111,7 @@ public class TouchHelperCallback extends ItemTouchHelper.Callback {
         if (viewHolder instanceof PhotosAdapter.ItemHolder) {
             holder = (PhotosAdapter.ItemHolder) viewHolder;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                holder.photoItem.setElevation(2);
+                holder.item.setElevation(2);
             }
             setNormal();
         }
