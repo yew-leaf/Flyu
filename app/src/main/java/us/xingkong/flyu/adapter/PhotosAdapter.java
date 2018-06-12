@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +17,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import us.xingkong.flyu.PhotoBean;
+import us.xingkong.flyu.PhotoModel;
 import us.xingkong.flyu.R;
 
 /**
@@ -33,12 +32,12 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public static final int TYPE_FOOTER = 1;
     private Context mContext;
     private LayoutInflater inflater;
-    private List<PhotoBean> mList;
+    private List<PhotoModel> mList;
     private View mFooterView;
     private onItemClickListener itemListener;
     private onAddClickListener addListener;
 
-    public PhotosAdapter(Context context, List<PhotoBean> list) {
+    public PhotosAdapter(Context context, List<PhotoModel> list) {
         mContext = context;
         mList = list;
         inflater = LayoutInflater.from(mContext);
@@ -49,22 +48,15 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         notifyItemInserted(getItemCount() - 1);
     }
 
-    public void print() {
-        for (PhotoBean bean : mList) {
-            Log.i("uri", bean.getUri());
-            Log.i("position", bean.getPosition() + "");
-        }
-    }
-
     public void delete(int position) {
         mList.remove(position);
         notifyItemRemoved(position);
     }
 
     public void clear() {
-        if (mList != null)
+        /*if (mList != null && mList.size() != 0) {
             mList.clear();
-        //这里好像还有点问题，为空时退出
+        }*/
     }
 
     public interface onAddClickListener {

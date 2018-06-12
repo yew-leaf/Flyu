@@ -1,6 +1,7 @@
 package us.xingkong.flyu.home;
 
-import us.xingkong.flyu.UserModel;
+import us.xingkong.flyu.DownloadModel;
+import us.xingkong.flyu.adapter.DynamicAdapter;
 import us.xingkong.flyu.base.BasePresenter;
 import us.xingkong.flyu.base.BaseView;
 
@@ -13,14 +14,23 @@ import us.xingkong.flyu.base.BaseView;
 public interface HomeContract {
 
     interface Presenter extends BasePresenter {
-        void display();
+        void load();
 
+        void display();
     }
 
     interface View extends BaseView<Presenter> {
+        String getUsername();
+
+        void setRefresh(boolean refresh);
+
+        void setAdapter(DynamicAdapter adapter);
+
+        void setEnable(boolean enable);
+
         void showMessage(String message);
 
-        void toOtherActivity(UserModel user);
+        void toOtherActivity(DownloadModel.Message message);
 
         boolean isActive();
     }

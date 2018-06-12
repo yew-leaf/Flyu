@@ -5,8 +5,8 @@
         android:icon="@mipmap/ic_home"
         android:title="@string/home" />
     <item
-        android:id="@+id/mine"
-        android:icon="@mipmap/ic_mine"
+        android:id="@+id/dynamic"
+        android:icon="@mipmap/ic_dynamic"
         android:title="@string/mine" />
     <item
         android:id="@+id/profile"

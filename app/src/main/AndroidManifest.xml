@@ -43,17 +43,17 @@
         <activity android:name=".register.RegisterActivity" />
         <activity
             android:name=".container.ContainerActivity"
-            android:windowSoftInputMode="adjustPan" >
-
-        </activity>
-
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".main.MainActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity android:name=".browse.BrowseActivity" />
-        <activity android:name=".profile.ProfileActivity" />
-        <activity android:name=".mine.MineActivity" />
-        <activity android:name=".home.HomeActivity" />
+        <activity
+            android:name=".welcome.WelcomeActivity"
+            android:theme="@style/WelcomeTheme"></activity>
+        <activity
+            android:name=".detail.DetailActivity"
+            android:theme="@style/DetailTheme" />
     </application>
 
 </manifest>

@@ -12,7 +12,7 @@ import com.github.chrisbanes.photoview.PhotoView;
 
 import java.util.List;
 
-import us.xingkong.flyu.PhotoBean;
+import us.xingkong.flyu.PhotoModel;
 
 /**
  * @作者: Xuer
@@ -20,14 +20,14 @@ import us.xingkong.flyu.PhotoBean;
  * @描述:
  * @更新日志:
  */
-public class ViewPagerAdapter extends PagerAdapter {
+public class BrowseAdapter extends PagerAdapter {
 
-    private List<PhotoBean> mList;
+    private List<PhotoModel> mList;
     private AppCompatActivity mActivity;
     private PhotoView mPhotoView;
     private OnPhotoViewClickListener mListener;
 
-    public ViewPagerAdapter(AppCompatActivity context, List<PhotoBean> list) {
+    public BrowseAdapter(AppCompatActivity context, List<PhotoModel> list) {
         mActivity = context;
         mList = list;
     }
@@ -43,7 +43,7 @@ public class ViewPagerAdapter extends PagerAdapter {
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
-        PhotoBean bean = mList.get(position);
+        PhotoModel bean = mList.get(position);
         mPhotoView = new PhotoView(mActivity);
         Glide.with(mActivity)
                 .asBitmap()

@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:focusableInTouchMode="true"
-    tools:context=".profile.ProfileActivity">
+    android:focusableInTouchMode="true">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBar"
@@ -96,7 +95,7 @@
                     android:layout_marginTop="10dp"
                     android:fontFamily="sans-serif"
                     android:gravity="center_horizontal"
-                    android:text="此刻的心情"
+                    android:text="此刻的心情：想换头像"
                     android:textSize="@dimen/text_size"
                     app:layout_constraintTop_toBottomOf="@+id/username" />
 

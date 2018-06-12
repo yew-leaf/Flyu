@@ -4,11 +4,14 @@ package us.xingkong.flyu.base;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import org.greenrobot.eventbus.EventBus;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -52,9 +55,10 @@ public abstract class BaseFragment<P extends BasePresenter>
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(bindLayout(), container, false);
         bind = ButterKnife.bind(this, root);
+
         initView(root);
         return root;
     }
@@ -120,6 +124,9 @@ public abstract class BaseFragment<P extends BasePresenter>
     public void onDestroyView() {
         super.onDestroyView();
         bind.unbind();
+        if (EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this);
+        }
         mOkUtil.cancel(this);
         if (mPresenter != null) {
             mPresenter.destroy();

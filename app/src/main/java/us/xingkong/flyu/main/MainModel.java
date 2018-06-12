@@ -31,6 +31,9 @@ public class MainModel {
     }
 
     public void uploadImageAndText(String name, String text, List<File> files) {
+        if (text.length() == 0 || files.size() == 0) {
+            return;
+        }
         HashMap<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("text", text);

@@ -37,11 +37,6 @@ public class LoginPresenter implements LoginContract.Presenter,
     }
 
     @Override
-    public void setCheckbox() {
-
-    }
-
-    @Override
     public void start() {
         UserModelDao dao = App.getInstance().getDaoSession().getUserModelDao();
         List<UserModel> list = dao.loadAll();
@@ -61,7 +56,7 @@ public class LoginPresenter implements LoginContract.Presenter,
     public void success(UserModel result) {
         mView.setEnable(true);
         mView.setVisibility(View.INVISIBLE);
-        mView.showMessage("登录成功");
+        //mView.showMessage("登录成功");
         mView.toOtherActivity(result);
     }
 

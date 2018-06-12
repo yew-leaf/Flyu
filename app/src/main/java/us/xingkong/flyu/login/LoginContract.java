@@ -14,8 +14,6 @@ public interface LoginContract {
 
     interface Presenter extends BasePresenter {
         void login();
-
-        void setCheckbox();
     }
 
     interface View extends BaseView<Presenter> {

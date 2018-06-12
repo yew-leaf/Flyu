@@ -15,10 +15,10 @@ import java.io.Serializable;
 import java.util.List;
 
 import butterknife.BindView;
-import us.xingkong.flyu.PhotoBean;
+import us.xingkong.flyu.PhotoModel;
 import us.xingkong.flyu.R;
 import us.xingkong.flyu.view.ViewPager;
-import us.xingkong.flyu.adapter.ViewPagerAdapter;
+import us.xingkong.flyu.adapter.BrowseAdapter;
 import us.xingkong.flyu.base.BaseActivity;
 import us.xingkong.flyu.main.MainActivity;
 
@@ -33,8 +33,8 @@ public class BrowseActivity extends BaseActivity<BrowseContract.Presenter>
     AppCompatTextView hint;
 
     private int currentPosition;
-    private List<PhotoBean> mList;
-    private ViewPagerAdapter mAdapter;
+    private List<PhotoModel> mList;
+    private BrowseAdapter mAdapter;
     private BrowseContract.Presenter mPresenter;
 
     @Override
@@ -61,11 +61,11 @@ public class BrowseActivity extends BaseActivity<BrowseContract.Presenter>
 
     @Override
     protected void initData() {
-        PhotoBean bean = (PhotoBean) getIntent().getSerializableExtra("bean");
-        mList = (List<PhotoBean>) getIntent().getSerializableExtra("photo");
+        PhotoModel bean = (PhotoModel) getIntent().getSerializableExtra("bean");
+        mList = (List<PhotoModel>) getIntent().getSerializableExtra("photo");
         currentPosition = bean.getPosition();
 
-        mAdapter = new ViewPagerAdapter(BrowseActivity.this, mList);
+        mAdapter = new BrowseAdapter(BrowseActivity.this, mList);
         viewPager.setAdapter(mAdapter);
         viewPager.setCurrentItem(currentPosition);
         hint.setText((currentPosition + 1) + "/" + mList.size());
@@ -89,7 +89,7 @@ public class BrowseActivity extends BaseActivity<BrowseContract.Presenter>
             }
         });
 
-        mAdapter.setOnPhotoViewClickListener(new ViewPagerAdapter.OnPhotoViewClickListener() {
+        mAdapter.setOnPhotoViewClickListener(new BrowseAdapter.OnPhotoViewClickListener() {
             @Override
             public void onClick() {
                 goBack();
@@ -124,7 +124,7 @@ public class BrowseActivity extends BaseActivity<BrowseContract.Presenter>
                         dialog.setTitle("提示");
                         dialog.setMessage("要删除这张照片吗？");
                         dialog.setCancelable(false);
-                        dialog.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        dialog.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Log.e("currentPosition", currentPosition + "");
@@ -136,7 +136,7 @@ public class BrowseActivity extends BaseActivity<BrowseContract.Presenter>
                                 }
                             }
                         });
-                        dialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        dialog.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();

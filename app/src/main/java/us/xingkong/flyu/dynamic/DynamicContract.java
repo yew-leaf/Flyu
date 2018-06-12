@@ -1,6 +1,6 @@
-package us.xingkong.flyu.mine;
+package us.xingkong.flyu.dynamic;
 
-import us.xingkong.flyu.UserModel;
+import us.xingkong.flyu.DownloadModel;
 import us.xingkong.flyu.adapter.DynamicAdapter;
 import us.xingkong.flyu.base.BasePresenter;
 import us.xingkong.flyu.base.BaseView;
@@ -11,7 +11,7 @@ import us.xingkong.flyu.base.BaseView;
  * @描述:
  * @更新日志:
  */
-public interface MineContract {
+public interface DynamicContract {
 
     interface Presenter extends BasePresenter {
         void load();
@@ -22,13 +22,17 @@ public interface MineContract {
     interface View extends BaseView<Presenter> {
         String getUsername();
 
-        void setRefresh(boolean refresh);
+        void setDynamic(String number);
 
-        void showMessage(String message);
+        void setRefresh(boolean refresh);
 
         void setAdapter(DynamicAdapter adapter);
 
-        void toOtherActivity(UserModel user);
+        void setEnable(boolean enable);
+
+        void showMessage(String message);
+
+        void toOtherActivity(DownloadModel.Message message);
 
         boolean isActive();
     }

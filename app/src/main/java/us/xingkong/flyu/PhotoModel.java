@@ -17,7 +17,7 @@ import java.io.Serializable;
  * @描述:
  * @更新日志:
  */
-public class PhotoBean implements Serializable {
+public class PhotoModel implements Serializable {
     private String uri;
     private int position;
 

@@ -1,5 +1,6 @@
 package us.xingkong.flyu;
 
+import java.io.Serializable;
 import java.util.List;
 
 import us.xingkong.flyu.app.Constants;
@@ -10,7 +11,7 @@ import us.xingkong.flyu.app.Constants;
  * @描述:
  * @更新日志:
  */
-public class DownloadModel {
+public class DownloadModel  {
 
     private List<Message> message;
 
@@ -26,10 +27,19 @@ public class DownloadModel {
         return Constants.URL + string.replace("\\", "");
     }
 
-    public class Message {
+    public class Message implements Serializable{
+        private String name;
         private String text;
         private List<String> img;
         private String time;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
 
         public String getText() {
             return text;

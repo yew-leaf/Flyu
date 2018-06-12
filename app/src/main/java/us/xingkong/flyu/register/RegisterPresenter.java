@@ -46,7 +46,7 @@ public class RegisterPresenter implements RegisterContract.Presenter,
     public void success(UserModel result) {
         mView.setEnable(true);
         mView.setVisibility(View.INVISIBLE);
-        mView.showMessage("注册成功");
+        //mView.showMessage("注册成功");
         mView.toOtherActivity(result);
     }
 

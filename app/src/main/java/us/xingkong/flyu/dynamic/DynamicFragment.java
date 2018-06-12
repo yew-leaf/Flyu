@@ -1,13 +1,18 @@
-package us.xingkong.flyu.mine;
+package us.xingkong.flyu.dynamic;
 
+import android.content.Intent;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import org.greenrobot.eventbus.EventBus;
+
 import butterknife.BindView;
+import us.xingkong.flyu.detail.DetailActivity;
+import us.xingkong.flyu.DownloadModel;
+import us.xingkong.flyu.EventModel;
 import us.xingkong.flyu.R;
-import us.xingkong.flyu.UserModel;
 import us.xingkong.flyu.adapter.DynamicAdapter;
 import us.xingkong.flyu.base.BaseFragment;
 import us.xingkong.flyu.container.ContainerActivity;
@@ -18,25 +23,23 @@ import us.xingkong.flyu.container.ContainerActivity;
  * @描述:
  * @更新日志:
  */
-public class MineFragment extends BaseFragment<MineContract.Presenter>
-        implements MineContract.View,
-        SwipeRefreshLayout.OnRefreshListener {
+public class DynamicFragment extends BaseFragment<DynamicContract.Presenter>
+        implements DynamicContract.View, SwipeRefreshLayout.OnRefreshListener {
 
     @BindView(R.id.swipeRefresh)
     SwipeRefreshLayout swipeRefresh;
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
 
-    private UserModel userModel;
-    private MineContract.Presenter mPresenter;
+    private DynamicContract.Presenter mPresenter;
 
-    public static MineFragment newInstance() {
-        return new MineFragment();
+    public static DynamicFragment newInstance() {
+        return new DynamicFragment();
     }
 
     @Override
     protected int bindLayout() {
-        return R.layout.activity_mine;
+        return R.layout.activity_dynamic;
     }
 
     @Override
@@ -50,15 +53,13 @@ public class MineFragment extends BaseFragment<MineContract.Presenter>
                 new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(manager);
 
-        new MinePresenter(this);
+        new DynamicPresenter(this);
         mPresenter = getPresenter();
     }
 
     @Override
     protected void initData() {
-        userModel = ContainerActivity.getUserModel();
-        mPresenter.load();
-        mPresenter.display();
+
     }
 
     @Override
@@ -68,7 +69,12 @@ public class MineFragment extends BaseFragment<MineContract.Presenter>
 
     @Override
     public String getUsername() {
-        return userModel.getUsername();
+        return ContainerActivity.getUserModel().getUsername();
+    }
+
+    @Override
+    public void setDynamic(String number) {
+        EventBus.getDefault().post(new EventModel<>("Profile", number));
     }
 
     @Override
@@ -77,18 +83,25 @@ public class MineFragment extends BaseFragment<MineContract.Presenter>
     }
 
     @Override
-    public void showMessage(String message) {
-
-    }
-
-    @Override
     public void setAdapter(DynamicAdapter adapter) {
         recyclerView.setAdapter(adapter);
     }
 
     @Override
-    public void toOtherActivity(UserModel user) {
+    public void setEnable(boolean enable) {
+        recyclerView.setEnabled(enable);
+    }
 
+    @Override
+    public void showMessage(String message) {
+
+    }
+
+    @Override
+    public void toOtherActivity(DownloadModel.Message message) {
+        Intent intent = new Intent(mActivity, DetailActivity.class);
+        intent.putExtra("message", message);
+        startActivity(intent);
     }
 
     @Override
@@ -99,6 +112,5 @@ public class MineFragment extends BaseFragment<MineContract.Presenter>
     @Override
     public void onRefresh() {
         mPresenter.load();
-        mPresenter.display();
     }
 }

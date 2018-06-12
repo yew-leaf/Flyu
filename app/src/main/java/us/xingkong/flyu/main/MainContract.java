@@ -5,7 +5,7 @@ import android.content.Intent;
 import java.io.File;
 import java.util.List;
 
-import us.xingkong.flyu.PhotoBean;
+import us.xingkong.flyu.PhotoModel;
 import us.xingkong.flyu.adapter.PhotosAdapter;
 import us.xingkong.flyu.base.BasePresenter;
 import us.xingkong.flyu.base.BaseView;
@@ -19,12 +19,14 @@ import us.xingkong.flyu.base.BaseView;
 public interface MainContract {
 
     interface Presenter extends BasePresenter {
-        void display(List<PhotoBean> list);
+        void display(List<PhotoModel> list);
 
         void upload(List<File> files);
     }
 
     interface View extends BaseView<Presenter> {
+        String getUsername();
+
         String getContent();
 
         void setHeaderView();
@@ -33,8 +35,12 @@ public interface MainContract {
 
         void setAdapter(PhotosAdapter adapter);
 
+        void setEnable(boolean enable);
+
         void showMessage(String message);
 
         void toOtherActivity(Intent intent);
+
+        void finishActivity();
     }
 }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="WelcomeTheme" parent="BaseAppTheme">
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+
+    <style name="DetailTheme" parent="BaseAppTheme">
+        <item name="colorPrimary">@android:color/black</item>
+    </style>
+
+</resources>

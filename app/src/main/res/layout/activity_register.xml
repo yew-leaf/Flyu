@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,109 +7,114 @@
     android:background="@color/background"
     android:focusableInTouchMode="true"
     android:orientation="vertical"
+    android:id="@+id/root"
     tools:context=".register.RegisterActivity">
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="64dp"
-        android:visibility="invisible"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/card"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="32dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="64dp"
-        app:cardCornerRadius="2dp"
-        app:cardElevation="2dp"
-        app:cardPreventCornerOverlap="true"
-        app:cardUseCompatPadding="true"
-        app:contentPadding="10dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/progressBar">
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_gravity="center"
+            android:layout_marginTop="64dp"
+            android:visibility="invisible"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <android.support.design.widget.TextInputLayout
+        <android.support.v7.widget.CardView
+            android:id="@+id/card"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="64dp"
+            app:cardCornerRadius="2dp"
+            app:cardElevation="2dp"
+            app:cardPreventCornerOverlap="true"
+            app:cardUseCompatPadding="true"
+            app:contentPadding="10dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/progressBar">
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                <android.support.v7.widget.AppCompatEditText
-                    android:id="@+id/username"
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/username_hint"
-                    android:singleLine="true" />
+                    android:layout_height="wrap_content">
 
-            </android.support.design.widget.TextInputLayout>
+                    <android.support.v7.widget.AppCompatEditText
+                        android:id="@+id/username"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/username_hint"
+                        android:singleLine="true" />
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                </android.support.design.widget.TextInputLayout>
 
-                <android.support.v7.widget.AppCompatEditText
-                    android:id="@+id/email"
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/email"
-                    android:singleLine="true" />
+                    android:layout_height="wrap_content">
 
-            </android.support.design.widget.TextInputLayout>
+                    <android.support.v7.widget.AppCompatEditText
+                        android:id="@+id/email"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/email"
+                        android:singleLine="true" />
 
+                </android.support.design.widget.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <android.support.v7.widget.AppCompatEditText
-                    android:id="@+id/password"
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/password_hint"
-                    android:inputType="textPassword"
-                    android:singleLine="true" />
+                    android:layout_height="wrap_content">
 
-            </android.support.design.widget.TextInputLayout>
+                    <android.support.v7.widget.AppCompatEditText
+                        android:id="@+id/password"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/password_hint"
+                        android:inputType="textPassword"
+                        android:singleLine="true" />
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                </android.support.design.widget.TextInputLayout>
 
-                <android.support.v7.widget.AppCompatEditText
-                    android:id="@+id/repassword"
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/repassword"
-                    android:inputType="textPassword"
-                    android:singleLine="true" />
+                    android:layout_height="wrap_content">
 
-            </android.support.design.widget.TextInputLayout>
+                    <android.support.v7.widget.AppCompatEditText
+                        android:id="@+id/repassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/repassword"
+                        android:inputType="textPassword"
+                        android:singleLine="true" />
 
-        </LinearLayout>
+                </android.support.design.widget.TextInputLayout>
 
-    </android.support.v7.widget.CardView>
+            </LinearLayout>
 
-    <android.support.v7.widget.AppCompatButton
-        android:id="@+id/register"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:background="@color/zhihu"
-        android:text="@string/register"
-        android:textColor="@color/white"
-        app:layout_constraintLeft_toLeftOf="@+id/card"
-        app:layout_constraintRight_toRightOf="@+id/card"
-        app:layout_constraintTop_toBottomOf="@+id/card" />
+        </android.support.v7.widget.CardView>
 
-</android.support.constraint.ConstraintLayout>
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/register"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@color/zhihu"
+            android:text="@string/register"
+            android:textColor="@color/white"
+            app:layout_constraintLeft_toLeftOf="@+id/card"
+            app:layout_constraintRight_toRightOf="@+id/card"
+            app:layout_constraintTop_toBottomOf="@+id/card" />
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.design.widget.CoordinatorLayout>

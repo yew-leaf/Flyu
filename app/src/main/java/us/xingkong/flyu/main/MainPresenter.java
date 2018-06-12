@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.List;
 
-import us.xingkong.flyu.PhotoBean;
+import us.xingkong.flyu.PhotoModel;
 import us.xingkong.flyu.adapter.PhotosAdapter;
 import us.xingkong.flyu.base.OnRequestListener;
 import us.xingkong.flyu.browse.BrowseActivity;
@@ -35,17 +35,17 @@ public class MainPresenter implements MainContract.Presenter,
     }
 
     @Override
-    public void display(final List<PhotoBean> list) {
+    public void display(final List<PhotoModel> list) {
         if (list.size() >= 3) {
             mView.showMessage("最多支持三张照片哦");
         }
-        mAdapter = new PhotosAdapter(activity, list);
+        mAdapter = new PhotosAdapter(mView.getContext(), list);
         mView.setAdapter(mAdapter);
         mAdapter.setItemClickListener(new PhotosAdapter.onItemClickListener() {
             @Override
             public void onItemClick(int position) {
                 if (position < list.size()) {
-                    PhotoBean bean = list.get(position);
+                    PhotoModel bean = list.get(position);
                     bean.setPosition(position);
                     Intent intent = new Intent(activity, BrowseActivity.class);
                     intent.putExtra("photo", (Serializable) list);
@@ -58,7 +58,8 @@ public class MainPresenter implements MainContract.Presenter,
 
     @Override
     public void upload(List<File> files) {
-        model.uploadImageAndText("射命丸文", mView.getContent(), files);
+        mView.setEnable(false);
+        model.uploadImageAndText(mView.getUsername(), mView.getContent(), files);
     }
 
     @Override
@@ -68,16 +69,19 @@ public class MainPresenter implements MainContract.Presenter,
 
     @Override
     public void destroy() {
-        //mAdapter.clear();
+
     }
 
     @Override
     public void success(String result) {
+        mView.setEnable(true);
         mView.showMessage("上传成功");
+        mView.finishActivity();
     }
 
     @Override
     public void failure(String result) {
+        mView.setEnable(true);
         mView.showMessage("上传失败");
     }
 }

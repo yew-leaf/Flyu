@@ -1,7 +1,6 @@
 package us.xingkong.flyu.register;
 
 import android.content.Intent;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
 import android.view.View;
@@ -12,6 +11,7 @@ import us.xingkong.flyu.R;
 import us.xingkong.flyu.UserModel;
 import us.xingkong.flyu.base.BaseActivity;
 import us.xingkong.flyu.login.LoginActivity;
+import us.xingkong.flyu.util.SnackbarUtil;
 import us.xingkong.flyu.util.UiUtil;
 
 public class RegisterActivity extends BaseActivity<RegisterContract.Presenter>
@@ -97,13 +97,12 @@ public class RegisterActivity extends BaseActivity<RegisterContract.Presenter>
 
     @Override
     public void showMessage(String message) {
-        Snackbar.make(register, message, Snackbar.LENGTH_SHORT).show();
+        SnackbarUtil.shortSnackbar(findViewById(R.id.root), message).show();
     }
 
     @Override
     public void toOtherActivity(UserModel user) {
         Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-        //intent.putExtra("user", user);
         startActivity(intent);
         finish();
     }

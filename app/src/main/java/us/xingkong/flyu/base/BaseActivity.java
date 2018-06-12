@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import org.greenrobot.eventbus.EventBus;
+
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import us.xingkong.flyu.app.App;
@@ -100,6 +102,9 @@ public abstract class BaseActivity<P extends BasePresenter>
     protected void onDestroy() {
         super.onDestroy();
         bind.unbind();
+        if (EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this);
+        }
         mOkUtil.cancel(this);
         if (mPresenter != null) {
             mPresenter.destroy();

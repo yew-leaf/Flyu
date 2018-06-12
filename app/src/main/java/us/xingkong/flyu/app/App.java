@@ -39,6 +39,7 @@ public class App extends android.app.Application {
     public void onCreate() {
         super.onCreate();
         //Bmob.initialize(this, Constants.APPID);
+
         appContext = getApplicationContext();
         mInstance = this;
 
@@ -69,7 +70,6 @@ public class App extends android.app.Application {
     public OkUtil getOkUtil() {
         return mOkUtil;
     }
-
 
     public static void addActivity(Activity activity) {
         activities.add(activity);

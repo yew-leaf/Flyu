@@ -6,18 +6,17 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:fitsSystemWindows="true"
-    android:focusableInTouchMode="true"
-    tools:context=".home.HomeActivity">
+    android:focusableInTouchMode="true">
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefresh"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar">
+        app:layout_constraintTop_toTopOf="parent">
 
         <include
-            layout="@layout/activity_recyclerview"
+            layout="@layout/recyclerview"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 

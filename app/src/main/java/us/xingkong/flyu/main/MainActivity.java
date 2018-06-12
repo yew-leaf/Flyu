@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
@@ -42,13 +41,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import us.xingkong.flyu.PhotoBean;
+import us.xingkong.flyu.PhotoModel;
 import us.xingkong.flyu.R;
 import us.xingkong.flyu.adapter.PhotosAdapter;
 import us.xingkong.flyu.adapter.TouchHelperCallback;
 import us.xingkong.flyu.base.BaseActivity;
+import us.xingkong.flyu.container.ContainerActivity;
 import us.xingkong.flyu.util.GifSizeFilter;
 import us.xingkong.flyu.util.MatisseEngine;
+import us.xingkong.flyu.util.SnackbarUtil;
 import us.xingkong.flyu.util.UiUtil;
 
 /**
@@ -84,7 +85,7 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
     private View footer;
     private PopupWindow popupWindow;
     private Uri uri;
-    private List<PhotoBean> photos;
+    private List<PhotoModel> photos;
     private List<String> permissionList;
     //private List<String> base64List;
     private PhotosAdapter mAdapter;
@@ -94,6 +95,7 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
     private String[] permissions = new String[]{
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,};
+    private MenuItem submit;
 
     @Override
     protected int bindLayout() {
@@ -122,7 +124,7 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
         GridLayoutManager manager = new GridLayoutManager(MainActivity.this, 3);
         recyclerView.setLayoutManager(manager);
         recyclerView.setHasFixedSize(true);
-        mAdapter = new PhotosAdapter(MainActivity.this, new ArrayList<PhotoBean>());
+        mAdapter = new PhotosAdapter(MainActivity.this, new ArrayList<PhotoModel>());
         recyclerView.setAdapter(mAdapter);
 
         footer = LayoutInflater.from(MainActivity.this).inflate(R.layout.item_footer, recyclerView, false);
@@ -141,13 +143,13 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                finishActivity();
             }
         });
     }
 
     private void initPopupWindow() {
-        sheet = LayoutInflater.from(MainActivity.this).inflate(R.layout.activity_pop_window, null);
+        sheet = LayoutInflater.from(MainActivity.this).inflate(R.layout.pop_window, null);
         CardView takePhoto = sheet.findViewById(R.id.take_photo);
         CardView choosePhoto = sheet.findViewById(R.id.choose_photo);
         CardView cancel = sheet.findViewById(R.id.cancel);
@@ -254,6 +256,7 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
         ok = menu.findItem(R.id.ok);
+        submit = menu.findItem(R.id.submit);
         ok.setVisible(false);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
@@ -261,14 +264,14 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
                 switch (item.getItemId()) {
                     case R.id.submit:
                         //parseBitmapToBase64();
+                        UiUtil.closeKeyboard(MainActivity.this);
                         List<File> files = new ArrayList<>();
-                        for (PhotoBean bean : photos) {
+                        for (PhotoModel bean : photos) {
                             String uri = bean.getUri();
                             File file = new File(bean.getPath(Uri.parse(uri), MainActivity.this));
                             files.add(file);
                         }
                         mPresenter.upload(files);
-                        finish();
                         break;
                     case R.id.ok:
                         //callback.setSelected();
@@ -321,7 +324,7 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
         switch (requestCode) {
             case CAMERA_REQUEST:
                 if (resultCode == RESULT_OK) {
-                    PhotoBean bean = new PhotoBean();
+                    PhotoModel bean = new PhotoModel();
                     bean.setUri(uri.toString());
                     photos.add(bean);
                     mPresenter.display(photos);
@@ -331,7 +334,7 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
                 if (resultCode == RESULT_OK) {
                     List<Uri> list = Matisse.obtainResult(data);
                     for (Uri uri : list) {
-                        PhotoBean bean = new PhotoBean();
+                        PhotoModel bean = new PhotoModel();
                         bean.setUri(uri.toString());
                         photos.add(bean);
                     }
@@ -340,7 +343,7 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
                 break;
             case Browse_REQUEST:
                 if (resultCode == RESULT_OK) {
-                    List<PhotoBean> list = (List<PhotoBean>) data.getSerializableExtra("photo");
+                    List<PhotoModel> list = (List<PhotoModel>) data.getSerializableExtra("photo");
                     photos.clear();
                     photos.addAll(list);
                     mAdapter.notifyDataSetChanged();
@@ -431,6 +434,11 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
     }
 
     @Override
+    public String getUsername() {
+        return ContainerActivity.getUserModel().getUsername();
+    }
+
+    @Override
     public String getContent() {
         return content.getText().toString();
     }
@@ -475,8 +483,14 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
     }
 
     @Override
+    public void setEnable(boolean enable) {
+        submit.setEnabled(enable);
+        recyclerView.setEnabled(enable);
+    }
+
+    @Override
     public void showMessage(String message) {
-        Snackbar.make(footer, message, Snackbar.LENGTH_SHORT).show();
+        SnackbarUtil.shortSnackbar(findViewById(R.id.root), message);
     }
 
     @Override
@@ -485,5 +499,17 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
         ActivityOptionsCompat options = ActivityOptionsCompat
                 .makeSceneTransitionAnimation(MainActivity.this, recyclerView, name);
         ActivityCompat.startActivityForResult(MainActivity.this, intent, Browse_REQUEST, options.toBundle());
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finishActivity();
+    }
+
+    @Override
+    public void finishActivity() {
+        finish();
+        overridePendingTransition(0, R.anim.activity_exit);
     }
 }

@@ -16,8 +16,18 @@
         <item name="windowNoTitle">true</item>
         <item name="android:actionMenuTextColor">@android:color/white</item>
         <item name="actionMenuTextAppearance">@style/MenuText</item>
-        <item name="android:textColorSecondary">@android:color/white</item>
+        <!--toolbar菜单项图标的颜色-->
+        <item name="android:textColorSecondary">@color/text_color</item>
         <!--<item name="android:windowSoftInputMode">adjustPan</item>-->
+    </style>
+
+    <style name="DetailTheme" parent="BaseAppTheme">
+        <item name="colorPrimary">@android:color/black</item>
+    </style>
+
+    <style name="WelcomeTheme" parent="BaseAppTheme">
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
     <style name="SheetAnimation" parent="android:Animation">
@@ -28,4 +38,5 @@
     <style name="MenuText">
         <item name="android:textSize">16sp</item>
     </style>
+
 </resources>
