@@ -24,7 +24,7 @@ public abstract class GsonResponse<T> implements ResponseInterface {
     public GsonResponse() {
         Type clazz = getClass().getGenericSuperclass();
         if (clazz instanceof Class) {
-            throw new RuntimeException("Missing Type Parameter");
+            throw new RuntimeException("Miss Type Parameter");
         }
         ParameterizedType parameter = (ParameterizedType) clazz;
         mType = $Gson$Types.canonicalize(parameter.getActualTypeArguments()[0]);
@@ -64,7 +64,7 @@ public abstract class GsonResponse<T> implements ResponseInterface {
             OkUtil.mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    onSuccess(response.code(), gsonResponse);
+                    onSuccess(response.code(),finalResponseBody, gsonResponse);
                 }
             });
         } catch (Exception e) {
@@ -78,7 +78,7 @@ public abstract class GsonResponse<T> implements ResponseInterface {
         }
     }
 
-    public abstract void onSuccess(int statusCode, T response);
+    public abstract void onSuccess(int statusCode,String result,T response);
 
     @Override
     public void onProgress(long currentBytes, long targetBytes) {

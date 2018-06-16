@@ -8,11 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.github.chrisbanes.photoview.PhotoView;
 
 import java.util.List;
 
-import us.xingkong.flyu.PhotoModel;
+import us.xingkong.flyu.model.PhotoModel;
 
 /**
  * @作者: Xuer
@@ -27,8 +28,8 @@ public class BrowseAdapter extends PagerAdapter {
     private PhotoView mPhotoView;
     private OnPhotoViewClickListener mListener;
 
-    public BrowseAdapter(AppCompatActivity context, List<PhotoModel> list) {
-        mActivity = context;
+    public BrowseAdapter(AppCompatActivity activity, List<PhotoModel> list) {
+        mActivity = activity;
         mList = list;
     }
 
@@ -43,13 +44,17 @@ public class BrowseAdapter extends PagerAdapter {
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
-        PhotoModel bean = mList.get(position);
+        PhotoModel model = mList.get(position);
         mPhotoView = new PhotoView(mActivity);
+
         Glide.with(mActivity)
-                .asBitmap()
-                .load(Uri.parse(bean.getUri()))
+                .load(Uri.parse(model.getUri()))
+                .thumbnail(0.5f)
+                .transition(new DrawableTransitionOptions().crossFade())
                 .into(mPhotoView);
+
         container.addView(mPhotoView);
+
         mPhotoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,8 +68,9 @@ public class BrowseAdapter extends PagerAdapter {
     public int getCount() {
         if (mList != null) {
             return mList.size();
-        } else
+        } else {
             return 0;
+        }
     }
 
     @Override

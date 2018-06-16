@@ -33,26 +33,34 @@
                 android:resource="@xml/file" />
         </provider>
 
-        <activity android:name=".login.LoginActivity">
+        <activity
+            android:name=".activity.welcome.WelcomeActivity"
+            android:theme="@style/WelcomeTheme">
+
+        </activity>
+
+        <activity android:name=".activity.login.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".register.RegisterActivity" />
+
+        <activity android:name=".activity.register.RegisterActivity" />
+
         <activity
-            android:name=".container.ContainerActivity"
+            android:name=".activity.container.ContainerActivity"
+            android:theme="@style/ContainerTheme"
             android:windowSoftInputMode="adjustPan" />
+
         <activity
-            android:name=".main.MainActivity"
+            android:name=".activity.main.MainActivity"
             android:windowSoftInputMode="adjustPan" />
-        <activity android:name=".browse.BrowseActivity" />
+        <activity android:name=".activity.browse.BrowseActivity" />
+
         <activity
-            android:name=".welcome.WelcomeActivity"
-            android:theme="@style/WelcomeTheme"></activity>
-        <activity
-            android:name=".detail.DetailActivity"
+            android:name=".activity.detail.DetailActivity"
             android:theme="@style/DetailTheme" />
     </application>
 

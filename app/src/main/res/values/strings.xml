@@ -14,6 +14,8 @@
     <string name="profile">个人</string>
     <string name="search">搜索</string>
     <string name="dynamic">动态：</string>
+    <string name="toggle_open">芝麻开门</string>
+    <string name="toggle_close">芝麻关门</string>
     <string name="follow">关注：</string>
     <string name="fans">粉丝：</string>
     <string name="about">关于</string>

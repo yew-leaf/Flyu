@@ -31,7 +31,6 @@ public class ProgressRequestBody extends RequestBody {
         mResponseInterface = responseInterface;
     }
 
-
     @Nullable
     @Override
     public MediaType contentType() {

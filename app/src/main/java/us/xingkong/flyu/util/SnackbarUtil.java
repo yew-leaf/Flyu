@@ -25,13 +25,13 @@ public class SnackbarUtil {
         return snackbar;
     }
 
-    public static void setSnackbarColor(Snackbar snackbar, int textColor, int backgroundColor) {
+    private static void setSnackbarColor(Snackbar snackbar, int textColor, int backgroundColor) {
         View view = snackbar.getView();
         view.setBackgroundColor(backgroundColor);
         ((TextView) view.findViewById(R.id.snackbar_text)).setTextColor(textColor);
     }
 
-    public static void SnackbarAddView(Snackbar snackbar, int layoutId, int index) {
+    private static void SnackbarAddView(Snackbar snackbar, int layoutId, int index) {
         View view = snackbar.getView();
         Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) view;
 

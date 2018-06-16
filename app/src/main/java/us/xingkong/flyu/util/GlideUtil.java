@@ -22,6 +22,7 @@ public class GlideUtil {
         if (imageView.getScaleType() != ImageView.ScaleType.FIT_XY) {
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
         }
+
         return new RequestListener<Drawable>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {

@@ -2,12 +2,12 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:focusableInTouchMode="true"
-    android:id="@+id/root"
-    tools:context=".container.ContainerActivity">
+    tools:context=".activity.container.ContainerActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -90,12 +90,12 @@
 
                     <android.support.v7.widget.SearchView
                         android:id="@+id/searchView"
-                        app:searchIcon="@null"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:background="@drawable/selector_search_view"
-                        app:queryHint="输入用户名，看看别人发了啥">
+                        app:queryHint="输入用户名，看看别人发了啥"
+                        app:searchIcon="@null">
 
                     </android.support.v7.widget.SearchView>
 
@@ -107,7 +107,7 @@
                 android:id="@+id/post"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:src="@mipmap/ic_toolbar_post" />
+                android:src="@mipmap/ic_toolbar_add" />
 
         </LinearLayout>
 

@@ -12,7 +12,7 @@ import us.xingkong.flyu.R;
  * @描述:
  * @更新日志:
  */
-public class DialogUtil {
+public class DialogUtil /*extends AlertDialog.Builder*/ {
 
     public static AlertDialog.Builder aboutDialog(Activity activity) {
         return new AlertDialog.Builder(activity)
@@ -26,4 +26,48 @@ public class DialogUtil {
                     }
                 });
     }
+
+    public static AlertDialog.Builder aboutDialog(String title, Activity activity) {
+        return new AlertDialog.Builder(activity)
+                .setTitle(title)
+                .setMessage(R.string.about_text)
+                .setCancelable(false)
+                .setPositiveButton("知道了", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+    }
+
+    /*private String title;
+    private String message;
+
+     public DialogUtil(@NonNull Context context) {
+        super(context);
+
+    public DialogUtil title(String title) {
+        this.title = title;
+        return this;
+    }
+
+    public DialogUtil message(String message) {
+        this.message = message;
+        return this;
+    }
+
+    public DialogUtil positiveListener() {
+        setPositiveButton("知道了", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        })
+    }
+
+    public void display() {
+        setTitle(title);
+        setMessage(message);
+        setCancelable(false);
+    }*/
 }

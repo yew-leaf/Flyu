@@ -6,18 +6,21 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 
+import java.lang.ref.SoftReference;
 import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import us.xingkong.flyu.PhotoModel;
+import us.xingkong.flyu.model.PhotoModel;
 import us.xingkong.flyu.R;
 
 /**
@@ -36,6 +39,7 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private View mFooterView;
     private onItemClickListener itemListener;
     private onAddClickListener addListener;
+    private SoftReference<Uri> softReference;
 
     public PhotosAdapter(Context context, List<PhotoModel> list) {
         mContext = context;
@@ -101,54 +105,61 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
-        switch (getItemViewType(position)) {
-            case TYPE_NORMAL:
-                if (mList != null) {
-                    Uri uri = Uri.parse(mList.get(position).getUri());
-                    Glide.with(mContext)
-                            .load(uri)
-                            .thumbnail(0.5f)
-                            .into(((ItemHolder) holder).image);
-                }
-                if (itemListener != null) {
-                    ((ItemHolder) holder).item.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            itemListener.onItemClick(holder.getLayoutPosition());
-                        }
-                    });
-                }
-                ((ItemHolder) holder).item.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        return true;
-                    }
-                });
-                ((ItemHolder) holder).delete.setOnClickListener(new View.OnClickListener() {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
+        if (holder instanceof FooterHolder && getItemViewType(position) == TYPE_FOOTER) {
+            FooterHolder footerHolder = (FooterHolder) holder;
+
+            if (mList == null || mList.size() < 3) {
+                footerHolder.add.setEnabled(true);
+            } else {
+                footerHolder.add.setEnabled(false);
+            }
+
+            if (addListener != null) {
+                footerHolder.add.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        delete(holder.getLayoutPosition());
+                        addListener.onAddClick();
                     }
                 });
-                break;
-            case TYPE_FOOTER:
-                if (mList == null || mList.size() < 3)
-                    ((FooterHolder) holder).add.setEnabled(true);
-                else
-                    ((FooterHolder) holder).add.setEnabled(false);
+            }
+            return;
+        }
 
-                if (addListener != null) {
-                    ((FooterHolder) holder).add.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            addListener.onAddClick();
-                        }
-                    });
+        if (holder instanceof ItemHolder && getItemViewType(position) == TYPE_NORMAL) {
+            final ItemHolder itemHolder = (ItemHolder) holder;
+            softReference = new SoftReference<>(Uri.parse(mList.get(position).getUri()));
+
+            if (mList != null && softReference.get() != null) {
+                Glide.with(mContext)
+                        .load(softReference.get())
+                        .thumbnail(0.5f)
+                        .transition(new DrawableTransitionOptions().crossFade())
+                        .into(itemHolder.image);
+            }
+
+            if (itemListener != null) {
+                itemHolder.item.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        itemListener.onItemClick(itemHolder.getLayoutPosition());
+                    }
+                });
+            }
+
+            itemHolder.item.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    return true;
                 }
-                break;
-            default:
-                break;
+            });
+
+            itemHolder.delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    delete(itemHolder.getLayoutPosition());
+                }
+            });
         }
     }
 
@@ -174,6 +185,15 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         notifyItemMoved(fromPosition, toPosition);
     }
 
+    @Override
+    public void onViewRecycled(@NonNull RecyclerView.ViewHolder holder) {
+        super.onViewRecycled(holder);
+        Log.w("ViewRecycled", "ViewRecycled");
+        if (softReference != null) {
+            softReference.clear();
+            System.gc();
+        }
+    }
 
     class FooterHolder extends RecyclerView.ViewHolder {
 

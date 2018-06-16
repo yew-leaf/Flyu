@@ -20,7 +20,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import us.xingkong.flyu.DownloadModel;
+import us.xingkong.flyu.model.DownloadModel;
 import us.xingkong.flyu.R;
 import us.xingkong.flyu.util.DateUtil;
 
@@ -76,7 +76,6 @@ public class DynamicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
         if (viewType == TYPE_ERROR || viewType == TYPE_EMPTY) {
             View empty = inflater.inflate(R.layout.item_empty, parent, false);
             return new EmptyHolder(empty);
@@ -88,12 +87,12 @@ public class DynamicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof EmptyHolder) {
-            EmptyHolder empty = (EmptyHolder) holder;
+            EmptyHolder emptyHolder = (EmptyHolder) holder;
             if (getItemViewType(position) == TYPE_ERROR) {
-                empty.hint.setText("加载不出来......");
-                empty.reload.setVisibility(View.VISIBLE);
+                emptyHolder.hint.setText("加载不出来......");
+                emptyHolder.reload.setVisibility(View.VISIBLE);
                 if (mListener != null) {
-                    empty.reload.setOnClickListener(new View.OnClickListener() {
+                    emptyHolder.reload.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             mListener.onReloadClick();
@@ -104,18 +103,18 @@ public class DynamicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             }
 
             if (getItemViewType(position) == TYPE_EMPTY) {
-                empty.hint.setText("空空如也......");
-                empty.reload.setVisibility(View.GONE);
+                emptyHolder.hint.setText("空空如也......");
+                emptyHolder.reload.setVisibility(View.GONE);
                 return;
             }
         }
 
         if (holder instanceof DynamicHolder) {
-            DynamicHolder dynamic = (DynamicHolder) holder;
+            DynamicHolder dynamicHolder = (DynamicHolder) holder;
             final DownloadModel.Message message = mList.get(position);
 
             if (mListener != null) {
-                dynamic.card.setOnClickListener(new View.OnClickListener() {
+                dynamicHolder.card.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         message.setName(name);
@@ -124,9 +123,9 @@ public class DynamicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 });
             }
 
-            dynamic.author.setText(name);
-            dynamic.content.setText(message.getText());
-            dynamic.time.setText(DateUtil.getTimeBefore(message.getTime()));
+            dynamicHolder.author.setText(name);
+            dynamicHolder.content.setText(message.getText());
+            dynamicHolder.time.setText(DateUtil.getTimeBefore(message.getTime()));
 
             String url = message.getImg().get(0);
             softReference = new SoftReference<>(DownloadModel.formatUrl(url));
@@ -142,7 +141,7 @@ public class DynamicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         .thumbnail(0.5f)
                         .transition(new DrawableTransitionOptions().crossFade())
                         .apply(options)
-                        .into(((DynamicHolder) holder).preview);
+                        .into(dynamicHolder.preview);
             }
         }
     }
