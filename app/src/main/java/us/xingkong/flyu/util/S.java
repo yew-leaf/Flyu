@@ -15,14 +15,14 @@ import us.xingkong.flyu.R;
  * @描述:
  * @更新日志:
  */
-public class SnackbarUtil {
+public class S {
     private static int background = 0xff1d8ae7;
     private static int textColor = 0xfffafafa;
 
-    public static Snackbar shortSnackbar(View view, String text) {
+    public static void shortSnackbar(View view, String text) {
         Snackbar snackbar = Snackbar.make(view, text, Snackbar.LENGTH_SHORT);
         setSnackbarColor(snackbar, textColor, background);
-        return snackbar;
+        snackbar.show();
     }
 
     private static void setSnackbarColor(Snackbar snackbar, int textColor, int backgroundColor) {

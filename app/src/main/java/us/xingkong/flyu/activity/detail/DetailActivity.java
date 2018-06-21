@@ -4,6 +4,8 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
@@ -11,24 +13,22 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 
-import java.lang.ref.SoftReference;
-
 import butterknife.BindView;
-import us.xingkong.flyu.model.DownloadModel;
 import us.xingkong.flyu.R;
+import us.xingkong.flyu.adapter.DetailAdapter;
 import us.xingkong.flyu.base.BaseActivity;
+import us.xingkong.flyu.base.BasePresenter;
+import us.xingkong.flyu.model.DownloadModel;
 import us.xingkong.flyu.util.DateUtil;
-import us.xingkong.flyu.util.GlideUtil;
 
-public class DetailActivity extends BaseActivity<DetailContract.Presenter>
-        implements DetailContract.View {
+public class DetailActivity extends BaseActivity {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.collapsing_toolbar)
     CollapsingToolbarLayout collapsingToolbar;
-    @BindView(R.id.image)
-    AppCompatImageView image;
+    @BindView(R.id.recyclerView)
+    RecyclerView recyclerView;
     @BindView(R.id.avatar)
     AppCompatImageView avatar;
     @BindView(R.id.name)
@@ -39,8 +39,11 @@ public class DetailActivity extends BaseActivity<DetailContract.Presenter>
     AppCompatTextView content;
 
     private DownloadModel.Message message;
-    private SoftReference<String> softReference;
-    private DetailContract.Presenter mPresenter;
+
+    @Override
+    protected BasePresenter newPresenter() {
+        return null;
+    }
 
     @Override
     protected int bindLayout() {
@@ -67,17 +70,12 @@ public class DetailActivity extends BaseActivity<DetailContract.Presenter>
     protected void initData() {
         message = (DownloadModel.Message) getIntent().getSerializableExtra("Message");
 
-        String url = message.getImg().get(0);
-        softReference = new SoftReference<>(DownloadModel.formatUrl(url));
+        LinearLayoutManager manager =
+                new LinearLayoutManager(DetailActivity.this, LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(manager);
 
-        if (softReference.get() != null) {
-            Glide.with(this)
-                    .load(softReference.get())
-                    .thumbnail(0.5f)
-                    .transition(new DrawableTransitionOptions().crossFade())
-                    .listener(GlideUtil.listener(image))
-                    .into(image);
-        }
+        DetailAdapter adapter = new DetailAdapter(DetailActivity.this, message.getImg());
+        recyclerView.setAdapter(adapter);
 
         Glide.with(this)
                 .asDrawable()
@@ -108,5 +106,10 @@ public class DetailActivity extends BaseActivity<DetailContract.Presenter>
         super.onBackPressed();
         finish();
         overridePendingTransition(0, R.anim.activity_exit);
+    }
+
+    @Override
+    public void showMessage(String message) {
+
     }
 }

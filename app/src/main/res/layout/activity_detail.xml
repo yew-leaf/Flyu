@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
-        android:fitsSystemWindows="true"
+        android:fitsSystemWindows="false"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <android.support.design.widget.CollapsingToolbarLayout
@@ -29,12 +29,21 @@
                 android:background="@android:color/transparent"
                 android:elevation="4dp"
                 app:contentInsetStart="0dp"
-                app:layout_collapseMode="pin" />
+                app:layout_collapseMode="pin">
 
-            <android.support.v7.widget.AppCompatImageView
-                android:id="@+id/image"
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/page"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/text_color" />
+
+            </android.support.v7.widget.Toolbar>
+
+            <include
+                layout="@layout/recyclerview"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 app:layout_collapseMode="pin" />
 
         </android.support.design.widget.CollapsingToolbarLayout>
@@ -91,8 +100,8 @@
             <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/content"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_height="wrap_content"
+
                 android:fontFamily="sans-serif"
                 android:textSize="@dimen/text_size" />
 

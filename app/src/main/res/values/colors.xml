@@ -13,4 +13,5 @@
     <color name="black">#333333</color>
     <color name="navigation_checked_true">#1d8ae7</color>
     <color name="navigation_checked_false">#bfbfbf</color>
+    <color name="placeholder">#efefef</color>
 </resources>

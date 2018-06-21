@@ -16,7 +16,7 @@ public interface RegisterContract {
         void register();
     }
 
-    interface View extends BaseView<Presenter> {
+    interface View extends BaseView {
         String getUserName();
 
         String getEmail();
@@ -32,5 +32,7 @@ public interface RegisterContract {
         void showMessage(String message);
 
         void toOtherActivity(UserModel user);
+
+        void showToast(String message);
     }
 }

@@ -1,13 +1,24 @@
 package us.xingkong.flyu.activity.home;
 
+import android.support.annotation.NonNull;
+
+import com.google.gson.stream.MalformedJsonException;
+
+import java.lang.ref.Reference;
+import java.lang.ref.SoftReference;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import us.xingkong.flyu.model.DownloadModel;
-import us.xingkong.flyu.adapter.DynamicAdapter;
-import us.xingkong.flyu.base.OnRequestListener;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+import retrofit2.adapter.rxjava2.HttpException;
 import us.xingkong.flyu.activity.dynamic.DynamicModel;
+import us.xingkong.flyu.adapter.DynamicAdapter;
+import us.xingkong.flyu.base.BasePresenterImpl;
+import us.xingkong.flyu.model.DownloadModel;
 
 /**
  * @作者: Xuer
@@ -15,32 +26,66 @@ import us.xingkong.flyu.activity.dynamic.DynamicModel;
  * @描述:
  * @更新日志:
  */
-public class HomePresenter implements HomeContract.Presenter,
-        OnRequestListener<DownloadModel> {
+public class HomePresenter extends BasePresenterImpl<HomeContract.View>
+        implements HomeContract.Presenter {
 
-    private HomeContract.View mView;
-    private DynamicModel model;
+    private DynamicModel dynamicModel;
     private DynamicAdapter mAdapter;
+    private Reference<List<DownloadModel.Message>> mListReference;
 
-    HomePresenter(HomeContract.View view) {
-        mView = view;
-        mView.setPresenter(this);
-        model = new DynamicModel();
-        model.setOnRequestListener(this);
+    HomePresenter(@NonNull HomeContract.View view) {
+        super(view);
+        dynamicModel = new DynamicModel();
     }
 
     @Override
-    public void load() {
+    public void loadHome() {
         if (!mView.isActive()) {
             return;
         }
         mView.setEnable(false);
         mView.setRefresh(true);
-        model.load(mView.getUsername());
+        dynamicModel.loadDynamic(mView.getUsername()).subscribe(new Observer<DownloadModel>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                mCompositeDisposable.add(d);
+            }
+
+            @Override
+            public void onNext(DownloadModel downloadModel) {
+                mAdapter = setAdapter(downloadModel.getMessage());
+                displayHome();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                e.printStackTrace();
+                if (e instanceof HttpException || e instanceof MalformedJsonException) {
+                    mAdapter = new DynamicAdapter(mView.getContext(), new ArrayList<DownloadModel.Message>());
+                } else if (e instanceof UnknownHostException) {
+                    if (checkReference(mListReference)) {
+                        mAdapter = new DynamicAdapter(mView.getContext(), mListReference.get());
+                    } else {
+                        mAdapter = new DynamicAdapter(mView.getContext(), null);
+                    }
+                    mView.showMessage("网络连接不可用");//snackBar action
+                }
+                if (e instanceof SocketTimeoutException) {
+                    mView.showMessage("网络连接超时");
+                }
+                displayHome();
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
     }
 
     @Override
-    public void display() {
+    public void displayHome() {
+        mAdapter.notifyDataSetChanged();
         mView.setAdapter(mAdapter);
         mView.setEnable(true);
         mView.setRefresh(false);
@@ -52,49 +97,29 @@ public class HomePresenter implements HomeContract.Presenter,
 
             @Override
             public void onReloadClick() {
-                load();
+                loadHome();
             }
         });
     }
 
     @Override
-    public void start() {
-        /*if (!mView.isActive()) {
-            return;
-        }
-        load();*/
+    public void subscribe() {
+        super.subscribe();
     }
 
     @Override
-    public void destroy() {
-
+    public void unSubscribe() {
+        super.unSubscribe();
+        if (checkReference(mListReference)) {
+            mListReference.clear();
+        }
     }
 
-    private DynamicAdapter setAdapter(DownloadModel downloadModel) {
-        List<DownloadModel.Message> list = downloadModel.getMessage();
+    private DynamicAdapter setAdapter(List<DownloadModel.Message> list) {
         Collections.reverse(list);
-        DynamicAdapter adapter = new DynamicAdapter(mView.getContext(), list);
+        mListReference = new SoftReference<>(list);
+        DynamicAdapter adapter = new DynamicAdapter(mView.getActivity(), list);
         adapter.setName(mView.getUsername());
-        adapter.notifyDataSetChanged();
         return adapter;
-    }
-
-    @Override
-    public void success(DownloadModel downloadModel) {
-        mAdapter = setAdapter(downloadModel);
-        display();
-    }
-
-    @Override
-    public void failure(String errorMsg) {
-        if (errorMsg.equals("Gson Error")) {
-            mAdapter = new DynamicAdapter(mView.getContext(), new ArrayList<DownloadModel.Message>());
-            mAdapter.notifyDataSetChanged();
-        } else {
-            mAdapter = new DynamicAdapter(mView.getContext(), null);
-            mAdapter.notifyDataSetChanged();
-        }
-        display();
-        mView.showMessage(errorMsg);
     }
 }

@@ -5,10 +5,10 @@ import android.content.Intent;
 import java.io.File;
 import java.util.List;
 
-import us.xingkong.flyu.model.PhotoModel;
 import us.xingkong.flyu.adapter.PhotosAdapter;
 import us.xingkong.flyu.base.BasePresenter;
 import us.xingkong.flyu.base.BaseView;
+import us.xingkong.flyu.model.PhotoModel;
 
 /**
  * @作者: Xuer
@@ -19,12 +19,12 @@ import us.xingkong.flyu.base.BaseView;
 public interface MainContract {
 
     interface Presenter extends BasePresenter {
-        void display(List<PhotoModel> list);
+        void displayPhotos(List<PhotoModel> list);
 
-        void upload(List<File> files);
+        void uploadImageAndText(List<File> files);
     }
 
-    interface View extends BaseView<Presenter> {
+    interface View extends BaseView {
         String getUsername();
 
         String getContent();
@@ -35,11 +35,11 @@ public interface MainContract {
 
         void setAdapter(PhotosAdapter adapter);
 
+        void setVisibility(int visibility);
+
         void setEnable(boolean enable);
 
-        void showProgress(String progress);
-
-        void showMessage(String message);
+        void showProgress(int progress);
 
         void toOtherActivity(Intent intent);
 

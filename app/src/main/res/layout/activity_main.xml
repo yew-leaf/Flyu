@@ -2,9 +2,9 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/root"
     android:background="@color/background"
     android:focusableInTouchMode="true"
     android:orientation="vertical"
@@ -19,10 +19,22 @@
 
         <include layout="@layout/toolbar" />
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:background="@color/zhihu"
+            android:max="100"
+            android:progress="0"
+            android:progressBackgroundTint="@color/placeholder"
+            android:progressTint="@color/zhihu"
+            android:secondaryProgressTint="@color/status_bar"
+            android:visibility="invisible" />
+
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="10dp"
             android:layout_weight="1"
             android:background="@color/white"
             android:orientation="vertical"

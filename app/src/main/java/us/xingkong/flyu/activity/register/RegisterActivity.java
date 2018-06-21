@@ -9,14 +9,17 @@ import android.widget.ProgressBar;
 import butterknife.BindView;
 import us.xingkong.flyu.R;
 import us.xingkong.flyu.UserModel;
-import us.xingkong.flyu.base.BaseActivity;
 import us.xingkong.flyu.activity.login.LoginActivity;
-import us.xingkong.flyu.util.SnackbarUtil;
-import us.xingkong.flyu.util.UiUtil;
+import us.xingkong.flyu.base.BaseActivity;
+import us.xingkong.flyu.util.S;
+import us.xingkong.flyu.util.T;
+import us.xingkong.flyu.util.UIUtil;
 
 public class RegisterActivity extends BaseActivity<RegisterContract.Presenter>
         implements RegisterContract.View {
 
+    @BindView(R.id.progressBar)
+    ProgressBar progressBar;
     @BindView(R.id.username)
     AppCompatEditText username;
     @BindView(R.id.email)
@@ -25,13 +28,13 @@ public class RegisterActivity extends BaseActivity<RegisterContract.Presenter>
     AppCompatEditText password;
     @BindView(R.id.repassword)
     AppCompatEditText repassword;
-    @BindView(R.id.progressBar)
-    ProgressBar progressBar;
     @BindView(R.id.register)
     AppCompatButton register;
 
-    //private RegisterContract.Presenter mPresenter;
-
+    @Override
+    protected RegisterContract.Presenter newPresenter() {
+        return new RegisterPresenter(this);
+    }
 
     @Override
     protected int bindLayout() {
@@ -45,8 +48,7 @@ public class RegisterActivity extends BaseActivity<RegisterContract.Presenter>
 
     @Override
     protected void initView() {
-        new RegisterPresenter(this);
-        mPresenter = getPresenter();
+
     }
 
     @Override
@@ -59,8 +61,8 @@ public class RegisterActivity extends BaseActivity<RegisterContract.Presenter>
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                UIUtil.closeKeyboard(RegisterActivity.this);
                 mPresenter.register();
-                UiUtil.closeKeyboard(RegisterActivity.this);
             }
         });
     }
@@ -96,14 +98,18 @@ public class RegisterActivity extends BaseActivity<RegisterContract.Presenter>
     }
 
     @Override
-    public void showMessage(String message) {
-        SnackbarUtil.shortSnackbar(findViewById(R.id.root), message).show();
+    public void toOtherActivity(UserModel user) {
+        startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+        finish();
     }
 
     @Override
-    public void toOtherActivity(UserModel user) {
-        Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-        startActivity(intent);
-        finish();
+    public void showMessage(String message) {
+        S.shortSnackbar(findViewById(R.id.root), message);
+    }
+
+    @Override
+    public void showToast(String message) {
+        T.shortToast(RegisterActivity.this, message);
     }
 }

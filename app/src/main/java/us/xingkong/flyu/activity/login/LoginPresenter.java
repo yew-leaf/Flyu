@@ -1,14 +1,20 @@
 package us.xingkong.flyu.activity.login;
 
+
+import android.support.annotation.NonNull;
 import android.view.View;
 
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.List;
 
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 import us.xingkong.flyu.UserModel;
 import us.xingkong.flyu.UserModelDao;
 import us.xingkong.flyu.app.App;
 import us.xingkong.flyu.app.Constants;
-import us.xingkong.flyu.base.OnRequestListener;
+import us.xingkong.flyu.base.BasePresenterImpl;
 
 /**
  * @作者: Xuer
@@ -16,29 +22,64 @@ import us.xingkong.flyu.base.OnRequestListener;
  * @描述:
  * @更新日志:
  */
-public class LoginPresenter implements LoginContract.Presenter,
-        OnRequestListener<UserModel> {
+public class LoginPresenter extends BasePresenterImpl<LoginContract.View>
+        implements LoginContract.Presenter {
 
-    private LoginContract.View mView;
-    private LoginModel model;
+    private LoginModel loginModel;
+    private UserModelDao dao;
 
-    LoginPresenter(LoginContract.View view) {
-        mView = view;
-        mView.setPresenter(this);
-        model = new LoginModel();
-        model.setOnRequestListener(this);
+    LoginPresenter(@NonNull LoginContract.View view) {
+        super(view);
+        loginModel = new LoginModel();
+        dao = App.getInstance().getDaoSession().getUserModelDao();
     }
 
     @Override
     public void login() {
         mView.setEnable(false);
         mView.setVisibility(View.VISIBLE);
-        model.login(mView.getUserName(), mView.getPassword());
+        loginModel.login(mView.getUserName(), mView.getPassword()).subscribe(new Observer<String>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                mCompositeDisposable.add(d);
+            }
+
+            @Override
+            public void onNext(String s) {
+                if (s.equals(Constants.SUCCESS)) {
+                    UserModel userModel = dao.load(mView.getUserName());
+                    userModel.setIsLogged(true);
+                    dao.update(userModel);
+                    mView.showToast("登录成功");
+                    mView.toOtherActivity(userModel);
+                } else {
+                    showMessage(s);
+                }
+                mView.setEnable(true);
+                mView.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                if (e instanceof UnknownHostException) {
+                    mView.showMessage("网络连接错误");
+                } else if (e instanceof SocketTimeoutException) {
+                    mView.showMessage("网络连接超时");
+                }
+                mView.setEnable(true);
+                mView.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
     }
 
     @Override
-    public void start() {
-        UserModelDao dao = App.getInstance().getDaoSession().getUserModelDao();
+    public void subscribe() {
+        super.subscribe();
         List<UserModel> list = dao.loadAll();
         for (UserModel user : list) {
             if (user.getIsLogged()) {
@@ -48,23 +89,12 @@ public class LoginPresenter implements LoginContract.Presenter,
     }
 
     @Override
-    public void destroy() {
-
+    public void unSubscribe() {
+        super.unSubscribe();
     }
 
-    @Override
-    public void success(UserModel result) {
-        mView.setEnable(true);
-        mView.setVisibility(View.INVISIBLE);
-        //mView.showMessage("登录成功");
-        mView.toOtherActivity(result);
-    }
-
-    @Override
-    public void failure(String result) {
-        mView.setEnable(true);
-        mView.setVisibility(View.INVISIBLE);
-        switch (result) {
+    private void showMessage(String message) {
+        switch (message) {
             case Constants.NETWORK_IS_UNAVAILABLE:
                 mView.showMessage("网络连接错误");
                 break;

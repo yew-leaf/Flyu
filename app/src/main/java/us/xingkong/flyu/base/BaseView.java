@@ -9,10 +9,10 @@ import android.content.Context;
  * @描述:
  * @更新日志:
  */
-public interface BaseView<P> {
-    void setPresenter(P presenter);
+public interface BaseView {
+    Context getContext();
 
     Activity getActivity();
 
-    Context getContext();
+    void showMessage(String message);
 }

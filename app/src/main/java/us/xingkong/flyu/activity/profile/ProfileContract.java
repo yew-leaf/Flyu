@@ -17,10 +17,8 @@ public interface ProfileContract {
 
     }
 
-    interface View extends BaseView<Presenter> {
-        void display();
-
-        void showMessage(String message);
+    interface View extends BaseView {
+        void displayProfile();
 
         void toOtherActivity(UserModel user);
 

@@ -9,15 +9,9 @@ package us.xingkong.flyu.app;
 public class Constants {
     public static final String APPID = "682fd39be9ebd646e4ebacf5ec9b3efb";
 
-    public static final String REGISTER = "http://39.108.0.22/blog/public/insert";
+    public static final String BASE_LOGIN_AND_REGISTER_URL = "http://39.108.0.22/blog/public/";
 
-    public static final String LOGIN = "http://39.108.0.22/blog/public/signin";
-
-    public static final String URL = "http://www.yogasol.xin/";
-
-    public static final String UPLOAD_IMAGE_AND_TEXT = "http://www.yogasol.xin/api/send";
-
-    public static final String DOWNLOAD_IMAGE_AND_TEXT = "http://www.yogasol.xin/api/fetch";
+    public static final String BASE_UPLOAD_DOWNLOAD_URL = "http://www.yogasol.xin/";
 
     public static final String NETWORK_IS_UNAVAILABLE = "-1";
 
@@ -38,4 +32,8 @@ public class Constants {
     public static final String EMAIL_IS_ILLEAGAL = "4";
 
     public static final String PASSWORD_ISNT_THE_SAME = "6";
+
+    public static final String UPDATE_PASSWORD_SUCCESSFULLY = "3";
+
+    public static final String UPDATE_PASSWORD_UNSUCCESSFULLY = "4";
 }

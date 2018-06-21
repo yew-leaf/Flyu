@@ -37,7 +37,7 @@ public class PhotoModel implements Serializable {
         this.position = position;
     }
 
-    public String getPath(Uri uri, Activity activity) {
+    public static String convertPath(Uri uri, Activity activity) {
         String[] project = {MediaStore.Video.Media.DATA};
         Cursor cursor = activity.managedQuery(uri, project, null, null, null);
         int index = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);

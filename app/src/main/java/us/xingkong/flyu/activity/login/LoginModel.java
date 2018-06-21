@@ -1,16 +1,12 @@
 package us.xingkong.flyu.activity.login;
 
-import android.util.Log;
 
-import java.util.HashMap;
+import android.support.annotation.NonNull;
 
-import us.xingkong.flyu.UserModel;
-import us.xingkong.flyu.UserModelDao;
-import us.xingkong.flyu.app.App;
+import io.reactivex.Observable;
+import us.xingkong.flyu.rx.RxSchedulers;
 import us.xingkong.flyu.app.Constants;
-import us.xingkong.flyu.base.OnRequestListener;
-import us.xingkong.oktuil.OkUtil;
-import us.xingkong.oktuil.response.ResultResponse;
+import us.xingkong.flyu.util.RetrofitUtil;
 
 
 /**
@@ -21,40 +17,12 @@ import us.xingkong.oktuil.response.ResultResponse;
  */
 public class LoginModel {
 
-    private OnRequestListener<UserModel> mListener;
-
-    public void setOnRequestListener(OnRequestListener<UserModel> listener) {
-        mListener = listener;
-    }
-
-    public void login(final String username, final String password) {
-        HashMap<String, String> params = new HashMap<>();
-        params.put("u", username);
-        params.put("p", password);
-        OkUtil okUtil = App.getInstance().getOkUtil();
-        okUtil.get()
-                .url(Constants.LOGIN)
-                .params(params)
-                .tag(this)
-                .enqueue(new ResultResponse() {
-                    @Override
-                    public void onSuccess(int statusCode, String result) {
-                        Log.i("LoginModel", result);
-                        if (result.equals(Constants.SUCCESS)) {
-                            UserModelDao dao = App.getInstance().getDaoSession().getUserModelDao();
-                            UserModel user = dao.load(username);
-                            user.setIsLogged(true);
-                            dao.update(user);
-                            mListener.success(user);
-                        } else {
-                            mListener.failure(result);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(int statusCode, String errorMsg) {
-                        mListener.failure(Constants.NETWORK_IS_UNAVAILABLE);
-                    }
-                });
+    public Observable<String> login(@NonNull String username, @NonNull String password) {
+        return RetrofitUtil
+                .getInstance()
+                .url(Constants.BASE_LOGIN_AND_REGISTER_URL)
+                .create()
+                .login(username, password)
+                .compose(RxSchedulers.<String>compose());
     }
 }

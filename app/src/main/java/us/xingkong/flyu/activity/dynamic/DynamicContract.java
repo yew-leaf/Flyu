@@ -1,9 +1,9 @@
 package us.xingkong.flyu.activity.dynamic;
 
-import us.xingkong.flyu.model.DownloadModel;
 import us.xingkong.flyu.adapter.DynamicAdapter;
 import us.xingkong.flyu.base.BasePresenter;
 import us.xingkong.flyu.base.BaseView;
+import us.xingkong.flyu.model.DownloadModel;
 
 /**
  * @作者: Xuer
@@ -14,23 +14,21 @@ import us.xingkong.flyu.base.BaseView;
 public interface DynamicContract {
 
     interface Presenter extends BasePresenter {
-        void load();
+        void loadDynamic();
 
-        void display();
+        void displayDynamic();
     }
 
-    interface View extends BaseView<Presenter> {
+    interface View extends BaseView {
         String getUsername();
 
-        void setDynamic(String number);
+        void setDynamic(String size);
 
         void setRefresh(boolean refresh);
 
         void setAdapter(DynamicAdapter adapter);
 
         void setEnable(boolean enable);
-
-        void showMessage(String message);
 
         void toOtherActivity(DownloadModel.Message message);
 

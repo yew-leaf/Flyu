@@ -7,7 +7,7 @@ package us.xingkong.flyu.base;
  * @更新日志:
  */
 public interface BasePresenter {
-    void start();
+    void subscribe();
 
-    void destroy();
+    void unSubscribe();
 }

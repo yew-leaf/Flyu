@@ -11,9 +11,12 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.github.chrisbanes.photoview.PhotoView;
 
+import java.lang.ref.Reference;
+import java.lang.ref.SoftReference;
 import java.util.List;
 
 import us.xingkong.flyu.model.PhotoModel;
+import us.xingkong.flyu.util.L;
 
 /**
  * @作者: Xuer
@@ -27,6 +30,7 @@ public class BrowseAdapter extends PagerAdapter {
     private AppCompatActivity mActivity;
     private PhotoView mPhotoView;
     private OnPhotoViewClickListener mListener;
+    private Reference<PhotoModel> mReference;
 
     public BrowseAdapter(AppCompatActivity activity, List<PhotoModel> list) {
         mActivity = activity;
@@ -44,14 +48,16 @@ public class BrowseAdapter extends PagerAdapter {
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
-        PhotoModel model = mList.get(position);
         mPhotoView = new PhotoView(mActivity);
 
-        Glide.with(mActivity)
-                .load(Uri.parse(model.getUri()))
-                .thumbnail(0.5f)
-                .transition(new DrawableTransitionOptions().crossFade())
-                .into(mPhotoView);
+        mReference = new SoftReference<>(mList.get(position));
+        if (mReference.get() != null) {
+            Glide.with(mActivity)
+                    .load(Uri.parse(mReference.get().getUri()))
+                    .thumbnail(0.5f)
+                    .transition(new DrawableTransitionOptions().crossFade())
+                    .into(mPhotoView);
+        }
 
         container.addView(mPhotoView);
 
@@ -80,7 +86,12 @@ public class BrowseAdapter extends PagerAdapter {
 
     @Override
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+        L.i("BrowseAdapter","destroyItem");
         container.removeView((View) object);
+        if (mReference != null && mReference.get() != null) {
+            mReference.clear();
+            System.gc();
+        }
     }
 
     @Override

@@ -28,6 +28,7 @@ public class UploadBuilder extends BaseRequestBuilderWithParams<UploadBuilder> {
 
     private Map<String, File> mFiles;
     private List<MultipartBody.Part> mParts;
+    private MultipartBody.Builder multipartBody;
 
     public UploadBuilder(OkUtil okUtil) {
         super(okUtil);
@@ -56,6 +57,13 @@ public class UploadBuilder extends BaseRequestBuilderWithParams<UploadBuilder> {
         return this;
     }
 
+    public UploadBuilder addBody(MultipartBody.Builder body) {
+        if (body != null) {
+            multipartBody = body;
+        }
+        return this;
+    }
+
     @Override
     public void enqueue(ResponseInterface responseInterface) {
         try {
@@ -70,12 +78,16 @@ public class UploadBuilder extends BaseRequestBuilderWithParams<UploadBuilder> {
                 builder.tag(mTag);
             }
 
-            MultipartBody.Builder multipartBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-            appendParams(multipartBuilder, mParams);
-            appendFiles(multipartBuilder, mFiles);
-            appendParts(multipartBuilder, mParts);
 
-            builder.post(new ProgressRequestBody(multipartBuilder.build(), responseInterface));
+            if (multipartBody != null) {
+                builder.post(new ProgressRequestBody(multipartBody.build(), responseInterface));
+            } else {
+                MultipartBody.Builder multipartBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+                appendParams(multipartBuilder, mParams);
+                appendFiles(multipartBuilder, mFiles);
+                appendParts(multipartBuilder, mParts);
+                builder.post(new ProgressRequestBody(multipartBuilder.build(), responseInterface));
+            }
 
             Request request = builder.build();
 

@@ -16,7 +16,7 @@ public interface LoginContract {
         void login();
     }
 
-    interface View extends BaseView<Presenter> {
+    interface View extends BaseView {
         String getUserName();
 
         String getPassword();
@@ -25,8 +25,8 @@ public interface LoginContract {
 
         void setEnable(boolean enable);
 
-        void showMessage(String message);
-
         void toOtherActivity(UserModel user);
+
+        void showToast(String message);
     }
 }

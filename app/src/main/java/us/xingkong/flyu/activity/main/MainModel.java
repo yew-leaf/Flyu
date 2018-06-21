@@ -1,18 +1,23 @@
 package us.xingkong.flyu.activity.main;
 
-import android.util.Log;
+
+import android.support.annotation.NonNull;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.net.FileNameMap;
+import java.net.URLConnection;
 import java.util.List;
-import java.util.Map;
 
-import us.xingkong.flyu.model.UploadModel;
+import io.reactivex.Observable;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import us.xingkong.flyu.app.App;
 import us.xingkong.flyu.app.Constants;
-import us.xingkong.oktuil.OkUtil;
-import us.xingkong.oktuil.response.GsonResponse;
+import us.xingkong.flyu.model.UploadModel;
+import us.xingkong.flyu.rx.RxSchedulers;
+import us.xingkong.flyu.util.RetrofitUtil;
+import us.xingkong.oktuil.builder.UploadBuilder;
 
 
 /**
@@ -23,76 +28,50 @@ import us.xingkong.oktuil.response.GsonResponse;
  */
 public class MainModel {
 
-    private OnRequestListener mListener;
-    //private String mResult;
+    public Observable<UploadModel> uploadImageAndText(@NonNull String name, @NonNull String text, @NonNull List<File> files) {
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
 
-    public interface OnRequestListener {
-        void success(String result);
-
-        void progress(long currentBytes, long targetBytes);
-
-        void failure(String result);
-    }
-
-    public void setOnRequestListener(OnRequestListener listener) {
-        mListener = listener;
-    }
-
-    public void uploadImageAndText(String name, String text, List<File> files) {
-        if (text.length() == 0 || files.size() == 0) {
-            return;
-        }
-        HashMap<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("text", text);
-        Map<String, File> fileMap = new LinkedHashMap<>();
+        builder.addFormDataPart("name", name);
+        builder.addFormDataPart("text", text);
         for (File file : files) {
-            fileMap.put("img[]", file);
+            String fileName = file.getName();
+            RequestBody requestBody = RequestBody.create(MediaType.parse(getContentType(fileName)), file);
+            builder.addFormDataPart("img[]", fileName, requestBody);
         }
-        OkUtil okUtil = App.getInstance().getOkUtil();
-        okUtil.upload()
-                .url(Constants.UPLOAD_IMAGE_AND_TEXT)
-                .params(params)
-                .files(fileMap)
-                .tag(this)
-                /*.enqueue(new ResultResponse() {
-                    @Override
-                    public void onSuccess(int statusCode, String result) {
-                        Log.e("MainModel", result);
-                        //mResult = result;
-                        if (!result.equals("error")) {
-                            mListener.success("success");
-                        } else
-                            mListener.failure(result);
-                    }
 
-                    @Override
-                    public void onFailure(int statusCode, String errorMsg) {
-                        Log.e("errorMsg", errorMsg);
-                        //mResult = Constants.NETWORK_IS_UNAVAILABLE;
-                        mListener.failure(Constants.NETWORK_IS_UNAVAILABLE);
-                    }
-                });*/
-                .enqueue(new GsonResponse<UploadModel>() {
-                    @Override
-                    public void onFailure(int statusCode, String errorMsg) {
-                        mListener.failure(Constants.NETWORK_IS_UNAVAILABLE);
-                    }
+        return RetrofitUtil
+                .getInstance()
+                .url(Constants.BASE_UPLOAD_DOWNLOAD_URL)
+                .create()
+                .uploadImageAndText(builder.build())
+                .compose(RxSchedulers.<UploadModel>compose());
+    }
 
-                    @Override
-                    public void onProgress(long currentBytes, long targetBytes) {
-                        mListener.progress(currentBytes, targetBytes);
-                    }
+    public UploadBuilder upload(@NonNull String name, @NonNull String text, @NonNull List<File> files) {
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
 
-                    @Override
-                    public void onSuccess(int statusCode, String result, UploadModel response) {
-                        Log.e("MainModel", result);
-                        if (!result.equals("error")) {
-                            mListener.success("Success");
-                        } else {
-                            mListener.failure(result);
-                        }
-                    }
-                });
+        builder.addFormDataPart("name", name);
+        builder.addFormDataPart("text", text);
+        for (File file : files) {
+            String fileName = file.getName();
+            RequestBody requestBody = RequestBody.create(MediaType.parse(getContentType(fileName)), file);
+            builder.addFormDataPart("img[]", fileName, requestBody);
+        }
+
+        return App
+                .getInstance()
+                .getOkUtil()
+                .upload()
+                .url(Constants.BASE_UPLOAD_DOWNLOAD_URL+"api/send")
+                .addBody(builder);
+    }
+
+    private String getContentType(String path) {
+        FileNameMap fileNameMap = URLConnection.getFileNameMap();
+        String contentTypeFor = fileNameMap.getContentTypeFor(path);
+        if (contentTypeFor == null) {
+            contentTypeFor = "application/octet-stream";
+        }
+        return contentTypeFor;
     }
 }

@@ -1,12 +1,11 @@
 package us.xingkong.flyu.adapter;
 
 import android.content.Context;
-import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,14 +13,16 @@ import android.view.ViewGroup;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 
+import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
 import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import us.xingkong.flyu.model.PhotoModel;
 import us.xingkong.flyu.R;
+import us.xingkong.flyu.model.PhotoModel;
+import us.xingkong.flyu.util.L;
 
 /**
  * @作者: Xuer
@@ -39,9 +40,9 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private View mFooterView;
     private onItemClickListener itemListener;
     private onAddClickListener addListener;
-    private SoftReference<Uri> softReference;
+    private Reference<PhotoModel> mReference;
 
-    public PhotosAdapter(Context context, List<PhotoModel> list) {
+    public PhotosAdapter(@NonNull Context context, @Nullable List<PhotoModel> list) {
         mContext = context;
         mList = list;
         inflater = LayoutInflater.from(mContext);
@@ -55,12 +56,6 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public void delete(int position) {
         mList.remove(position);
         notifyItemRemoved(position);
-    }
-
-    public void clear() {
-        /*if (mList != null && mList.size() != 0) {
-            mList.clear();
-        }*/
     }
 
     public interface onAddClickListener {
@@ -128,11 +123,11 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         if (holder instanceof ItemHolder && getItemViewType(position) == TYPE_NORMAL) {
             final ItemHolder itemHolder = (ItemHolder) holder;
-            softReference = new SoftReference<>(Uri.parse(mList.get(position).getUri()));
 
-            if (mList != null && softReference.get() != null) {
+            mReference = new SoftReference<>(mList.get(position));
+            if (mList != null && mReference.get() != null) {
                 Glide.with(mContext)
-                        .load(softReference.get())
+                        .load(mReference.get().getUri())
                         .thumbnail(0.5f)
                         .transition(new DrawableTransitionOptions().crossFade())
                         .into(itemHolder.image);
@@ -188,9 +183,9 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public void onViewRecycled(@NonNull RecyclerView.ViewHolder holder) {
         super.onViewRecycled(holder);
-        Log.w("ViewRecycled", "ViewRecycled");
-        if (softReference != null) {
-            softReference.clear();
+        L.i("PhotosAdapter", "ViewRecycled");
+        if (mReference != null && mReference.get() != null) {
+            mReference.clear();
             System.gc();
         }
     }

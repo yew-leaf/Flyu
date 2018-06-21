@@ -1,10 +1,18 @@
 package us.xingkong.flyu.activity.register;
 
+import android.support.annotation.NonNull;
 import android.view.View;
 
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 import us.xingkong.flyu.UserModel;
+import us.xingkong.flyu.UserModelDao;
+import us.xingkong.flyu.app.App;
 import us.xingkong.flyu.app.Constants;
-import us.xingkong.flyu.base.OnRequestListener;
+import us.xingkong.flyu.base.BasePresenterImpl;
 
 /**
  * @作者: Xuer
@@ -12,50 +20,83 @@ import us.xingkong.flyu.base.OnRequestListener;
  * @描述:
  * @更新日志:
  */
-public class RegisterPresenter implements RegisterContract.Presenter,
-        OnRequestListener<UserModel> {
+public class RegisterPresenter extends BasePresenterImpl<RegisterContract.View>
+        implements RegisterContract.Presenter {
 
-    private RegisterContract.View mView;
-    private RegisterModel model;
+    private RegisterModel registerModel;
+    private UserModelDao dao;
 
-    RegisterPresenter(RegisterContract.View view) {
-        mView = view;
-        mView.setPresenter(this);
-        model = new RegisterModel();
-        model.setOnRequestListener(this);
+    RegisterPresenter(@NonNull RegisterContract.View view) {
+        super(view);
+        registerModel = new RegisterModel();
+        dao = App.getInstance().getDaoSession().getUserModelDao();
     }
 
     @Override
     public void register() {
         mView.setEnable(false);
         mView.setVisibility(View.VISIBLE);
-        model.register(mView.getUserName(), mView.getEmail(),
-                mView.getPassword(), mView.getRepassword());
+        if (!mView.getPassword().equals(mView.getRepassword())) {
+            mView.setEnable(true);
+            mView.setVisibility(View.INVISIBLE);
+            mView.showMessage("两次密码不一致");
+            return;
+        }
+        registerModel.register(mView.getUserName(), mView.getEmail(),
+                mView.getPassword()).subscribe(new Observer<String>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                mCompositeDisposable.add(d);
+            }
+
+            @Override
+            public void onNext(String s) {
+                if (s.equals(Constants.SUCCESS)) {
+                    UserModel userModel = new UserModel();
+                    userModel.setUsername(mView.getUserName());
+                    userModel.setEmail(mView.getEmail());
+                    userModel.setPassword(mView.getPassword());
+                    userModel.setIsLogged(false);
+                    dao.insert(userModel);
+                    mView.showToast("注册成功");
+                    mView.toOtherActivity(userModel);
+                } else {
+                    showMessage(s);
+                }
+                mView.setEnable(true);
+                mView.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                if (e instanceof UnknownHostException) {
+                    mView.showMessage("网络连接错误");
+                } else if (e instanceof SocketTimeoutException) {
+                    mView.showMessage("网络连接超时");
+                }
+                mView.setEnable(true);
+                mView.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
     }
 
     @Override
-    public void start() {
-
+    public void subscribe() {
+        super.subscribe();
     }
 
     @Override
-    public void destroy() {
-
+    public void unSubscribe() {
+        super.unSubscribe();
     }
 
-    @Override
-    public void success(UserModel result) {
-        mView.setEnable(true);
-        mView.setVisibility(View.INVISIBLE);
-        //mView.showMessage("注册成功");
-        mView.toOtherActivity(result);
-    }
-
-    @Override
-    public void failure(String result) {
-        mView.setEnable(true);
-        mView.setVisibility(View.INVISIBLE);
-        switch (result) {
+    private void showMessage(String message) {
+        switch (message) {
             case Constants.NETWORK_IS_UNAVAILABLE:
                 mView.showMessage("网络连接错误");
                 break;

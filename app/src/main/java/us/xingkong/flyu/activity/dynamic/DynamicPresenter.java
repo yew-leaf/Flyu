@@ -1,12 +1,23 @@
 package us.xingkong.flyu.activity.dynamic;
 
+import android.support.annotation.NonNull;
+
+import com.google.gson.stream.MalformedJsonException;
+
+import java.lang.ref.Reference;
+import java.lang.ref.SoftReference;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import us.xingkong.flyu.model.DownloadModel;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+import retrofit2.adapter.rxjava2.HttpException;
 import us.xingkong.flyu.adapter.DynamicAdapter;
-import us.xingkong.flyu.base.OnRequestListener;
+import us.xingkong.flyu.base.BasePresenterImpl;
+import us.xingkong.flyu.model.DownloadModel;
 
 /**
  * @作者: Xuer
@@ -14,32 +25,66 @@ import us.xingkong.flyu.base.OnRequestListener;
  * @描述:
  * @更新日志:
  */
-public class DynamicPresenter implements DynamicContract.Presenter,
-        OnRequestListener<DownloadModel> {
+public class DynamicPresenter extends BasePresenterImpl<DynamicContract.View>
+        implements DynamicContract.Presenter {
 
-    private DynamicContract.View mView;
-    private DynamicModel model;
+    private DynamicModel dynamicModel;
     private DynamicAdapter mAdapter;
+    private Reference<List<DownloadModel.Message>> mDynamicReference;
 
-    DynamicPresenter(DynamicContract.View view) {
-        mView = view;
-        mView.setPresenter(this);
-        model = new DynamicModel();
-        model.setOnRequestListener(this);
+    DynamicPresenter(@NonNull DynamicContract.View view) {
+        super(view);
+        dynamicModel = new DynamicModel();
     }
 
     @Override
-    public void load() {
+    public void loadDynamic() {
         if (!mView.isActive()) {
             return;
         }
         mView.setEnable(false);
         mView.setRefresh(true);
-        model.load(mView.getUsername());
+        dynamicModel.loadDynamic(mView.getUsername()).subscribe(new Observer<DownloadModel>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                mCompositeDisposable.add(d);
+            }
+
+            @Override
+            public void onNext(DownloadModel downloadModel) {
+                mAdapter = setAdapter(downloadModel.getMessage());
+                displayDynamic();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                e.printStackTrace();
+                if (e instanceof HttpException || e instanceof MalformedJsonException) {
+                    mAdapter = new DynamicAdapter(mView.getContext(), new ArrayList<DownloadModel.Message>());
+                } else if (e instanceof UnknownHostException) {
+                    if (checkReference(mDynamicReference)) {
+                        mAdapter = new DynamicAdapter(mView.getContext(), mDynamicReference.get());
+                        mAdapter.setName(mView.getUsername());
+                    } else {
+                        mAdapter = new DynamicAdapter(mView.getContext(), null);
+                    }
+                    mView.showMessage("网络连接不可用");//snackBar action
+                } else if (e instanceof SocketTimeoutException) {
+                    mView.showMessage("网络连接超时");
+                }
+                displayDynamic();
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
     }
 
     @Override
-    public void display() {
+    public void displayDynamic() {
+        mAdapter.notifyDataSetChanged();
         mView.setAdapter(mAdapter);
         mView.setEnable(true);
         mView.setRefresh(false);
@@ -51,50 +96,31 @@ public class DynamicPresenter implements DynamicContract.Presenter,
 
             @Override
             public void onReloadClick() {
-                load();
+                loadDynamic();
             }
         });
+
     }
 
     @Override
-    public void start() {
-        /*if (!mView.isActive()) {
-            return;
+    public void subscribe() {
+        super.subscribe();
+    }
+
+    @Override
+    public void unSubscribe() {
+        super.unSubscribe();
+        if (checkReference(mDynamicReference)) {
+            mDynamicReference.clear();
         }
-        load();*/
     }
 
-    @Override
-    public void destroy() {
-
-    }
-
-    private DynamicAdapter setAdapter(DownloadModel downloadModel) {
-        List<DownloadModel.Message> list = downloadModel.getMessage();
+    private DynamicAdapter setAdapter(List<DownloadModel.Message> list) {
         Collections.reverse(list);
-        DynamicAdapter adapter = new DynamicAdapter(mView.getContext(), list);
+        mDynamicReference = new SoftReference<>(list);
+        DynamicAdapter adapter = new DynamicAdapter(mView.getActivity(), list);
         adapter.setName(mView.getUsername());
-        adapter.notifyDataSetChanged();
         mView.setDynamic(String.valueOf(list.size()));
         return adapter;
-    }
-
-    @Override
-    public void success(DownloadModel downloadModel) {
-        mAdapter = setAdapter(downloadModel);
-        display();
-    }
-
-    @Override
-    public void failure(String errorMsg) {
-        if (errorMsg.equals("Gson Error")) {
-            mAdapter = new DynamicAdapter(mView.getContext(), new ArrayList<DownloadModel.Message>());
-            mAdapter.notifyDataSetChanged();
-        } else {
-            mAdapter = new DynamicAdapter(mView.getContext(), null);
-            mAdapter.notifyDataSetChanged();
-        }
-        display();
-        mView.showMessage("网络连接不可用");
     }
 }

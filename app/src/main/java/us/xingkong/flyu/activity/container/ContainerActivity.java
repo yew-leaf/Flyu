@@ -23,21 +23,20 @@ import java.util.List;
 import butterknife.BindColor;
 import butterknife.BindView;
 import butterknife.OnClick;
-import us.xingkong.flyu.model.DownloadModel;
-import us.xingkong.flyu.model.EventModel;
 import us.xingkong.flyu.R;
 import us.xingkong.flyu.UserModel;
 import us.xingkong.flyu.UserModelDao;
-import us.xingkong.flyu.app.App;
-import us.xingkong.flyu.base.BaseActivity;
 import us.xingkong.flyu.activity.dynamic.DynamicFragment;
 import us.xingkong.flyu.activity.home.HomeFragment;
 import us.xingkong.flyu.activity.main.MainActivity;
 import us.xingkong.flyu.activity.profile.ProfileFragment;
-import us.xingkong.flyu.util.SnackbarUtil;
+import us.xingkong.flyu.app.App;
+import us.xingkong.flyu.base.BaseActivity;
+import us.xingkong.flyu.base.BasePresenter;
+import us.xingkong.flyu.model.EventModel;
+import us.xingkong.flyu.util.S;
 
-public class ContainerActivity extends BaseActivity<ContainerContract.Presenter>
-        implements ContainerContract.View{
+public class ContainerActivity extends BaseActivity {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -53,12 +52,16 @@ public class ContainerActivity extends BaseActivity<ContainerContract.Presenter>
     private long exitTime;
     private MenuItem menuItem;
     private static UserModel userModel;
-    private static DownloadModel downloadModel;
 
     @Override
     protected void onResume() {
         super.onResume();
         searchView.clearFocus();
+    }
+
+    @Override
+    protected BasePresenter newPresenter() {
+        return null;
     }
 
     @Override
@@ -78,8 +81,6 @@ public class ContainerActivity extends BaseActivity<ContainerContract.Presenter>
 
     @Override
     protected void initView() {
-        //EventBus.getDefault().register(this);
-
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
 
@@ -108,24 +109,10 @@ public class ContainerActivity extends BaseActivity<ContainerContract.Presenter>
         String username = getIntent().getStringExtra("Username");
         UserModelDao dao = App.getInstance().getDaoSession().getUserModelDao();
         userModel = dao.load(username);
-        //downloadModel = (DownloadModel) getIntent().getSerializableExtra("downloadModel");
     }
-
-    /*@Subscribe
-    public void getModel(EventModel<DownloadModel> eventBus) {
-        Log.i("eventbus", eventBus.getPublisher());
-        if (!eventBus.getPublisher().equals("Welcome")) {
-            return;
-        }
-        downloadModel = eventBus.getSubscriber();
-    }*/
 
     public static UserModel getUserModel() {
         return userModel;
-    }
-
-    public static DownloadModel getDownloadModel() {
-        return downloadModel;
     }
 
     @Override
@@ -197,7 +184,7 @@ public class ContainerActivity extends BaseActivity<ContainerContract.Presenter>
     }
 
     @OnClick(R.id.post)
-    public void onPostClicked(){
+    public void onPostClicked() {
         if (viewPager.getCurrentItem() != 1) {
             viewPager.setCurrentItem(1);
         }
@@ -208,7 +195,7 @@ public class ContainerActivity extends BaseActivity<ContainerContract.Presenter>
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (System.currentTimeMillis() - exitTime > 2000) {
-                SnackbarUtil.shortSnackbar(findViewById(R.id.root), "再按一次退出").show();
+                S.shortSnackbar(findViewById(R.id.root), getString(R.string.double_click_to_exit));
                 exitTime = System.currentTimeMillis();
             } else {
                 App.exit();
@@ -216,6 +203,11 @@ public class ContainerActivity extends BaseActivity<ContainerContract.Presenter>
             return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void showMessage(String message) {
+
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {

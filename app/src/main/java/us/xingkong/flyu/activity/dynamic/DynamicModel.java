@@ -1,15 +1,13 @@
 package us.xingkong.flyu.activity.dynamic;
 
-import android.util.Log;
 
-import com.google.gson.Gson;
+import android.support.annotation.NonNull;
 
-import us.xingkong.flyu.model.DownloadModel;
-import us.xingkong.flyu.app.App;
+import io.reactivex.Observable;
+import us.xingkong.flyu.rx.RxSchedulers;
 import us.xingkong.flyu.app.Constants;
-import us.xingkong.flyu.base.OnRequestListener;
-import us.xingkong.oktuil.OkUtil;
-import us.xingkong.oktuil.response.ResultResponse;
+import us.xingkong.flyu.model.DownloadModel;
+import us.xingkong.flyu.util.RetrofitUtil;
 
 /**
  * @作者: Xuer
@@ -19,39 +17,12 @@ import us.xingkong.oktuil.response.ResultResponse;
  */
 public class DynamicModel {
 
-    private OnRequestListener<DownloadModel> mListener;
-
-    public void setOnRequestListener(OnRequestListener<DownloadModel> listener) {
-        mListener = listener;
-    }
-
-    public void load(String name) {
-        if (name == null) {
-            mListener.failure("Gson Error");
-            return;
-        }
-        OkUtil okUtil = App.getInstance().getOkUtil();
-        okUtil.post()
-                .url(Constants.DOWNLOAD_IMAGE_AND_TEXT)
-                .addParam("name", name)
-                .tag(this)
-                .enqueue(new ResultResponse() {
-                    @Override
-                    public void onSuccess(int statusCode, String result) {
-                        if (!result.equals("error")) {
-                            Log.i("DynamicModel", result);
-                            Gson gson = new Gson();
-                            DownloadModel downloadModel = gson.fromJson(result, DownloadModel.class);
-                            mListener.success(downloadModel);
-                        } else {
-                            mListener.failure("Gson Error");
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(int statusCode, String errorMsg) {
-                        mListener.failure(errorMsg);
-                    }
-                });
+    public Observable<DownloadModel> loadDynamic(@NonNull String name) {
+        return RetrofitUtil
+                .getInstance()
+                .url(Constants.BASE_UPLOAD_DOWNLOAD_URL)
+                .create()
+                .loadDynamic(name)
+                .compose(RxSchedulers.<DownloadModel>compose());
     }
 }

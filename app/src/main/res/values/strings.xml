@@ -1,34 +1,49 @@
 <resources>
     <string name="app_name">Flyu</string>
     <string name="error_gif">x or y bound size should be at least %1$dpx and file size should be no more than %2$sM</string>
-    <string name="about_text">一些碎碎念：这个app是和后端合作做的，但是登录注册的接口没有返回用户信息，我都保存在本地的，如果你删了以后可能再也登录不了这个账号，
-        只能重新注册一个了。虽然这个app比较简单，但我也是用心在做的，希望在你删除之前，能对这个app留下一个好的印象。    ——文</string>
-    <string name="username_hint">用户名</string>
-    <string name="password_hint">密码</string>
+    <string name="first_meeting">初次见面！</string>
+    <string name="about_text">"写在前面："\n
+        "1.这个app是和后端合作做的，但是登录注册的接口没有返回用户信息，我都保存在本地的。如果你删了这个app后，再次登录（如果还有再次）会疯狂闪退，"
+        "这时只要通过「修改密码」修改一次后就能重新保存到本地。"\n
+        "2.登录的接口比较坑，只要是在「修改密码」修改过的密码都能登录，所以你开心就好。。。"\n
+        "3.虽然这个app比较简单，但我也是用很心在做的，希望在你删除之前，能给你一个好的体验."\n\n
+        "——文文"</string>
+    <string name="i_see">知道了</string>
+    <string name="i_will_die_without_permissions">没有权限我会死的......</string>
+    <string name="username">用户名</string>
+    <string name="password">密码</string>
     <string name="login">登录</string>
     <string name="register">注册</string>
     <string name="email">邮箱</string>
+    <string name="double_click_to_exit">再按一次退出</string>
     <string name="repassword">再输入一次密码</string>
+    <string name="original_password">修改过的任意一次都可以</string>
+    <string name="update_password">要修改的密码</string>
+    <string name="change_password">修改密码</string>
+    <string name="query_hint">在这里搜索用户</string>
     <string name="home">首页</string>
     <string name="mine">我的</string>
     <string name="profile">个人</string>
     <string name="search">搜索</string>
     <string name="dynamic">动态：</string>
-    <string name="toggle_open">芝麻开门</string>
-    <string name="toggle_close">芝麻关门</string>
     <string name="follow">关注：</string>
     <string name="fans">粉丝：</string>
     <string name="about">关于</string>
     <string name="night">夜间模式</string>
     <string name="update">检查更新</string>
     <string name="logout">退出登录</string>
+    <string name="do_you_want_to_exit">确定退出吗？</string>
     <string name="yes">确定</string>
     <string name="no">取消</string>
+    <string name="send">发送</string>
+    <string name="what_you_want_to_say">你想说的话</string>
     <string name="take_photo">拍照</string>
     <string name="choose_photo">从相册选择</string>
-    <string name="what_you_want_to_say">你最想说的话</string>
+   <string name="forget_it">那就算了吧......</string>
     <string name="ok">完成</string>
     <string name="submit">提交</string>
     <string name="delete">删除</string>
+    <string name="browse_hint">提示</string>
+    <string name="browse_delete">"要删除这张照片吗？"</string>
     <string name="translate">translate</string>
 </resources>

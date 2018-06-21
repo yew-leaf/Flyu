@@ -65,15 +65,19 @@ public class ProfileFragment extends BaseFragment<ProfileContract.Presenter>
     AppCompatButton logout;
 
     private UserModel userModel;
-    //private ProfileContract.Presenter mPresenter;
 
     public static ProfileFragment newInstance() {
         return new ProfileFragment();
     }
 
     @Override
+    protected ProfileContract.Presenter newPresenter() {
+        return new ProfilePresenter(this);
+    }
+
+    @Override
     protected int bindLayout() {
-        return R.layout.activity_profile;
+        return R.layout.fragment_profile;
     }
 
     @Override
@@ -91,8 +95,7 @@ public class ProfileFragment extends BaseFragment<ProfileContract.Presenter>
         collapsingToolbar.setTitle(" ");
         toolbar.setTitle("");
 
-        new ProfilePresenter(this);
-        mPresenter = getPresenter();
+        dynamic.setText("动态：0");
     }
 
     @Override
@@ -113,10 +116,10 @@ public class ProfileFragment extends BaseFragment<ProfileContract.Presenter>
 
     @Override
     protected void initListener() {
-        //dynamic.setOnClickListener(this);
         about.setOnClickListener(this);
         logout.setOnClickListener(this);
 
+        //我希望能获取到attr里toolbar的高度，但是好像不行
         appBar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
@@ -160,7 +163,7 @@ public class ProfileFragment extends BaseFragment<ProfileContract.Presenter>
     }
 
     @Override
-    public void display() {
+    public void displayProfile() {
         RequestOptions options = new RequestOptions()
                 .centerCrop()
                 .transform(new BlurTransformation(25));
@@ -191,11 +194,6 @@ public class ProfileFragment extends BaseFragment<ProfileContract.Presenter>
     }
 
     @Override
-    public void showMessage(String message) {
-
-    }
-
-    @Override
     public void toOtherActivity(UserModel user) {
 
     }
@@ -203,6 +201,11 @@ public class ProfileFragment extends BaseFragment<ProfileContract.Presenter>
     @Override
     public boolean isActive() {
         return isAdded();
+    }
+
+    @Override
+    public void showMessage(String message) {
+
     }
 
     @Override
@@ -214,7 +217,7 @@ public class ProfileFragment extends BaseFragment<ProfileContract.Presenter>
             case R.id.logout:
                 new AlertDialog.Builder(mActivity)
                         .setTitle("")
-                        .setMessage("确定退出吗？")
+                        .setMessage(R.string.do_you_want_to_exit)
                         .setCancelable(false)
                         .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                             @Override

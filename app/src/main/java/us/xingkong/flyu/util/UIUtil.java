@@ -11,7 +11,7 @@ import android.view.inputmethod.InputMethodManager;
  * @描述:
  * @更新日志:
  */
-public class UiUtil {
+public class UIUtil {
 
     public static void closeKeyboard(Activity activity) {
         View view = activity.getWindow().peekDecorView();

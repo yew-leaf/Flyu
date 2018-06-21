@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,14 +7,17 @@
     android:background="@color/browse"
     tools:context=".activity.browse.BrowseActivity">
 
-    <include layout="@layout/toolbar" />
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
 
     <us.xingkong.flyu.view.ViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/toolbar"
-        android:transitionName="@string/translate">
+        android:layout_height="0dp"
+        android:transitionName="@string/translate"
+        app:layout_constraintBottom_toTopOf="@id/hint"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
 
     </us.xingkong.flyu.view.ViewPager>
 
@@ -22,12 +25,13 @@
         android:id="@+id/hint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:background="@color/black"
         android:fontFamily="sans-serif-condensed"
         android:padding="10dp"
         android:text="0/0"
         android:textColor="@color/background"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/viewPager" />
 
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>

@@ -23,10 +23,6 @@ public class DownloadModel {
         this.message = message;
     }
 
-    public static String formatUrl(String string) {
-        return Constants.URL + string.replace("\\", "");
-    }
-
     public class Message implements Serializable {
         private String name;
         private String text;
@@ -64,5 +60,9 @@ public class DownloadModel {
         public void setTime(String time) {
             this.time = time;
         }
+    }
+
+    public static String convertUrl(String string) {
+        return Constants.BASE_UPLOAD_DOWNLOAD_URL + string.replace("\\", "");
     }
 }

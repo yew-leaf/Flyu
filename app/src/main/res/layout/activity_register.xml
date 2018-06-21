@@ -2,12 +2,12 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
+    android:fitsSystemWindows="true"
     android:focusableInTouchMode="true"
-    android:orientation="vertical"
-    android:id="@+id/root"
     tools:context=".activity.register.RegisterActivity">
 
     <android.support.constraint.ConstraintLayout
@@ -54,8 +54,9 @@
                         android:id="@+id/username"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/username_hint"
-                        android:singleLine="true" />
+                        android:hint="@string/username"
+                        android:singleLine="true"
+                        android:textColor="@color/text_color" />
 
                 </android.support.design.widget.TextInputLayout>
 
@@ -68,7 +69,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/email"
-                        android:singleLine="true" />
+                        android:singleLine="true"
+                        android:textColor="@color/text_color" />
 
                 </android.support.design.widget.TextInputLayout>
 
@@ -80,9 +82,10 @@
                         android:id="@+id/password"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/password_hint"
+                        android:hint="@string/password"
                         android:inputType="textPassword"
-                        android:singleLine="true" />
+                        android:singleLine="true"
+                        android:textColor="@color/text_color" />
 
                 </android.support.design.widget.TextInputLayout>
 
@@ -96,7 +99,8 @@
                         android:layout_height="wrap_content"
                         android:hint="@string/repassword"
                         android:inputType="textPassword"
-                        android:singleLine="true" />
+                        android:singleLine="true"
+                        android:textColor="@color/text_color" />
 
                 </android.support.design.widget.TextInputLayout>
 

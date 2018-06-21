@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
+    android:fitsSystemWindows="true"
     android:focusableInTouchMode="true"
     tools:context=".activity.login.LoginActivity">
 
@@ -53,7 +54,7 @@
                         android:id="@+id/username"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/username_hint"
+                        android:hint="@string/username"
                         android:singleLine="true"
                         android:textColor="@color/text_color" />
 
@@ -67,7 +68,7 @@
                         android:id="@+id/password"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/password_hint"
+                        android:hint="@string/password"
                         android:inputType="textPassword"
                         android:singleLine="true"
                         android:textColor="@color/text_color" />
@@ -79,11 +80,11 @@
         </android.support.v7.widget.CardView>
 
         <android.support.v7.widget.AppCompatTextView
-            android:id="@+id/changePassword"
+            android:id="@+id/updatePassword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="修改密码"
+            android:text="@string/change_password"
             app:layout_constraintBottom_toTopOf="@id/login"
             app:layout_constraintRight_toRightOf="@id/card"
             app:layout_constraintTop_toBottomOf="@id/card" />
@@ -98,7 +99,7 @@
             android:textColor="@color/white"
             app:layout_constraintLeft_toLeftOf="@+id/card"
             app:layout_constraintRight_toRightOf="@+id/card"
-            app:layout_constraintTop_toBottomOf="@+id/changePassword" />
+            app:layout_constraintTop_toBottomOf="@+id/updatePassword" />
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/register"
@@ -111,6 +112,7 @@
             app:layout_constraintLeft_toLeftOf="@+id/card"
             app:layout_constraintRight_toRightOf="@+id/card"
             app:layout_constraintTop_toBottomOf="@+id/login" />
+
     </android.support.constraint.ConstraintLayout>
 
 </android.support.design.widget.CoordinatorLayout>

@@ -18,11 +18,11 @@ import us.xingkong.flyu.R;
 import us.xingkong.flyu.activity.main.MainActivity;
 import us.xingkong.flyu.adapter.BrowseAdapter;
 import us.xingkong.flyu.base.BaseActivity;
+import us.xingkong.flyu.base.BasePresenter;
 import us.xingkong.flyu.model.PhotoModel;
 import us.xingkong.flyu.view.ViewPager;
 
-public class BrowseActivity extends BaseActivity<BrowseContract.Presenter>
-        implements BrowseContract.View {
+public class BrowseActivity extends BaseActivity {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -34,7 +34,11 @@ public class BrowseActivity extends BaseActivity<BrowseContract.Presenter>
     private int currentPosition;
     private List<PhotoModel> mList;
     private BrowseAdapter mAdapter;
-    private BrowseContract.Presenter mPresenter;
+
+    @Override
+    protected BasePresenter newPresenter() {
+        return null;
+    }
 
     @Override
     protected int bindLayout() {
@@ -53,16 +57,13 @@ public class BrowseActivity extends BaseActivity<BrowseContract.Presenter>
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowTitleEnabled(true);
-
-        new BrowsePresenter(this);
-        mPresenter = getPresenter();
     }
 
     @Override
     protected void initData() {
-        PhotoModel bean = (PhotoModel) getIntent().getSerializableExtra("PhotoModel");
+        PhotoModel photoModel = (PhotoModel) getIntent().getSerializableExtra("PhotoModel");
         mList = (List<PhotoModel>) getIntent().getSerializableExtra("Photos");
-        currentPosition = bean.getPosition();
+        currentPosition = photoModel.getPosition();
 
         mAdapter = new BrowseAdapter(BrowseActivity.this, mList);
         viewPager.setAdapter(mAdapter);
@@ -96,7 +97,6 @@ public class BrowseActivity extends BaseActivity<BrowseContract.Presenter>
         });
     }
 
-    @Override
     public void goBack() {
         Intent intent = new Intent(BrowseActivity.this, MainActivity.class);
         intent.putExtra("Photos", (Serializable) mList);
@@ -120,8 +120,8 @@ public class BrowseActivity extends BaseActivity<BrowseContract.Presenter>
                 switch (item.getItemId()) {
                     case R.id.delete_browse:
                         new AlertDialog.Builder(BrowseActivity.this)
-                                .setTitle("提示")
-                                .setMessage("要删除这张照片吗？")
+                                .setTitle(R.string.browse_hint)
+                                .setMessage(R.string.browse_delete)
                                 .setCancelable(false)
                                 .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                                     @Override
@@ -147,5 +147,10 @@ public class BrowseActivity extends BaseActivity<BrowseContract.Presenter>
             }
         });
         return true;
+    }
+
+    @Override
+    public void showMessage(String message) {
+
     }
 }

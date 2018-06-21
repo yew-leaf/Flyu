@@ -10,14 +10,14 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import butterknife.BindView;
-import us.xingkong.flyu.model.DownloadModel;
-import us.xingkong.flyu.model.EventModel;
 import us.xingkong.flyu.R;
-import us.xingkong.flyu.adapter.DynamicAdapter;
-import us.xingkong.flyu.base.BaseFragment;
 import us.xingkong.flyu.activity.container.ContainerActivity;
 import us.xingkong.flyu.activity.detail.DetailActivity;
-import us.xingkong.flyu.util.SnackbarUtil;
+import us.xingkong.flyu.adapter.DynamicAdapter;
+import us.xingkong.flyu.base.BaseFragment;
+import us.xingkong.flyu.model.DownloadModel;
+import us.xingkong.flyu.model.EventModel;
+import us.xingkong.flyu.util.S;
 
 /**
  * @作者: Xuer
@@ -33,15 +33,18 @@ public class DynamicFragment extends BaseFragment<DynamicContract.Presenter>
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
 
-    private DynamicContract.Presenter mPresenter;
-
     public static DynamicFragment newInstance() {
         return new DynamicFragment();
     }
 
     @Override
+    protected DynamicContract.Presenter newPresenter() {
+        return new DynamicPresenter(this);
+    }
+
+    @Override
     protected int bindLayout() {
-        return R.layout.activity_dynamic;
+        return R.layout.fragment_dynamic;
     }
 
     @Override
@@ -57,9 +60,9 @@ public class DynamicFragment extends BaseFragment<DynamicContract.Presenter>
                 new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(manager);
 
-        new DynamicPresenter(this);
-        mPresenter = getPresenter();
-        mPresenter.load();
+        swipeRefresh.setColorSchemeResources(R.color.zhihu);
+
+        mPresenter.loadDynamic();
     }
 
     @Override
@@ -72,7 +75,7 @@ public class DynamicFragment extends BaseFragment<DynamicContract.Presenter>
         if (!eventModel.getPublisher().equals("MainActivity")) {
             return;
         }
-        mPresenter.load();
+        mPresenter.loadDynamic();
     }
 
     @Override
@@ -86,8 +89,8 @@ public class DynamicFragment extends BaseFragment<DynamicContract.Presenter>
     }
 
     @Override
-    public void setDynamic(String number) {
-        EventBus.getDefault().post(new EventModel<>("DynamicFragment", number));
+    public void setDynamic(String size) {
+        EventBus.getDefault().post(new EventModel<>("DynamicFragment", size));
     }
 
     @Override
@@ -102,13 +105,8 @@ public class DynamicFragment extends BaseFragment<DynamicContract.Presenter>
 
     @Override
     public void setEnable(boolean enable) {
-        swipeRefresh.setEnabled(enable);
+        //swipeRefresh.setEnabled(enable);
         recyclerView.setEnabled(enable);
-    }
-
-    @Override
-    public void showMessage(String message) {
-        SnackbarUtil.shortSnackbar(mActivity.findViewById(R.id.root), message).show();
     }
 
     @Override
@@ -124,7 +122,12 @@ public class DynamicFragment extends BaseFragment<DynamicContract.Presenter>
     }
 
     @Override
+    public void showMessage(String message) {
+        S.shortSnackbar(mActivity.findViewById(R.id.root), message);
+    }
+
+    @Override
     public void onRefresh() {
-        mPresenter.load();
+        mPresenter.loadDynamic();
     }
 }

@@ -18,6 +18,7 @@ public class DateUtil {
     private static SimpleDateFormat format =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINESE);
 
+    //php的坑，要乘个1000
     public static String formatTime(String time) {
         long l = Long.parseLong(time);
         if (time.length() == 10) {

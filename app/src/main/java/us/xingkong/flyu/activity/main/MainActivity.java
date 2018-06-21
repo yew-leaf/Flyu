@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
+import android.widget.ProgressBar;
 
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
@@ -42,12 +43,14 @@ import us.xingkong.flyu.R;
 import us.xingkong.flyu.activity.container.ContainerActivity;
 import us.xingkong.flyu.adapter.PhotosAdapter;
 import us.xingkong.flyu.adapter.TouchHelperCallback;
+import us.xingkong.flyu.app.App;
 import us.xingkong.flyu.base.BaseActivity;
 import us.xingkong.flyu.model.PhotoModel;
 import us.xingkong.flyu.util.GifSizeFilter;
+import us.xingkong.flyu.util.L;
 import us.xingkong.flyu.util.MatisseEngine;
-import us.xingkong.flyu.util.SnackbarUtil;
-import us.xingkong.flyu.util.UiUtil;
+import us.xingkong.flyu.util.S;
+import us.xingkong.flyu.util.UIUtil;
 
 /**
  * @作者: Xuer
@@ -68,6 +71,8 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    @BindView(R.id.progressBar)
+    ProgressBar progressBar;
     @BindView(R.id.content)
     AppCompatEditText content;
     @BindView(R.id.recyclerView)
@@ -87,8 +92,11 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
     //private List<String> base64List;
     private PhotosAdapter mAdapter;
     private TouchHelperCallback callback;
-    private MainContract.Presenter mPresenter;
-    //private ProgressDialog progressDialog;
+
+    @Override
+    protected MainContract.Presenter newPresenter() {
+        return new MainPresenter(this);
+    }
 
     @Override
     protected int bindLayout() {
@@ -109,7 +117,7 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowTitleEnabled(true);
-        toolbar.setTitle("发送");
+        toolbar.setTitle(R.string.send);
 
         initPopupWindow();
 
@@ -121,12 +129,6 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
 
         footer = LayoutInflater.from(MainActivity.this)
                 .inflate(R.layout.item_footer, recyclerView, false);
-
-        //progressDialog = new ProgressDialog(MainActivity.this);
-        //progressDialog.setCancelable(false);
-
-        new MainPresenter(this);
-        mPresenter = getPresenter();
     }
 
     @Override
@@ -145,7 +147,7 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
     }
 
     private void initPopupWindow() {
-        sheet = LayoutInflater.from(MainActivity.this).inflate(R.layout.pop_window, null);
+        sheet = LayoutInflater.from(MainActivity.this).inflate(R.layout.popupwindow, null);
         CardView takePhoto = sheet.findViewById(R.id.take_photo);
         CardView choosePhoto = sheet.findViewById(R.id.choose_photo);
         CardView cancel = sheet.findViewById(R.id.cancel);
@@ -244,14 +246,14 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
                 switch (item.getItemId()) {
                     case R.id.submit:
                         //parseBitmapToBase64();
-                        UiUtil.closeKeyboard(MainActivity.this);
+                        UIUtil.closeKeyboard(MainActivity.this);
                         List<File> files = new ArrayList<>();
-                        for (PhotoModel bean : photos) {
-                            String uri = bean.getUri();
-                            File file = new File(bean.getPath(Uri.parse(uri), MainActivity.this));
+                        for (PhotoModel model : photos) {
+                            String uri = model.getUri();
+                            File file = new File(PhotoModel.convertPath(Uri.parse(uri), MainActivity.this));
                             files.add(file);
                         }
-                        mPresenter.upload(files);
+                        mPresenter.uploadImageAndText(files);
                         break;
                     case R.id.ok:
                         //callback.setSelected();
@@ -304,10 +306,10 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
         switch (requestCode) {
             case CAMERA_REQUEST:
                 if (resultCode == RESULT_OK) {
-                    PhotoModel bean = new PhotoModel();
-                    bean.setUri(uri.toString());
-                    photos.add(bean);
-                    mPresenter.display(photos);
+                    PhotoModel photoModel = new PhotoModel();
+                    photoModel.setUri(uri.toString());
+                    photos.add(photoModel);
+                    mPresenter.displayPhotos(photos);
                 }
                 break;
             case ALBUM_REQUEST:
@@ -318,7 +320,7 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
                         bean.setUri(uri.toString());
                         photos.add(bean);
                     }
-                    mPresenter.display(photos);
+                    mPresenter.displayPhotos(photos);
                 }
                 break;
             case Browse_REQUEST:
@@ -340,14 +342,14 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     takePhoto();
                 } else {
-                    SnackbarUtil.shortSnackbar(findViewById(R.id.root), "那就算了吧......").show();
+                    S.shortSnackbar(findViewById(R.id.root), getString(R.string.forget_it));
                 }
                 break;
             case ALBUM_REQUEST:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     choosePhoto();
                 } else {
-                    SnackbarUtil.shortSnackbar(findViewById(R.id.root), "那就算了吧......").show();
+                    S.shortSnackbar(findViewById(R.id.root), getString(R.string.forget_it));
                 }
                 break;
         }
@@ -374,7 +376,7 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
         mAdapter.setOnAddClickListener(new PhotosAdapter.onAddClickListener() {
             @Override
             public void onAddClick() {
-                UiUtil.closeKeyboard(MainActivity.this);
+                UIUtil.closeKeyboard(MainActivity.this);
                 setEnterAlpha();
                 popupWindow.showAtLocation(sheet, Gravity.BOTTOM, 0, 0);
                 popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
@@ -452,21 +454,20 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
     }
 
     @Override
+    public void setVisibility(int visibility) {
+        progressBar.setVisibility(visibility);
+    }
+
+    @Override
     public void setEnable(boolean enable) {
         submit.setEnabled(enable);
         recyclerView.setEnabled(enable);
     }
 
     @Override
-    public void showProgress(String progress) {
-        /*progressDialog.setMessage("上传中：" + progress + "%");
-        progressDialog.show();*/
-    }
-
-    @Override
-    public void showMessage(String message) {
-        //progressDialog.dismiss();
-        SnackbarUtil.shortSnackbar(findViewById(R.id.root), message).show();
+    public void showProgress(int progress) {
+        progressBar.setProgress(progress);
+        L.i("MainActivity", progress + "");
     }
 
     @Override
@@ -475,6 +476,11 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
         ActivityOptionsCompat options = ActivityOptionsCompat
                 .makeSceneTransitionAnimation(MainActivity.this, recyclerView, name);
         ActivityCompat.startActivityForResult(MainActivity.this, intent, Browse_REQUEST, options.toBundle());
+    }
+
+    @Override
+    public void showMessage(String message) {
+        S.shortSnackbar(findViewById(R.id.root), message);
     }
 
     @Override
@@ -487,5 +493,11 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
     public void onBackPressed() {
         super.onBackPressed();
         finishActivity();
+    }
+
+    @Override
+    protected void onDestroy() {
+        App.getInstance().getOkUtil().cancel(this);
+        super.onDestroy();
     }
 }

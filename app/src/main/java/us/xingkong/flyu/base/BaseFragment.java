@@ -15,8 +15,6 @@ import org.greenrobot.eventbus.EventBus;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import us.xingkong.flyu.app.App;
-import us.xingkong.oktuil.OkUtil;
 
 /**
  * @作者: Xuer
@@ -25,12 +23,11 @@ import us.xingkong.oktuil.OkUtil;
  * @更新日志:
  */
 public abstract class BaseFragment<P extends BasePresenter>
-        extends Fragment implements BaseView<P> {
+        extends Fragment implements BaseView {
 
     protected Context mContext;
     protected Activity mActivity;
-    protected Unbinder bind;
-    protected OkUtil mOkUtil;
+    protected Unbinder unbinder;
     protected P mPresenter;
 
 
@@ -50,15 +47,14 @@ public abstract class BaseFragment<P extends BasePresenter>
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         init();
-        mOkUtil = App.getInstance().getOkUtil();
+        mPresenter = newPresenter();
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(bindLayout(), container, false);
-        bind = ButterKnife.bind(this, root);
-
+        unbinder = ButterKnife.bind(this, root);
         initView(root);
         return root;
     }
@@ -74,17 +70,8 @@ public abstract class BaseFragment<P extends BasePresenter>
     public void onResume() {
         super.onResume();
         if (mPresenter != null) {
-            mPresenter.start();
+            mPresenter.subscribe();
         }
-    }
-
-    protected P getPresenter() {
-        return mPresenter;
-    }
-
-    @Override
-    public void setPresenter(P presenter) {
-        mPresenter = presenter;
     }
 
     @Nullable
@@ -92,6 +79,13 @@ public abstract class BaseFragment<P extends BasePresenter>
     public Context getContext() {
         return mContext;
     }
+
+    /**
+     * 返回presenter，可以为null
+     *
+     * @return 子类返回的presenter
+     */
+    protected abstract P newPresenter();
 
     /**
      * 绑定布局
@@ -123,13 +117,12 @@ public abstract class BaseFragment<P extends BasePresenter>
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        bind.unbind();
+        unbinder.unbind();
+        if (mPresenter != null) {
+            mPresenter.unSubscribe();
+        }
         if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
-        }
-        mOkUtil.cancel(this);
-        if (mPresenter != null) {
-            mPresenter.destroy();
         }
     }
 }

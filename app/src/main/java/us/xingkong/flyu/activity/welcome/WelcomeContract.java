@@ -1,6 +1,8 @@
 package us.xingkong.flyu.activity.welcome;
 
-import us.xingkong.flyu.model.DownloadModel;
+import android.annotation.TargetApi;
+import android.support.annotation.Nullable;
+
 import us.xingkong.flyu.UserModel;
 import us.xingkong.flyu.base.BasePresenter;
 import us.xingkong.flyu.base.BaseView;
@@ -14,14 +16,17 @@ import us.xingkong.flyu.base.BaseView;
 public interface WelcomeContract {
 
     interface Presenter extends BasePresenter {
-        void load();
+        void loadUser();
     }
 
-    interface View extends BaseView<Presenter> {
+    interface View extends BaseView {
+        boolean getUserState();
+
         UserModel getUser();
 
-        void showMessage(String message);
+        @TargetApi(23)
+        void applyPermissions();
 
-        void toOtherActivity(UserModel userModel, DownloadModel downloadModel);
+        void toOtherActivity(@Nullable UserModel userModel);
     }
 }

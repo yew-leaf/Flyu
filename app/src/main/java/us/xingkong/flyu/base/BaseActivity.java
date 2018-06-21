@@ -11,7 +11,6 @@ import org.greenrobot.eventbus.EventBus;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import us.xingkong.flyu.app.App;
-import us.xingkong.oktuil.OkUtil;
 
 /**
  * @作者: Xuer
@@ -20,10 +19,9 @@ import us.xingkong.oktuil.OkUtil;
  * @更新日志:
  */
 public abstract class BaseActivity<P extends BasePresenter>
-        extends AppCompatActivity implements BaseView<P> {
+        extends AppCompatActivity implements BaseView {
 
-    protected Unbinder bind;
-    protected OkUtil mOkUtil;
+    protected Unbinder unbinder;
     protected P mPresenter;
 
     @Override
@@ -32,8 +30,10 @@ public abstract class BaseActivity<P extends BasePresenter>
         App.addActivity(this);
         init();
         setContentView(bindLayout());
-        bind = ButterKnife.bind(this);
-        mOkUtil = App.getInstance().getOkUtil();
+
+        unbinder = ButterKnife.bind(this);
+        mPresenter = newPresenter();
+
         initView();
         initData();
         initListener();
@@ -43,22 +43,13 @@ public abstract class BaseActivity<P extends BasePresenter>
     protected void onResume() {
         super.onResume();
         if (mPresenter != null) {
-            mPresenter.start();
+            mPresenter.subscribe();
         }
     }
 
-    /**
-     * 返回Contract里的Presenter
-     *
-     * @return presenter
-     */
-    protected P getPresenter() {
-        return mPresenter;
-    }
-
     @Override
-    public void setPresenter(P presenter) {
-        mPresenter = presenter;
+    public Context getContext() {
+        return this;
     }
 
     @Override
@@ -66,10 +57,13 @@ public abstract class BaseActivity<P extends BasePresenter>
         return this;
     }
 
-    @Override
-    public Context getContext() {
-        return this;
-    }
+
+    /**
+     * 返回presenter，可以为null
+     *
+     * @return 子类返回的presenter
+     */
+    protected abstract P newPresenter();
 
     /**
      * 绑定布局
@@ -101,13 +95,12 @@ public abstract class BaseActivity<P extends BasePresenter>
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        bind.unbind();
+        unbinder.unbind();
+        if (mPresenter != null) {
+            mPresenter.unSubscribe();
+        }
         if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
-        }
-        mOkUtil.cancel(this);
-        if (mPresenter != null) {
-            mPresenter.destroy();
         }
         App.removeActivity(this);
     }

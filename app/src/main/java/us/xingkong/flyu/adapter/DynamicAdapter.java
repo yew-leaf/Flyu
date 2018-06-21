@@ -2,6 +2,7 @@ package us.xingkong.flyu.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
@@ -15,13 +16,14 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 
+import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import us.xingkong.flyu.model.DownloadModel;
 import us.xingkong.flyu.R;
+import us.xingkong.flyu.model.DownloadModel;
 import us.xingkong.flyu.util.DateUtil;
 
 /**
@@ -39,10 +41,10 @@ public class DynamicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private Context mContext;
     private List<DownloadModel.Message> mList;
     private LayoutInflater inflater;
-    private SoftReference<String> softReference;
+    private Reference<String> mReference;
     private onItemClickListener mListener;
 
-    public DynamicAdapter(Context context, List<DownloadModel.Message> list) {
+    public DynamicAdapter(@NonNull Context context, @Nullable List<DownloadModel.Message> list) {
         mContext = context;
         mList = list;
         inflater = LayoutInflater.from(mContext);
@@ -128,16 +130,16 @@ public class DynamicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             dynamicHolder.time.setText(DateUtil.getTimeBefore(message.getTime()));
 
             String url = message.getImg().get(0);
-            softReference = new SoftReference<>(DownloadModel.formatUrl(url));
+            mReference = new SoftReference<>(DownloadModel.convertUrl(url));
 
             RequestOptions options = new RequestOptions()
                     .centerCrop()
                     .placeholder(R.mipmap.ic_placeholder)
                     .error(R.mipmap.ic_error);
 
-            if (softReference != null && softReference.get() != null) {
+            if (mReference != null && mReference.get() != null) {
                 Glide.with(mContext)
-                        .load(softReference.get())
+                        .load(mReference.get())
                         .thumbnail(0.5f)
                         .transition(new DrawableTransitionOptions().crossFade())
                         .apply(options)
@@ -152,13 +154,6 @@ public class DynamicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             return 1;
         }
         return mList.size();
-    }
-
-    public void clear() {
-        if (mList == null) {
-            return;
-        }
-        mList.clear();
     }
 
     class EmptyHolder extends RecyclerView.ViewHolder {
