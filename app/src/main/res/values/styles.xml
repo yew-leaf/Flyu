@@ -26,6 +26,14 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
+    <style name="SplashTheme" parent="BaseAppTheme">
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@drawable/bitmap_splash</item>
+    </style>
+
     <style name="ContainerTheme" parent="BaseAppTheme">
         <item name="android:textColorSecondary">@color/text_color</item>
     </style>
@@ -34,7 +42,7 @@
         <item name="colorPrimary">@android:color/black</item>
     </style>
 
-    <style name="SheetAnimation" parent="android:Animation">
+    <style name="PopupWindowAnimation" parent="android:Animation">
         <item name="android:windowEnterAnimation">@anim/popup_enter</item>
         <item name="android:windowExitAnimation">@anim/popup_exit</item>
     </style>

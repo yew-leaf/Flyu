@@ -25,7 +25,9 @@ public interface LoginContract {
 
         void setEnable(boolean enable);
 
-        void toOtherActivity(UserModel user);
+        void toOtherActivity(UserModel userModel);
+
+        void toOtherActivity();
 
         void showToast(String message);
     }

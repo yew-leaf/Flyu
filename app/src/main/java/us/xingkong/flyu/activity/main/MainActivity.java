@@ -25,7 +25,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 
@@ -46,11 +45,15 @@ import us.xingkong.flyu.adapter.TouchHelperCallback;
 import us.xingkong.flyu.app.App;
 import us.xingkong.flyu.base.BaseActivity;
 import us.xingkong.flyu.model.PhotoModel;
+import us.xingkong.flyu.util.FileUtil;
 import us.xingkong.flyu.util.GifSizeFilter;
 import us.xingkong.flyu.util.L;
 import us.xingkong.flyu.util.MatisseEngine;
 import us.xingkong.flyu.util.S;
 import us.xingkong.flyu.util.UIUtil;
+
+import static us.xingkong.flyu.app.Constants.ALBUM_REQUEST;
+import static us.xingkong.flyu.app.Constants.CAMERA_REQUEST;
 
 /**
  * @作者: Xuer
@@ -78,16 +81,14 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
 
-    private final static int CAMERA_REQUEST = 1;
-    private final static int ALBUM_REQUEST = 2;
     private final static int Browse_REQUEST = 3;
     private float alpha = 1f;
     private MenuItem ok;
     private MenuItem submit;
-    private View sheet;
+    private View root;
     private View footer;
     private PopupWindow popupWindow;
-    private Uri uri;
+    private Uri cameraUri;
     private List<PhotoModel> photos;
     //private List<String> base64List;
     private PhotosAdapter mAdapter;
@@ -147,16 +148,16 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
     }
 
     private void initPopupWindow() {
-        sheet = LayoutInflater.from(MainActivity.this).inflate(R.layout.popupwindow, null);
-        CardView takePhoto = sheet.findViewById(R.id.take_photo);
-        CardView choosePhoto = sheet.findViewById(R.id.choose_photo);
-        CardView cancel = sheet.findViewById(R.id.cancel);
+        root = LayoutInflater.from(MainActivity.this).inflate(R.layout.popupwindow, null);
+        CardView takePhoto = root.findViewById(R.id.take_photo);
+        CardView choosePhoto = root.findViewById(R.id.choose_photo);
+        CardView cancel = root.findViewById(R.id.cancel);
 
-        popupWindow = new PopupWindow(sheet);
+        popupWindow = new PopupWindow(root);
         popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
         popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
         popupWindow.setFocusable(true);
-        popupWindow.setAnimationStyle(R.style.SheetAnimation);
+        popupWindow.setAnimationStyle(R.style.PopupWindowAnimation);
         popupWindow.setOutsideTouchable(true);
 
         takePhoto.setOnClickListener(new View.OnClickListener() {
@@ -207,12 +208,12 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
         try {
             File imageFile = new File(getExternalCacheDir(), System.currentTimeMillis() + ".jpg");
             if (Build.VERSION.SDK_INT >= 24) {
-                uri = FileProvider.getUriForFile(MainActivity.this, "us.xingkong.flyu", imageFile);
+                cameraUri = FileProvider.getUriForFile(MainActivity.this, "us.xingkong.flyu", imageFile);
             } else {
-                uri = Uri.fromFile(imageFile);
+                cameraUri = Uri.fromFile(imageFile);
             }
             Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri);
             startActivityForResult(intent, CAMERA_REQUEST);
         } catch (SecurityException e) {
             e.printStackTrace();
@@ -250,7 +251,7 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
                         List<File> files = new ArrayList<>();
                         for (PhotoModel model : photos) {
                             String uri = model.getUri();
-                            File file = new File(PhotoModel.convertPath(Uri.parse(uri), MainActivity.this));
+                            File file = new File(FileUtil.convertPath(MainActivity.this, Uri.parse(uri)));
                             files.add(file);
                         }
                         mPresenter.uploadImageAndText(files);
@@ -307,7 +308,7 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
             case CAMERA_REQUEST:
                 if (resultCode == RESULT_OK) {
                     PhotoModel photoModel = new PhotoModel();
-                    photoModel.setUri(uri.toString());
+                    photoModel.setUri(cameraUri.toString());
                     photos.add(photoModel);
                     mPresenter.displayPhotos(photos);
                 }
@@ -358,7 +359,8 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
 
     @Override
     public String getUsername() {
-        return ContainerActivity.getUserModel().getUsername();
+        //return ContainerActivity.getUserModel().getUsername();
+        return ContainerActivity.getBmobUserModel().getUsername();
     }
 
     @Override
@@ -377,65 +379,17 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
             @Override
             public void onAddClick() {
                 UIUtil.closeKeyboard(MainActivity.this);
-                setEnterAlpha();
-                popupWindow.showAtLocation(sheet, Gravity.BOTTOM, 0, 0);
+                UIUtil.setEnterAlpha(MainActivity.this);
+                popupWindow.showAtLocation(root, Gravity.BOTTOM, 0, 0);
                 popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
                     @Override
                     public void onDismiss() {
-                        setExitAlpha();
+                        UIUtil.setExitAlpha(MainActivity.this);
                     }
                 });
             }
         });
         mAdapter.setFooterView(footer);
-    }
-
-    private void setEnterAlpha() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (alpha > 0.5f) {
-                    try {
-                        Thread.sleep(8);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    alpha -= 0.01f;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            WindowManager.LayoutParams lp = getWindow().getAttributes();
-                            lp.alpha = alpha;
-                            getWindow().setAttributes(lp);
-                        }
-                    });
-                }
-            }
-        }).start();
-    }
-
-    private void setExitAlpha() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (alpha < 1f) {
-                    try {
-                        Thread.sleep(8);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    alpha += 0.01f;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            WindowManager.LayoutParams lp = getWindow().getAttributes();
-                            lp.alpha = alpha;
-                            getWindow().setAttributes(lp);
-                        }
-                    });
-                }
-            }
-        }).start();
     }
 
     @Override
@@ -493,6 +447,11 @@ public class MainActivity extends BaseActivity<MainContract.Presenter>
     public void onBackPressed() {
         super.onBackPressed();
         finishActivity();
+    }
+
+    @Override
+    public boolean isSupportSwipeBack() {
+        return true;
     }
 
     @Override

@@ -4,8 +4,8 @@ package us.xingkong.flyu.activity.login;
 import android.support.annotation.NonNull;
 
 import io.reactivex.Observable;
-import us.xingkong.flyu.rx.RxSchedulers;
 import us.xingkong.flyu.app.Constants;
+import us.xingkong.flyu.rx.RxSchedulers;
 import us.xingkong.flyu.util.RetrofitUtil;
 
 

@@ -11,6 +11,7 @@ import us.xingkong.flyu.R;
 import us.xingkong.flyu.UserModel;
 import us.xingkong.flyu.activity.login.LoginActivity;
 import us.xingkong.flyu.base.BaseActivity;
+import us.xingkong.flyu.model.BmobUserModel;
 import us.xingkong.flyu.util.S;
 import us.xingkong.flyu.util.T;
 import us.xingkong.flyu.util.UIUtil;
@@ -98,18 +99,24 @@ public class RegisterActivity extends BaseActivity<RegisterContract.Presenter>
     }
 
     @Override
-    public void toOtherActivity(UserModel user) {
+    public void toOtherActivity(UserModel userModel) {
+        /*startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+        finish();*/
+    }
+
+    @Override
+    public void toOtherActivity(BmobUserModel bmobUserModel) {
         startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
         finish();
     }
 
     @Override
-    public void showMessage(String message) {
-        S.shortSnackbar(findViewById(R.id.root), message);
+    public void showToast(String message) {
+        T.shortToast(RegisterActivity.this, message);
     }
 
     @Override
-    public void showToast(String message) {
-        T.shortToast(RegisterActivity.this, message);
+    public void showMessage(String message) {
+        S.shortSnackbar(findViewById(R.id.root), message);
     }
 }

@@ -1,17 +1,19 @@
 package us.xingkong.flyu.activity.profile;
 
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.PopupWindow;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
@@ -20,17 +22,24 @@ import com.bumptech.glide.request.RequestOptions;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.io.File;
+
 import butterknife.BindView;
+import butterknife.OnClick;
+import cn.bmob.v3.datatype.BmobFile;
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import us.xingkong.flyu.R;
 import us.xingkong.flyu.UserModel;
-import us.xingkong.flyu.UserModelDao;
 import us.xingkong.flyu.activity.container.ContainerActivity;
 import us.xingkong.flyu.activity.login.LoginActivity;
-import us.xingkong.flyu.app.App;
 import us.xingkong.flyu.base.BaseFragment;
+import us.xingkong.flyu.model.BmobUserModel;
 import us.xingkong.flyu.model.EventModel;
 import us.xingkong.flyu.util.DialogUtil;
+import us.xingkong.flyu.util.FileUtil;
+import us.xingkong.flyu.util.S;
+import us.xingkong.flyu.util.T;
+import us.xingkong.flyu.util.UIUtil;
 
 /**
  * @作者: Xuer
@@ -39,14 +48,14 @@ import us.xingkong.flyu.util.DialogUtil;
  * @更新日志:
  */
 public class ProfileFragment extends BaseFragment<ProfileContract.Presenter>
-        implements ProfileContract.View, View.OnClickListener {
+        implements ProfileContract.View {
 
     @BindView(R.id.appBar)
     AppBarLayout appBar;
     @BindView(R.id.collapsing_toolbar)
     CollapsingToolbarLayout collapsingToolbar;
-    @BindView(R.id.background)
-    AppCompatImageView background;
+    @BindView(R.id.background_avatar)
+    AppCompatImageView background_avatar;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.small_avatar)
@@ -57,14 +66,21 @@ public class ProfileFragment extends BaseFragment<ProfileContract.Presenter>
     AppCompatImageView big_avatar;
     @BindView(R.id.username)
     AppCompatTextView username;
+    @BindView(R.id.signature)
+    AppCompatTextView signature;
     @BindView(R.id.dynamic)
     AppCompatButton dynamic;
     @BindView(R.id.about)
     AppCompatButton about;
+    @BindView(R.id.night)
+    AppCompatButton night;
     @BindView(R.id.logout)
     AppCompatButton logout;
 
     private UserModel userModel;
+    private BmobUserModel bmobUserModel;
+    private View root;
+    private PopupWindow popupWindow;
 
     public static ProfileFragment newInstance() {
         return new ProfileFragment();
@@ -92,33 +108,53 @@ public class ProfileFragment extends BaseFragment<ProfileContract.Presenter>
         ((AppCompatActivity) mActivity).setSupportActionBar(toolbar);
         ActionBar actionBar = ((AppCompatActivity) mActivity).getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(false);
+
+        this.root = LayoutInflater.from(mActivity).inflate(R.layout.popupwindow, null);
+        popupWindow = UIUtil.photoPopupWindow(mActivity, this.root);
+
         collapsingToolbar.setTitle(" ");
         toolbar.setTitle("");
-
         dynamic.setText("动态：0");
     }
 
     @Override
     protected void initData() {
-        userModel = ContainerActivity.getUserModel();
-        toolbar_name.setText(userModel.getUsername());
-        username.setText(userModel.getUsername());
+        //userModel = ContainerActivity.getUserModel();
+        //toolbar_name.setText(userModel.getUsername());
+        //username.setText(userModel.getUsername());
+        bmobUserModel = ContainerActivity.getBmobUserModel();
+        toolbar_name.setText(bmobUserModel.getUsername());
+        username.setText(bmobUserModel.getUsername());
+        signature.setText(bmobUserModel.getSignature());
+
+        displayProfile(bmobUserModel);
     }
 
     @Subscribe
-    public void getDynamic(EventModel<String> model) {
-        if (!model.getPublisher().equals("DynamicFragment")) {
+    public void getDynamic(EventModel<String> eventModel) {
+        if (!eventModel.getPublisher().equals("DynamicFragment")) {
             return;
         }
-        String s = getString(R.string.dynamic) + model.getSubscriber();
+        String s = getString(R.string.dynamic) + eventModel.getSubscriber();
         dynamic.setText(s);
+    }
+
+    @Subscribe
+    public void getAvatarUri(EventModel<String> eventModel) {
+        if (!eventModel.getPublisher().equals("AvatarRequest")) {
+            return;
+        }
+        showMessage("上传中，请稍等");
+        setEnable(false);
+        String uri = eventModel.getSubscriber();
+        File file = new File(FileUtil.convertPath(mActivity, Uri.parse(uri)));
+        BmobFile bmobFile = new BmobFile(file);
+        bmobUserModel.setAvatar(bmobFile);
+        mPresenter.updateAvatar(bmobUserModel);
     }
 
     @Override
     protected void initListener() {
-        about.setOnClickListener(this);
-        logout.setOnClickListener(this);
-
         //我希望能获取到attr里toolbar的高度，但是好像不行
         appBar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             @Override
@@ -162,39 +198,113 @@ public class ProfileFragment extends BaseFragment<ProfileContract.Presenter>
         });
     }
 
-    @Override
-    public void displayProfile() {
-        RequestOptions options = new RequestOptions()
-                .centerCrop()
-                .transform(new BlurTransformation(25));
-
-        Glide.with(this)
-                .asDrawable()
-                .load(R.drawable.avatar)
-                .thumbnail(0.5f)
-                .transition(new DrawableTransitionOptions().crossFade())
-                .apply(options)
-                .into(background);
-
-        Glide.with(this)
-                .asDrawable()
-                .load(R.drawable.avatar)
-                .thumbnail(0.5f)
-                .transition(new DrawableTransitionOptions().crossFade())
-                .apply(RequestOptions.circleCropTransform())
-                .into(small_avatar);
-
-        Glide.with(this)
-                .asDrawable()
-                .load(R.drawable.avatar)
-                .thumbnail(0.5f)
-                .transition(new DrawableTransitionOptions().crossFade())
-                .apply(RequestOptions.circleCropTransform())
-                .into(big_avatar);
+    @OnClick({R.id.small_avatar, R.id.background_avatar, R.id.big_avatar
+            , R.id.signature, R.id.about, R.id.night, R.id.logout})
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.small_avatar:
+            case R.id.background_avatar:
+            case R.id.big_avatar:
+                UIUtil.setEnterAlpha(mActivity);
+                popupWindow.showAtLocation(root, Gravity.BOTTOM, 0, 0);
+                popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                    @Override
+                    public void onDismiss() {
+                        UIUtil.setExitAlpha(mActivity);
+                    }
+                });
+                break;
+            case R.id.signature:
+                mPresenter.updateSignature(bmobUserModel, signature.getText().toString());
+                break;
+            case R.id.about:
+                DialogUtil.aboutDialog(mActivity).show();
+                break;
+            case R.id.night:
+                //RippleAnimation.create(v).setDuration(200).start();
+                //mActivity.findViewById(R.id.root).setBackgroundColor(getResources().getColor(R.color.browse));
+                //mActivity.findViewById(R.id.viewPager).setBackgroundColor(getResources().getColor(R.color.black));
+                //night.setBackgroundColor(getResources().getColor(R.color.browse));
+                break;
+            case R.id.logout:
+                mPresenter.logout(userModel);
+                break;
+        }
     }
 
     @Override
-    public void toOtherActivity(UserModel user) {
+    public void displayProfile(BmobUserModel bmobUserModel) {
+        RequestOptions options = new RequestOptions()
+                .centerCrop()
+                .placeholder(R.mipmap.ic_placeholder)
+                .error(R.mipmap.ic_error)
+                .transform(new BlurTransformation(25));
+
+        if (bmobUserModel.getAvatar() != null) {
+            String uri = bmobUserModel.getAvatar().getUrl();
+            Glide.with(this)
+                    .load(uri)
+                    .thumbnail(0.5f)
+                    .transition(new DrawableTransitionOptions().crossFade())
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(small_avatar);
+
+            Glide.with(this)
+                    .load(uri)
+                    .thumbnail(0.5f)
+                    .transition(new DrawableTransitionOptions().crossFade())
+                    .apply(options)
+                    .into(background_avatar);
+
+            Glide.with(this)
+                    .load(uri)
+                    .thumbnail(0.5f)
+                    .transition(new DrawableTransitionOptions().crossFade())
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(big_avatar);
+        } else {
+            //加载默认头像
+            Glide.with(this)
+                    .asDrawable()
+                    .load(R.drawable.default_avatar)
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(small_avatar);
+
+            Glide.with(this)
+                    .asDrawable()
+                    .load(R.drawable.default_avatar)
+                    .apply(options)
+                    .into(background_avatar);
+
+            Glide.with(this)
+                    .asDrawable()
+                    .load(R.drawable.default_avatar)
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(big_avatar);
+        }
+    }
+
+    @Override
+    public void showSignature(String sign) {
+        signature.setText(sign);
+    }
+
+    @Override
+    public void setEnable(boolean enable) {
+        small_avatar.setEnabled(enable);
+        background_avatar.setEnabled(enable);
+        big_avatar.setEnabled(enable);
+    }
+
+    @Override
+    public void toOtherActivity(UserModel userModel) {
+        Intent intent = new Intent(mActivity, LoginActivity.class);
+        startActivity(intent);
+        mActivity.finish();
+    }
+
+    @Override
+    public void toOtherActivity(BmobUserModel bmobUserModel) {
 
     }
 
@@ -204,41 +314,12 @@ public class ProfileFragment extends BaseFragment<ProfileContract.Presenter>
     }
 
     @Override
-    public void showMessage(String message) {
-
+    public void showToast(String message) {
+        T.shortToast(mActivity, message);
     }
 
     @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.about:
-                DialogUtil.aboutDialog(mActivity).show();
-                break;
-            case R.id.logout:
-                new AlertDialog.Builder(mActivity)
-                        .setTitle("")
-                        .setMessage(R.string.do_you_want_to_exit)
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                UserModelDao dao = App.getInstance().getDaoSession().getUserModelDao();
-                                UserModel user = dao.load(userModel.getUsername());
-                                user.setIsLogged(false);
-                                dao.update(user);
-                                Intent intent = new Intent(mActivity, LoginActivity.class);
-                                startActivity(intent);
-                                mActivity.finish();
-                            }
-                        })
-                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        })
-                        .show();
-                break;
-        }
+    public void showMessage(String message) {
+        S.shortSnackbar(mActivity.findViewById(R.id.root), message);
     }
 }

@@ -1,39 +1,37 @@
-package us.xingkong.flyu.activity.welcome;
+package us.xingkong.flyu.activity.splash;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.AppCompatImageView;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.bumptech.glide.request.RequestOptions;
+import android.support.v7.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
+import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.update.BmobUpdateAgent;
 import us.xingkong.flyu.R;
 import us.xingkong.flyu.UserModel;
 import us.xingkong.flyu.UserModelDao;
 import us.xingkong.flyu.activity.container.ContainerActivity;
 import us.xingkong.flyu.activity.login.LoginActivity;
-import us.xingkong.flyu.app.App;
-import us.xingkong.flyu.base.BaseActivity;
+import us.xingkong.flyu.model.BmobUserModel;
 import us.xingkong.flyu.util.S;
 
-public class WelcomeActivity extends BaseActivity<WelcomeContract.Presenter>
-        implements WelcomeContract.View {
+import static us.xingkong.flyu.app.Constants.GENERAL_REQUEST;
 
-    @BindView(R.id.welcome)
-    AppCompatImageView welcome;
+public class SplashActivityTest extends AppCompatActivity
+        implements SplashContract.View {
 
-    private final static int GENERAL_REQUEST = 0;
     private List<String> permissionList;
     private String[] permissions = new String[]{
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -42,6 +40,24 @@ public class WelcomeActivity extends BaseActivity<WelcomeContract.Presenter>
     private UserModelDao dao;
 
     @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        permissionList = new ArrayList<>();
+        BmobUpdateAgent.initAppVersion();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        applyPermissions();
+        if (getBmobUser() == null) {
+            showMessage("关于这个app");
+            return;
+        }
+        toOtherActivity();
+    }
+
+    /*@Override
     protected WelcomeContract.Presenter newPresenter() {
         return new WelcomePresenter(this);
     }
@@ -78,29 +94,35 @@ public class WelcomeActivity extends BaseActivity<WelcomeContract.Presenter>
     @Override
     protected void initListener() {
 
-    }
+    }*/
 
     @Override
     public boolean getUserState() {
-        return dao.loadAll().isEmpty();
+        //return dao.loadAll().isEmpty();
+        return false;
     }
 
     @Override
     public UserModel getUser() {
-        List<UserModel> list = dao.loadAll();
+       /* List<UserModel> list = dao.loadAll();
         for (UserModel user : list) {
             if (user.getIsLogged()) {
                 return user;
             }
-        }
+        }*/
         return null;
+    }
+
+    @Override
+    public BmobUserModel getBmobUser() {
+        return BmobUser.getCurrentUser(BmobUserModel.class);
     }
 
     @Override
     public void applyPermissions() {
         permissionList.clear();
         for (String permission : permissions) {
-            if (ContextCompat.checkSelfPermission(WelcomeActivity.this, permission)
+            if (ContextCompat.checkSelfPermission(SplashActivityTest.this, permission)
                     != PackageManager.PERMISSION_GRANTED) {
                 permissionList.add(permission);
             }
@@ -108,21 +130,21 @@ public class WelcomeActivity extends BaseActivity<WelcomeContract.Presenter>
 
         if (!permissionList.isEmpty()) {
             String[] permissions = permissionList.toArray(new String[permissionList.size()]);
-            ActivityCompat.requestPermissions(WelcomeActivity.this, permissions, GENERAL_REQUEST);
+            ActivityCompat.requestPermissions(SplashActivityTest.this, permissions, GENERAL_REQUEST);
         }
     }
 
     @Override
     public void showMessage(String message) {
-        new AlertDialog.Builder(WelcomeActivity.this)
-                .setTitle(R.string.first_meeting)
+        new AlertDialog.Builder(SplashActivityTest.this)
+                .setTitle(message)
                 .setMessage(R.string.about_text)
                 .setCancelable(false)
                 .setPositiveButton(R.string.i_see, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        startActivity(new Intent(WelcomeActivity.this, LoginActivity.class));
+                        startActivity(new Intent(SplashActivityTest.this, LoginActivity.class));
                         finish();
                     }
                 })
@@ -131,14 +153,20 @@ public class WelcomeActivity extends BaseActivity<WelcomeContract.Presenter>
 
     @Override
     public void toOtherActivity(UserModel userModel) {
-        Intent intent = new Intent();
+        /*Intent intent = new Intent();
         if (userModel == null) {
-            intent.setClass(WelcomeActivity.this, LoginActivity.class);
+            intent.setClass(SplashActivityTest.this, LoginActivity.class);
         } else {
-            intent.setClass(WelcomeActivity.this, ContainerActivity.class);
+            intent.setClass(SplashActivityTest.this, ContainerActivity.class);
             intent.putExtra("Username", userModel.getUsername());
         }
         startActivity(intent);
+        finish();*/
+    }
+
+    @Override
+    public void toOtherActivity() {
+        startActivity(new Intent(SplashActivityTest.this, ContainerActivity.class));
         finish();
     }
 
@@ -148,12 +176,22 @@ public class WelcomeActivity extends BaseActivity<WelcomeContract.Presenter>
         if (requestCode == GENERAL_REQUEST) {
             for (int i : grantResults) {
                 boolean reRequest = ActivityCompat
-                        .shouldShowRequestPermissionRationale(WelcomeActivity.this, permissions[i]);
+                        .shouldShowRequestPermissionRationale(SplashActivityTest.this, permissions[i]);
                 if (reRequest) {
                     S.shortSnackbar(findViewById(R.id.root), getString(R.string.i_will_die_without_permissions));
                 }
             }
         }
+    }
+
+    @Override
+    public Context getContext() {
+        return null;
+    }
+
+    @Override
+    public Activity getActivity() {
+        return null;
     }
 
     @Override

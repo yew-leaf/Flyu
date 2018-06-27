@@ -1,10 +1,5 @@
 package us.xingkong.flyu.model;
 
-import android.app.Activity;
-import android.database.Cursor;
-import android.net.Uri;
-import android.provider.MediaStore;
-
 import java.io.Serializable;
 
 /**
@@ -35,13 +30,5 @@ public class PhotoModel implements Serializable {
 
     public void setPosition(int position) {
         this.position = position;
-    }
-
-    public static String convertPath(Uri uri, Activity activity) {
-        String[] project = {MediaStore.Video.Media.DATA};
-        Cursor cursor = activity.managedQuery(uri, project, null, null, null);
-        int index = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
-        cursor.moveToFirst();
-        return cursor.getString(index);
     }
 }

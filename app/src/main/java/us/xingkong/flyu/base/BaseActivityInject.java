@@ -33,7 +33,7 @@ public abstract class BaseActivityInject<P extends BasePresenter>
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        App.addActivity(this);
+        //App.addActivity(this);
         init();
         setContentView(bindLayout());
 
@@ -115,6 +115,6 @@ public abstract class BaseActivityInject<P extends BasePresenter>
         if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
         }
-        App.removeActivity(this);
+        //App.removeActivity(this);
     }
 }

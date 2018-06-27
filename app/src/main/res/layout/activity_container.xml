@@ -5,11 +5,10 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     android:focusableInTouchMode="true"
     tools:context=".activity.container.ContainerActivity">
 
-    <android.support.constraint.ConstraintLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -17,12 +16,11 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            android:layout_alignParentTop="true"
             android:background="@color/zhihu"
             android:elevation="4dp"
             android:padding="5dp"
             app:contentInsetStart="0dp"
-            app:layout_collapseMode="pin"
-            app:layout_constraintTop_toTopOf="parent"
             app:titleTextAppearance="@style/TextAppearance.AppCompat.Title"
             app:titleTextColor="@color/white">
 
@@ -81,10 +79,10 @@
         <android.support.v4.view.ViewPager
             android:id="@+id/viewPager"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:background="@color/background"
-            app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
-            app:layout_constraintTop_toBottomOf="@id/toolbar">
+            android:layout_height="match_parent"
+            android:layout_above="@id/bottomNavigation"
+            android:layout_below="@id/toolbar"
+            android:background="@color/background">
 
         </android.support.v4.view.ViewPager>
 
@@ -92,21 +90,19 @@
             android:layout_width="match_parent"
             android:layout_height="4dp"
             android:layout_above="@id/bottomNavigation"
-            android:background="@drawable/shape_elevation"
-            app:layout_constraintBottom_toTopOf="@+id/bottomNavigation" />
+            android:background="@drawable/shape_elevation" />
 
         <android.support.design.widget.BottomNavigationView
             android:id="@+id/bottomNavigation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:elevation="4dp"
+            android:layout_alignParentBottom="true"
             app:itemIconTint="@drawable/selector_navigation"
             app:itemTextColor="@drawable/selector_navigation"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:menu="@menu/navigation_menu">
 
         </android.support.design.widget.BottomNavigationView>
 
-    </android.support.constraint.ConstraintLayout>
+    </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>

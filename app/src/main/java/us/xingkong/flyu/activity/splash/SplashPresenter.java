@@ -1,6 +1,5 @@
-package us.xingkong.flyu.activity.welcome;
+package us.xingkong.flyu.activity.splash;
 
-import us.xingkong.flyu.UserModel;
 import us.xingkong.flyu.base.BasePresenterImpl;
 
 /**
@@ -9,16 +8,16 @@ import us.xingkong.flyu.base.BasePresenterImpl;
  * @描述:
  * @更新日志:
  */
-public class WelcomePresenter extends BasePresenterImpl<WelcomeContract.View>
-        implements WelcomeContract.Presenter {
+public class SplashPresenter extends BasePresenterImpl<SplashContract.View>
+        implements SplashContract.Presenter {
 
-    WelcomePresenter(WelcomeContract.View view) {
+    SplashPresenter(SplashContract.View view) {
         super(view);
     }
 
     @Override
     public void loadUser() {
-        if (mView.getUserState()) {
+        /*if (mView.getUserState()) {
             mView.showMessage("初次见面");
             return;
         }
@@ -27,8 +26,13 @@ public class WelcomePresenter extends BasePresenterImpl<WelcomeContract.View>
             mView.toOtherActivity(null);
             return;
         }
-        mView.toOtherActivity(user);
+        mView.toOtherActivity(user);*/
 
+        if (mView.getBmobUser() == null) {
+            mView.showMessage("初次见面");
+            return;
+        }
+        mView.toOtherActivity();
     }
 
     @Override

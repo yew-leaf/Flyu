@@ -30,7 +30,6 @@ public abstract class BaseFragment<P extends BasePresenter>
     protected Unbinder unbinder;
     protected P mPresenter;
 
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

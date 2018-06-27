@@ -3,16 +3,13 @@ package us.xingkong.flyu.activity.register;
 import android.support.annotation.NonNull;
 import android.view.View;
 
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
-
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
-import us.xingkong.flyu.UserModel;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.SaveListener;
 import us.xingkong.flyu.UserModelDao;
-import us.xingkong.flyu.app.App;
 import us.xingkong.flyu.app.Constants;
 import us.xingkong.flyu.base.BasePresenterImpl;
+import us.xingkong.flyu.model.BmobUserModel;
+import us.xingkong.flyu.util.L;
 
 /**
  * @作者: Xuer
@@ -29,20 +26,40 @@ public class RegisterPresenter extends BasePresenterImpl<RegisterContract.View>
     RegisterPresenter(@NonNull RegisterContract.View view) {
         super(view);
         registerModel = new RegisterModel();
-        dao = App.getInstance().getDaoSession().getUserModelDao();
+        //dao = App.getInstance().getDaoSession().getUserModelDao();
     }
 
     @Override
     public void register() {
         mView.setEnable(false);
         mView.setVisibility(View.VISIBLE);
+
         if (!mView.getPassword().equals(mView.getRepassword())) {
             mView.setEnable(true);
             mView.setVisibility(View.INVISIBLE);
             mView.showMessage("两次密码不一致");
             return;
         }
-        registerModel.register(mView.getUserName(), mView.getEmail(),
+
+        registerModel.bmobRegister(mView.getUserName(), mView.getPassword()
+                , mView.getEmail()).signUp(new SaveListener<BmobUserModel>() {
+            @Override
+            public void done(BmobUserModel bmobUserModel, BmobException e) {
+                if (e == null) {
+                    L.i("RegisterPresenter", mView.getUserName() + "signUp successfully");
+                    mView.showToast("注册成功");
+                    mView.toOtherActivity(bmobUserModel);
+                } else {
+                    L.e("RegisterPresenter", e.getMessage());
+                    L.e("ErrorCode", e.getErrorCode() + "");
+                    showBmobMessage(e.getErrorCode());
+                }
+                mView.setEnable(true);
+                mView.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        /*registerModel.register(mView.getUserName(), mView.getEmail(),
                 mView.getPassword()).subscribe(new Observer<String>() {
             @Override
             public void onSubscribe(Disposable d) {
@@ -82,7 +99,7 @@ public class RegisterPresenter extends BasePresenterImpl<RegisterContract.View>
             public void onComplete() {
 
             }
-        });
+        });*/
     }
 
     @Override
@@ -117,6 +134,23 @@ public class RegisterPresenter extends BasePresenterImpl<RegisterContract.View>
                 break;
             case Constants.USERNAME_OR_PASSWORD_IS_EMPTY:
                 mView.showMessage("不能为空");
+                break;
+        }
+    }
+
+    private void showBmobMessage(int errorCode) {
+        switch (errorCode) {
+            case 202:
+                mView.showMessage("这个人已经被注册了");
+                break;
+            case 203:
+                mView.showMessage("这个邮箱已经被注册了");
+                break;
+            case 301:
+                mView.showMessage("请好好填写你的邮箱");
+                break;
+            case 304:
+                mView.showMessage("请好好填写你的用户名和密码");
                 break;
         }
     }

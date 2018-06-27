@@ -3,6 +3,7 @@ package us.xingkong.flyu.activity.register;
 import us.xingkong.flyu.UserModel;
 import us.xingkong.flyu.base.BasePresenter;
 import us.xingkong.flyu.base.BaseView;
+import us.xingkong.flyu.model.BmobUserModel;
 
 /**
  * @作者: Xuer
@@ -31,7 +32,9 @@ public interface RegisterContract {
 
         void showMessage(String message);
 
-        void toOtherActivity(UserModel user);
+        void toOtherActivity(UserModel userModel);
+
+        void toOtherActivity(BmobUserModel bmobUserModel);
 
         void showToast(String message);
     }

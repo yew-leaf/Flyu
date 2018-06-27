@@ -66,11 +66,7 @@ public class DetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public int getItemCount() {
-        if (mList != null) {
-            return mList.size();
-        } else {
-            return 0;
-        }
+        return mList != null ? mList.size() : 0;
     }
 
     @Override

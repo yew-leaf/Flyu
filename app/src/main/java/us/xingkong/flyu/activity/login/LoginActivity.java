@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import us.xingkong.flyu.R;
 import us.xingkong.flyu.UserModel;
 import us.xingkong.flyu.activity.container.ContainerActivity;
@@ -21,7 +22,7 @@ import us.xingkong.flyu.util.T;
 import us.xingkong.flyu.util.UIUtil;
 
 public class LoginActivity extends BaseActivity<LoginContract.Presenter>
-        implements LoginContract.View, View.OnClickListener {
+        implements LoginContract.View {
 
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
@@ -65,9 +66,24 @@ public class LoginActivity extends BaseActivity<LoginContract.Presenter>
 
     @Override
     protected void initListener() {
-        updatePassword.setOnClickListener(this);
-        login.setOnClickListener(this);
-        register.setOnClickListener(this);
+
+    }
+
+    @OnClick({R.id.updatePassword, R.id.login, R.id.register})
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.updatePassword:
+                startActivity(new Intent(LoginActivity.this, UpdatePasswordActivity.class));
+                overridePendingTransition(R.anim.activity_slide_in, R.anim.activity_slide_out);
+                break;
+            case R.id.login:
+                UIUtil.closeKeyboard(LoginActivity.this);
+                mPresenter.login();
+                break;
+            case R.id.register:
+                startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+                break;
+        }
     }
 
     @Override
@@ -93,15 +109,16 @@ public class LoginActivity extends BaseActivity<LoginContract.Presenter>
 
     @Override
     public void toOtherActivity(UserModel userModel) {
-        Intent intent = new Intent(LoginActivity.this, ContainerActivity.class);
+        /*Intent intent = new Intent(LoginActivity.this, ContainerActivity.class);
         intent.putExtra("Username", userModel.getUsername());
         startActivity(intent);
-        finish();
+        finish();*/
     }
 
     @Override
-    public void showMessage(String message) {
-        S.shortSnackbar(findViewById(R.id.root), message);
+    public void toOtherActivity() {
+        startActivity(new Intent(LoginActivity.this, ContainerActivity.class));
+        finish();
     }
 
     @Override
@@ -110,20 +127,8 @@ public class LoginActivity extends BaseActivity<LoginContract.Presenter>
     }
 
     @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.updatePassword:
-                startActivity(new Intent(LoginActivity.this, UpdatePasswordActivity.class));
-                overridePendingTransition(R.anim.activity_slide_in, R.anim.activity_slide_out);
-                break;
-            case R.id.login:
-                UIUtil.closeKeyboard(LoginActivity.this);
-                mPresenter.login();
-                break;
-            case R.id.register:
-                startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
-                break;
-        }
+    public void showMessage(String message) {
+        S.shortSnackbar(findViewById(R.id.root), message);
     }
 
     @Override

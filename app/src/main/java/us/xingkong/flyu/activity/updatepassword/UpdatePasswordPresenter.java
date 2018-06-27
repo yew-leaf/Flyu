@@ -3,12 +3,9 @@ package us.xingkong.flyu.activity.updatepassword;
 import android.support.annotation.NonNull;
 import android.view.View;
 
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
-
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
-import us.xingkong.flyu.UserModel;
+import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.UpdateListener;
 import us.xingkong.flyu.UserModelDao;
 import us.xingkong.flyu.app.App;
 import us.xingkong.flyu.app.Constants;
@@ -37,7 +34,25 @@ public class UpdatePasswordPresenter extends BasePresenterImpl<UpdatePasswordCon
     public void updatePassword() {
         mView.setEnable(false);
         mView.setVisibility(View.VISIBLE);
-        updatePasswordModel.updatePassword(mView.getUserName(), mView.getPassword()
+
+        //修改密码不能放在这里
+        BmobUser.updateCurrentUserPassword(mView.getPassword(), mView.getRepassword(), new UpdateListener() {
+            @Override
+            public void done(BmobException e) {
+                if (e == null) {
+                    mView.showToast("修改密码成功");
+                    mView.toOtherActivity();
+                } else {
+                    L.e("UpdatePasswordPresenter", e.getMessage());
+                    L.e("ErrorCode", e.getErrorCode() + "");
+                    mView.showMessage("修改失败：" + e.getMessage());
+                }
+                mView.setEnable(true);
+                mView.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        /*updatePasswordModel.updatePassword(mView.getUserName(), mView.getPassword()
                 , mView.getRepassword()).subscribe(new Observer<String>() {
             @Override
             public void onSubscribe(Disposable d) {
@@ -87,7 +102,7 @@ public class UpdatePasswordPresenter extends BasePresenterImpl<UpdatePasswordCon
             public void onComplete() {
 
             }
-        });
+        });*/
     }
 
     @Override
@@ -110,6 +125,20 @@ public class UpdatePasswordPresenter extends BasePresenterImpl<UpdatePasswordCon
                 break;
             case Constants.UPDATE_PASSWORD_UNSUCCESSFULLY:
                 mView.showMessage("修改密码失败");
+                break;
+        }
+    }
+
+    private void showBmobMessage(int errorCode) {
+        switch (errorCode) {
+            case 210:
+                mView.showMessage("旧密码不对");
+                break;
+            case 9018:
+                mView.showMessage("请好好填写你的用户名和密码");
+                break;
+            case 9016:
+                mView.showMessage("网络不可用，检查下网络吧");
                 break;
         }
     }

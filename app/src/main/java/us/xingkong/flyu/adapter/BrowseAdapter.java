@@ -72,11 +72,7 @@ public class BrowseAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        if (mList != null) {
-            return mList.size();
-        } else {
-            return 0;
-        }
+        return mList != null ? mList.size() : 0;
     }
 
     @Override
@@ -86,7 +82,7 @@ public class BrowseAdapter extends PagerAdapter {
 
     @Override
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-        L.i("BrowseAdapter","destroyItem");
+        L.i("BrowseAdapter", "destroyItem");
         container.removeView((View) object);
         if (mReference != null && mReference.get() != null) {
             mReference.clear();

@@ -1,10 +1,10 @@
 package us.xingkong.flyu.activity.dynamic;
 
 import android.content.Intent;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
+
+import com.jcodecraeer.xrecyclerview.XRecyclerView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -13,7 +13,7 @@ import butterknife.BindView;
 import us.xingkong.flyu.R;
 import us.xingkong.flyu.activity.container.ContainerActivity;
 import us.xingkong.flyu.activity.detail.DetailActivity;
-import us.xingkong.flyu.adapter.DynamicAdapter;
+import us.xingkong.flyu.adapter.DynamicAdapterX;
 import us.xingkong.flyu.base.BaseFragment;
 import us.xingkong.flyu.model.DownloadModel;
 import us.xingkong.flyu.model.EventModel;
@@ -25,26 +25,24 @@ import us.xingkong.flyu.util.S;
  * @描述:
  * @更新日志:
  */
-public class DynamicFragment extends BaseFragment<DynamicContract.Presenter>
-        implements DynamicContract.View, SwipeRefreshLayout.OnRefreshListener {
+public class DynamicFragmentX extends BaseFragment<DynamicContractX.Presenter>
+        implements DynamicContractX.View {
 
-    @BindView(R.id.swipeRefresh)
-    SwipeRefreshLayout swipeRefresh;
     @BindView(R.id.recyclerView)
-    RecyclerView recyclerView;
+    XRecyclerView recyclerView;
 
-    public static DynamicFragment newInstance() {
-        return new DynamicFragment();
+    public static DynamicFragmentX newInstance() {
+        return new DynamicFragmentX();
     }
 
     @Override
-    protected DynamicContract.Presenter newPresenter() {
-        return new DynamicPresenter(this);
+    protected DynamicContractX.Presenter newPresenter() {
+        return new DynamicPresenterX(this);
     }
 
     @Override
     protected int bindLayout() {
-        return R.layout.fragment_dynamic;
+        return R.layout.fragment_dynamic_x;
     }
 
     @Override
@@ -59,8 +57,13 @@ public class DynamicFragment extends BaseFragment<DynamicContract.Presenter>
         LinearLayoutManager manager =
                 new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(manager);
-
-        swipeRefresh.setColorSchemeResources(R.color.zhihu);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setPullRefreshEnabled(true);
+        recyclerView.getDefaultRefreshHeaderView().setRefreshTimeVisible(true);
+        recyclerView.setLimitNumberToCallLoadMore(0);
+        //recyclerView.setRefreshProgressStyle(ProgressStyle.BallSpinFadeLoader);
+        //recyclerView.setLoadingMoreProgressStyle(ProgressStyle.BallSpinFadeLoader);
+        //recyclerView.setArrowImageView(R.mipmap.ic_arrow_refresh);
 
         mPresenter.loadDynamic();
     }
@@ -80,7 +83,17 @@ public class DynamicFragment extends BaseFragment<DynamicContract.Presenter>
 
     @Override
     protected void initListener() {
-        swipeRefresh.setOnRefreshListener(this);
+        recyclerView.setLoadingListener(new XRecyclerView.LoadingListener() {
+            @Override
+            public void onRefresh() {
+                mPresenter.refresh();
+            }
+
+            @Override
+            public void onLoadMore() {
+                mPresenter.loadMore();
+            }
+        });
     }
 
     @Override
@@ -95,19 +108,24 @@ public class DynamicFragment extends BaseFragment<DynamicContract.Presenter>
     }
 
     @Override
-    public void setRefresh(boolean refresh) {
-        swipeRefresh.setRefreshing(refresh);
-    }
-
-    @Override
-    public void setAdapter(DynamicAdapter adapter) {
+    public void setAdapter(DynamicAdapterX adapter) {
         recyclerView.setAdapter(adapter);
     }
 
     @Override
     public void setEnable(boolean enable) {
-        //swipeRefresh.setEnabled(enable);
         recyclerView.setEnabled(enable);
+        recyclerView.setLoadingMoreEnabled(enable);
+    }
+
+    @Override
+    public void refreshComplete() {
+        recyclerView.refreshComplete();
+    }
+
+    @Override
+    public void loadMoreComplete() {
+        recyclerView.loadMoreComplete();
     }
 
     @Override
@@ -128,7 +146,11 @@ public class DynamicFragment extends BaseFragment<DynamicContract.Presenter>
     }
 
     @Override
-    public void onRefresh() {
-        mPresenter.loadDynamic();
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (recyclerView != null) {
+            recyclerView.destroy();
+            recyclerView = null;
+        }
     }
 }

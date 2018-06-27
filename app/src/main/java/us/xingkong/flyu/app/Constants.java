@@ -7,7 +7,7 @@ package us.xingkong.flyu.app;
  * @更新日志:
  */
 public class Constants {
-    public static final String APPID = "682fd39be9ebd646e4ebacf5ec9b3efb";
+    public static final String ApplicationID = "682fd39be9ebd646e4ebacf5ec9b3efb";
 
     public static final String BASE_LOGIN_AND_REGISTER_URL = "http://39.108.0.22/blog/public/";
 
@@ -36,4 +36,10 @@ public class Constants {
     public static final String UPDATE_PASSWORD_SUCCESSFULLY = "3";
 
     public static final String UPDATE_PASSWORD_UNSUCCESSFULLY = "4";
+
+    public final static int CAMERA_REQUEST = 100;
+
+    public final static int ALBUM_REQUEST = 200;
+
+    public final static int GENERAL_REQUEST = 300;
 }

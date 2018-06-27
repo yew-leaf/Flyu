@@ -1,6 +1,7 @@
 package us.xingkong.flyu.activity.container;
 
 import android.content.Intent;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -15,6 +16,8 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.zhihu.matisse.Matisse;
+
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
@@ -23,18 +26,24 @@ import java.util.List;
 import butterknife.BindColor;
 import butterknife.BindView;
 import butterknife.OnClick;
+import cn.bmob.v3.BmobUser;
 import us.xingkong.flyu.R;
 import us.xingkong.flyu.UserModel;
-import us.xingkong.flyu.UserModelDao;
-import us.xingkong.flyu.activity.dynamic.DynamicFragment;
-import us.xingkong.flyu.activity.home.HomeFragment;
+import us.xingkong.flyu.activity.dynamic.DynamicFragmentX;
+import us.xingkong.flyu.activity.home.HomeFragmentX;
 import us.xingkong.flyu.activity.main.MainActivity;
 import us.xingkong.flyu.activity.profile.ProfileFragment;
 import us.xingkong.flyu.app.App;
 import us.xingkong.flyu.base.BaseActivity;
 import us.xingkong.flyu.base.BasePresenter;
+import us.xingkong.flyu.model.BmobUserModel;
 import us.xingkong.flyu.model.EventModel;
+import us.xingkong.flyu.util.L;
 import us.xingkong.flyu.util.S;
+import us.xingkong.flyu.util.UIUtil;
+
+import static us.xingkong.flyu.app.Constants.ALBUM_REQUEST;
+import static us.xingkong.flyu.app.Constants.CAMERA_REQUEST;
 
 public class ContainerActivity extends BaseActivity {
 
@@ -52,6 +61,7 @@ public class ContainerActivity extends BaseActivity {
     private long exitTime;
     private MenuItem menuItem;
     private static UserModel userModel;
+    private static BmobUserModel bmobUserModel;
 
     @Override
     protected void onResume() {
@@ -98,21 +108,26 @@ public class ContainerActivity extends BaseActivity {
 
     private void setViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.add(HomeFragment.newInstance());
-        adapter.add(DynamicFragment.newInstance());
+        adapter.add(HomeFragmentX.newInstance());
+        adapter.add(DynamicFragmentX.newInstance());
         adapter.add(ProfileFragment.newInstance());
         viewPager.setAdapter(adapter);
     }
 
     @Override
     protected void initData() {
-        String username = getIntent().getStringExtra("Username");
-        UserModelDao dao = App.getInstance().getDaoSession().getUserModelDao();
-        userModel = dao.load(username);
+        //String username = getIntent().getStringExtra("Username");
+        //UserModelDao dao = App.getInstance().getDaoSession().getUserModelDao();
+        //userModel = dao.load(username);
+        bmobUserModel = BmobUser.getCurrentUser(BmobUserModel.class);
     }
 
     public static UserModel getUserModel() {
         return userModel;
+    }
+
+    public static BmobUserModel getBmobUserModel() {
+        return bmobUserModel;
     }
 
     @Override
@@ -123,7 +138,8 @@ public class ContainerActivity extends BaseActivity {
                 if (viewPager.getCurrentItem() != 0) {
                     viewPager.setCurrentItem(0);
                 }
-                EventBus.getDefault().post(new EventModel<>("ContainerActivity", query));
+                UIUtil.closeKeyboard(ContainerActivity.this);
+                EventBus.getDefault().post(new EventModel<>("QueryUser", query));
                 return true;
             }
 
@@ -210,7 +226,28 @@ public class ContainerActivity extends BaseActivity {
 
     }
 
-    class ViewPagerAdapter extends FragmentPagerAdapter {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        L.i("Container", "requestCode:" + requestCode + "resultCode:" + requestCode);
+        String uri;
+        switch (requestCode) {
+            case CAMERA_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    uri = data.getStringExtra(MediaStore.EXTRA_OUTPUT);
+                    EventBus.getDefault().post(new EventModel<>("AvatarRequest", uri));
+                }
+                break;
+            case ALBUM_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    uri = String.valueOf(Matisse.obtainResult(data).get(0));
+                    EventBus.getDefault().post(new EventModel<>("AvatarRequest", uri));
+                }
+                break;
+        }
+    }
+
+    static class ViewPagerAdapter extends FragmentPagerAdapter {
 
         List<Fragment> fragmentList;
 

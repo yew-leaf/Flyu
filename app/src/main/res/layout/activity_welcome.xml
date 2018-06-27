@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:focusableInTouchMode="false"
-    tools:context=".activity.welcome.WelcomeActivity">
+    tools:context=".activity.splash.SplashActivity">
 
     <android.support.v7.widget.AppCompatImageView
         android:id="@+id/welcome"

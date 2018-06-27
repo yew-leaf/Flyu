@@ -4,17 +4,14 @@ package us.xingkong.flyu.activity.login;
 import android.support.annotation.NonNull;
 import android.view.View;
 
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
-import java.util.List;
-
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
-import us.xingkong.flyu.UserModel;
+import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.LogInListener;
 import us.xingkong.flyu.UserModelDao;
-import us.xingkong.flyu.app.App;
 import us.xingkong.flyu.app.Constants;
 import us.xingkong.flyu.base.BasePresenterImpl;
+import us.xingkong.flyu.model.BmobUserModel;
+import us.xingkong.flyu.util.L;
 
 /**
  * @作者: Xuer
@@ -30,15 +27,33 @@ public class LoginPresenter extends BasePresenterImpl<LoginContract.View>
 
     LoginPresenter(@NonNull LoginContract.View view) {
         super(view);
-        loginModel = new LoginModel();
-        dao = App.getInstance().getDaoSession().getUserModelDao();
+        //loginModel = new LoginModel();
+        //dao = App.getInstance().getDaoSession().getUserModelDao();
     }
 
     @Override
     public void login() {
         mView.setEnable(false);
         mView.setVisibility(View.VISIBLE);
-        loginModel.login(mView.getUserName(), mView.getPassword()).subscribe(new Observer<String>() {
+
+        BmobUser.loginByAccount(mView.getUserName(), mView.getPassword(), new LogInListener<BmobUserModel>() {
+            @Override
+            public void done(BmobUserModel bmobUserModel, BmobException e) {
+                if (e == null) {
+                    L.i("LoginPresenter", mView.getUserName() + "login successfully");
+                    mView.showToast("登录成功");
+                    mView.toOtherActivity();
+                } else {
+                    L.e("LoginPresenter", e.getMessage());
+                    L.e("ErrorCode", e.getErrorCode() + "");
+                    showBmobMessage(e.getErrorCode());
+                }
+                mView.setEnable(true);
+                mView.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        /*loginModel.login(mView.getUserName(), mView.getPassword()).subscribe(new Observer<String>() {
             @Override
             public void onSubscribe(Disposable d) {
                 mCompositeDisposable.add(d);
@@ -74,18 +89,18 @@ public class LoginPresenter extends BasePresenterImpl<LoginContract.View>
             public void onComplete() {
 
             }
-        });
+        });*/
     }
 
     @Override
     public void subscribe() {
         super.subscribe();
-        List<UserModel> list = dao.loadAll();
+        /*List<UserModel> list = dao.loadAll();
         for (UserModel user : list) {
             if (user.getIsLogged()) {
                 mView.toOtherActivity(user);
             }
-        }
+        }*/
     }
 
     @Override
@@ -106,6 +121,20 @@ public class LoginPresenter extends BasePresenterImpl<LoginContract.View>
                 break;
             case Constants.USERNAME_OR_PASSWORD_IS_EMPTY:
                 mView.showMessage("用户名或密码为空");
+                break;
+        }
+    }
+
+    private void showBmobMessage(int errorCode) {
+        switch (errorCode) {
+            case 101:
+                mView.showMessage("用户名或密码不正确");
+                break;
+            case 9018:
+                mView.showMessage("用户名或密码为空");
+                break;
+            case 9016:
+                mView.showMessage("网络不可用，检查下网络吧");
                 break;
         }
     }

@@ -1,4 +1,4 @@
-package us.xingkong.flyu.activity.welcome;
+package us.xingkong.flyu.activity.splash;
 
 import android.annotation.TargetApi;
 import android.support.annotation.Nullable;
@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import us.xingkong.flyu.UserModel;
 import us.xingkong.flyu.base.BasePresenter;
 import us.xingkong.flyu.base.BaseView;
+import us.xingkong.flyu.model.BmobUserModel;
 
 /**
  * @作者: Xuer
@@ -13,7 +14,7 @@ import us.xingkong.flyu.base.BaseView;
  * @描述:
  * @更新日志:
  */
-public interface WelcomeContract {
+public interface SplashContract {
 
     interface Presenter extends BasePresenter {
         void loadUser();
@@ -24,9 +25,13 @@ public interface WelcomeContract {
 
         UserModel getUser();
 
+        BmobUserModel getBmobUser();
+
         @TargetApi(23)
         void applyPermissions();
 
         void toOtherActivity(@Nullable UserModel userModel);
+
+        void toOtherActivity();
     }
 }

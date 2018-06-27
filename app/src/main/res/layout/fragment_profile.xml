@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
@@ -11,7 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:elevation="4dp">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar"
@@ -21,7 +23,7 @@
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <android.support.v7.widget.AppCompatImageView
-                android:id="@+id/background"
+                android:id="@+id/background_avatar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
@@ -31,7 +33,6 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:elevation="4dp"
                 app:contentInsetStart="0dp"
                 app:layout_collapseMode="pin">
 
@@ -39,7 +40,7 @@
                     android:id="@+id/small_avatar"
                     android:layout_width="@dimen/small_avatar_size"
                     android:layout_height="@dimen/small_avatar_size"
-                    android:layout_marginStart="64dp" />
+                    android:layout_marginStart="48dp" />
 
                 <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/toolbar_name"
@@ -70,7 +71,7 @@
 
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:background="@color/white"
                 android:elevation="4dp">
 
@@ -91,11 +92,14 @@
                     android:id="@+id/signature"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginStart="32dp"
                     android:layout_marginTop="10dp"
                     android:fontFamily="sans-serif"
                     android:gravity="center_horizontal"
-                    android:text="此刻的心情：想换头像"
+                    android:text="@string/signature"
                     android:textSize="@dimen/text_size"
+                    app:layout_constraintBottom_toTopOf="@id/follow"
                     app:layout_constraintTop_toBottomOf="@+id/username" />
 
                 <android.support.v7.widget.AppCompatButton
@@ -103,7 +107,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:background="@color/white"
+                    android:background="@null"
                     android:text="@string/dynamic"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
@@ -115,7 +119,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:background="@color/white"
+                    android:background="@null"
                     android:text="@string/follow"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toRightOf="@+id/dynamic"
@@ -127,7 +131,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:background="@color/white"
+                    android:background="@null"
                     android:text="@string/fans"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toRightOf="@id/follow"

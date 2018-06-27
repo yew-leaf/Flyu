@@ -89,8 +89,13 @@ public class UpdatePasswordActivity extends BaseActivity<UpdatePasswordContract.
     }
 
     @Override
-    public void toOtherActivity(UserModel user) {
+    public void toOtherActivity(UserModel userModel) {
         finishActivity();
+    }
+
+    @Override
+    public void toOtherActivity() {
+
     }
 
     @Override
